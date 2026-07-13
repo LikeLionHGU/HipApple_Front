@@ -1,0 +1,241 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.signup-info-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-info-page .navbar {
+  width: 100%;
+  height: 84px;
+  background: #ffffff;
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.10);
+  display: flex;
+  align-items: center;
+  padding: 0 81px;
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.signup-info-page .logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background: #D2D2D2;
+  border-radius: 4px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #000000;
+  min-width: 89px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.signup-info-page .logo:hover {
+  background: #c0c0c0;
+}
+
+.signup-info-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 20px 60px;
+}
+
+.signup-info-page .step-indicator {
+  display: flex;
+  align-items: center;
+  margin-bottom: 36px;
+  animation: fadeSlideIn 0.4s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.signup-info-page .step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: #C5C5C5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  flex-shrink: 0;
+}
+
+.signup-info-page .step-circle.active {
+  background: #1BC485;
+}
+
+.signup-info-page .step-line {
+  width: 70px;
+  height: 1px;
+  background: #C5C5C5;
+}
+
+.signup-info-page .step-line.active {
+  background: #1BC485;
+}
+
+.signup-info-page .signup-title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 32px;
+  animation: fadeSlideIn 0.45s ease 0.05s both forwards;
+  text-align: center;
+}
+
+.signup-info-page .signup-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  line-height: 32px;
+}
+
+.signup-info-page .signup-subtitle {
+  font-size: 24px;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.signup-info-card {
+  width: 100%;
+  max-width: 500px;
+  background: #FAFAFA;
+  border-radius: 20px;
+  padding: 36px 34px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  animation: fadeSlideIn 0.5s ease 0.1s both forwards;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+  font-family: 'Inter', sans-serif;
+  line-height: 15px;
+}
+
+.field-input {
+  width: 100%;
+  height: 57px;
+  padding: 10px 10px 10px 13px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: none;
+  border-radius: 12px;
+  outline: 1px solid #6B7280;
+  outline-offset: -1px;
+  line-height: 20px;
+  font-size: 20px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  color: #000000;
+  transition: outline-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field-input::placeholder {
+  color: #A9A9A9;
+}
+
+.field-input:focus {
+  outline: 1.5px solid #1BC485;
+  box-shadow: 0 0 0 3px rgba(27, 196, 133, 0.12);
+}
+
+.market-options {
+  display: flex;
+  gap: 18px;
+}
+
+.market-btn {
+  flex: 1;
+  height: 49px;
+  padding: 10px 10px 10px 13px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: none;
+  border-radius: 12px;
+  outline: 1px solid #6B7280;
+  outline-offset: -1px;
+  font-size: 20px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  color: #A9A9A9;
+  cursor: pointer;
+  transition: outline-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.market-btn:hover {
+  outline-color: #1BC485;
+  color: #1BC485;
+}
+
+.market-btn.selected {
+  background: #1BC485;
+  outline-color: #1BC485;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.signup-info-page .next-btn {
+  width: 204px;
+  height: 50px;
+  background: #1BC485;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  align-self: flex-end;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.signup-info-page .next-btn:hover {
+  background: #17ae76;
+  box-shadow: 0 4px 16px rgba(27, 196, 133, 0.35);
+  transform: translateY(-1px);
+}
+
+.signup-info-page .next-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
