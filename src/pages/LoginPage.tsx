@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './LoginPage.css'
 
 function LoginPage() {
@@ -36,9 +37,9 @@ function LoginPage() {
           </button>
 
           <div className="login-footer">
-            <a href="/signup" className="signup-link">
+            <Link to="/signup" className="signup-link">
               회원가입
-            </a>
+            </Link>
           </div>
         </div>
       </main>
