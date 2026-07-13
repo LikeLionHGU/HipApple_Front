@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# 리뷰 언어 설정 (한국어)
+language: "ko-KR"
+
+# 리뷰 전반 설정
+reviews:
+  # chill: 중요한 이슈에 집중, assertive: 더 적극적으로 nitpick
+  profile: "chill"
+
+  # PR 머지 전 변경 요청 워크플로우 활성화
+  request_changes_workflow: false
+
+  # PR 상단에 고수준 요약 표시
+  high_level_summary: true
+
+  # 시 형태의 요약 비활성화 (간결한 피드백 선호)
+  poem: false
+
+  # 리뷰 상태 표시 활성화
+  review_status: true
+
+  # 자동 리뷰 설정
+  auto_review:
+    enabled: true
+    # 드래프트 PR은 리뷰 건너뜀
+    drafts: false
+    # 리뷰 대상 브랜치
+    base_branches:
+      - "main"
+      - "develop"
+
+  # 파일별 특별 리뷰 지침
+  path_instructions:
+    - path: "src/**/*.tsx"
+      instructions: |
+        - React 컴포넌트 구조와 훅 사용법을 점검해주세요.
+        - 컴포넌트 Props의 타입 정의가 명확한지 확인해주세요.
+        - 불필요한 리렌더링을 유발하는 패턴이 있는지 확인해주세요.
+        - 접근성(aria 속성, 시맨틱 HTML)을 점검해주세요.
+
+    - path: "src/**/*.css"
+      instructions: |
+        - CSS 클래스 네이밍 일관성을 확인해주세요.
+        - 하드코딩된 색상 값이 있으면 CSS 변수 사용을 제안해주세요.
+        - 반응형 디자인(미디어 쿼리) 처리가 적절한지 확인해주세요.
+
+    - path: "src/**/*.ts"
+      instructions: |
+        - TypeScript 타입 안전성을 점검해주세요.
+        - any 타입 사용을 지양하고 명확한 타입 정의를 권장해주세요.
+
+# 채팅(PR 댓글) 설정
+chat:
+  # CodeRabbit 댓글에 자동 답변 활성화
+  auto_reply: true
