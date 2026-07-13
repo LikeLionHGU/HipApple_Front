@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import Header from '../components/Header'
 import './MarketPricePage.css'
 
 const SAMPLE_PRICES = [2180, 2210, 2195, 2240, 2260, 2290, 2310]
@@ -64,7 +64,6 @@ function PriceChart() {
 }
 
 function MarketPricePage() {
-  const location = useLocation()
   const dateRef = useRef<HTMLInputElement>(null)
   const [rawDate, setRawDate] = useState('2026-07-10')
   const [market, setMarket] = useState('전국도매시장')
@@ -78,31 +77,13 @@ function MarketPricePage() {
     return `${y}년 ${parseInt(m)}월 ${parseInt(day)}일`
   }
 
-  const navLinks = [
-    { label: '저장고 현황', path: '/storage' },
-    { label: '출하 AI', path: '/ai' },
-    { label: '시장 가격', path: '/market' },
-    { label: '마이페이지', path: '/mypage' },
-  ]
-
-  const handleSearch = () => setSearched(true)
+  const handleSearch = () => {
+    setSearched(true)
+  }
 
   return (
     <div className="market-page">
-      <header className="market-navbar">
-        <div className="market-logo">로고</div>
-        <nav className="market-nav">
-          {navLinks.map(link => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-      </header>
+      <Header />
 
       <main className="market-main">
         <div className="page-header">
