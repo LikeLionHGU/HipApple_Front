@@ -3,6 +3,7 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import SignupInfoPage from './pages/SignupInfoPage'
 import SignupCompletePage from './pages/SignupCompletePage'
+import MarketPricePage from './pages/MarketPricePage'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/signup/info" element={<SignupInfoPage />} />
         <Route path="/signup/step3" element={<SignupCompletePage />} />
+        <Route path="/market" element={<MarketPricePage />} />
       </Routes>
     </BrowserRouter>
   )
