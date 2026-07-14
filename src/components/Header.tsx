@@ -4,6 +4,8 @@ import './Header.css'
 export default function Header() {
   const location = useLocation()
 
+  const isStoragePage = ['/storage', '/StorageInfo', '/StorageAdd'].includes(location.pathname)
+
   const navLinks = [
     { label: '저장고 현황', path: '/storage' },
     { label: '출하 AI', path: '/ai' },
@@ -19,7 +21,10 @@ export default function Header() {
           <Link
             key={link.path}
             to={link.path}
-            className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
+            className={`nav-link ${
+              link.path === '/storage' ? (isStoragePage ? 'active' : '')
+                : location.pathname === link.path ? 'active' : ''
+            }`}
           >
             {link.label}
           </Link>

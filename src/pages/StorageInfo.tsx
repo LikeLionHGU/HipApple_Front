@@ -14,27 +14,29 @@ const INITIAL_STORAGES: Storage[] = [
   { name: 'B동', date: '2026.7.4 ~', description: '사과 홍로 · CA 저장 · 당도 15' },
 ]
 
+export const STORAGE_LIST_KEY = 'hipapple-storage-list'
+
+const getStoredStorages = (): Storage[] => {
+  const savedStorages = window.localStorage.getItem(STORAGE_LIST_KEY)
+  if (!savedStorages) return INITIAL_STORAGES
+
+  try {
+    return JSON.parse(savedStorages) as Storage[]
+  } catch {
+    return INITIAL_STORAGES
+  }
+}
+
 function StorageInfo() {
   const navigate = useNavigate()
-  const [storages, setStorages] = useState(INITIAL_STORAGES)
+  const [storages] = useState<Storage[]>(getStoredStorages)
 
   const handleEdit = (storage: Storage) => {
-    const description = window.prompt('저장고 정보를 수정하세요.', storage.description)
-    if (description === null || !description.trim()) return
-
-    setStorages(currentStorages => currentStorages.map(currentStorage => (
-      currentStorage.name === storage.name
-        ? { ...currentStorage, description: description.trim() }
-        : currentStorage
-    )))
+    navigate('/StorageEdit', { state: { storage } })
   }
 
   const handleAdd = () => {
-    const nextName = String.fromCharCode(65 + storages.length) + '동'
-    setStorages(currentStorages => [
-      ...currentStorages,
-      { name: nextName, date: '2026.7.15 ~', description: '저장고 정보를 입력해주세요' },
-    ])
+    navigate('/StorageAdd')
   }
 
   return (
