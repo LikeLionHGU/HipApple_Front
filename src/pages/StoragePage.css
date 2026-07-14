@@ -217,11 +217,19 @@
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.ai-recommend-button:hover { background: #14ad73; }
-.ai-recommend-button:active { transform: translateY(1px); }
+.ai-recommend-button:hover {
+  background: #14ad73;
+  box-shadow: 0 4px 10px rgba(27, 196, 133, 0.25);
+  transform: translateY(-2px);
+}
+
+.ai-recommend-button:active {
+  box-shadow: none;
+  transform: translateY(0);
+}
 
 @media (max-width: 900px) {
   .storage-main { width: min(680px, calc(100% - 40px)); }
@@ -241,4 +249,42 @@
   .quality-panel { padding: 22px; }
   .quality-title-row { align-items: flex-start; flex-direction: column; gap: 12px; }
   .quality-panel p { font-size: 17px; }
+  .ai-summary-grid { grid-template-columns: 1fr; }
+  .daily-analysis-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.ai-recommendations { margin-top: 62px; }
+.ai-intro h2 { margin: 0; font-size: 32px; font-weight: 700; }
+.ai-intro h2 span { color: #1bc485; }
+.ai-intro p { margin-top: 10px; font-size: 22px; }
+.ai-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 34px; }
+.recommendation-card, .analysis-card { min-height: 292px; box-sizing: border-box; border-radius: 20px; }
+.recommendation-card { position: relative; padding: 28px 48px; background: #1bc485; color: #fff; }
+.recommendation-label { font-size: 20px; }
+.recommendation-card strong { display: block; margin-top: 14px; font-size: 44px; }
+.recommendation-card strong small { font-size: 17px; font-weight: 400; }
+.recommendation-grade { position: absolute; top: 22px; right: 28px; padding: 8px 20px; border-radius: 22px; background: #e6f8ef; color: #1bc485; }
+.recommendation-card p { margin-top: 48px; font-size: 18px; line-height: 1.7; font-weight: 600; }
+.analysis-card { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; padding: 28px 46px; border: 1px solid #e5e7eb; background: #fafafa; }
+.analysis-card h3 { grid-column: 1 / -1; margin: 0; font-size: 20px; }
+.analysis-card strong { color: #697386; font-size: 16px; }
+.analysis-card p { margin-top: 12px; color: #697386; font-size: 14px; line-height: 1.6; }
+.daily-analysis-title { margin: 28px 0 12px; font-size: 18px; }
+.daily-analysis-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px; }
+.daily-card { position: relative; display: flex; min-height: 226px; padding: 25px 15px 0; box-sizing: border-box; align-items: center; flex-direction: column; border: 1px solid #e5e7eb; border-radius: 20px; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.08); }
+.daily-card.recommended { border: 2px solid #1bc485; }
+.ai-tag { position: absolute; top: -28px; padding: 6px 14px; border-radius: 10px 10px 0 0; background: #1bc485; color: #fff; font-size: 14px; }
+.weather-icon { color: #9ca3af; font-size: 22px; }
+.daily-card > strong { margin-top: 7px; font-size: 16px; }
+.daily-status { margin-top: 22px; padding: 7px 18px; border-radius: 20px; font-size: 14px; }
+.daily-status.우수 { background: #e2f8eb; color: #1bc485; }
+.daily-status.양호 { background: #fff4d9; color: #e9a900; }
+.daily-status.불량 { background: #ffe8e8; color: #ff5d5d; }
+.daily-card > b { width: calc(100% + 30px); margin-top: auto; padding: 20px 0; border-top: 1px solid #e5e7eb; text-align: center; font-size: 28px; }
+.daily-card > b small { font-size: 13px; font-weight: 400; }
+.daily-card.recommended > b { color: #1bc485; }
+
+@media (max-width: 560px) {
+  .ai-summary-grid { grid-template-columns: 1fr; }
+  .daily-analysis-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

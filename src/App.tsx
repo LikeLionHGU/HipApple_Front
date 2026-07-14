@@ -19,6 +19,7 @@ function App() {
         <Route path="/signup/step3" element={<SignupCompletePage />} />
         <Route path="/market" element={<MarketPricePage />} />
         <Route path="/storage" element={<StoragePage />} />
+        <Route path="/StorageAI" element={<StoragePage showAiRecommendations />} />
         <Route path="/StorageInfo" element={<StorageInfo />} />
         <Route path="/StorageAdd" element={<StorageAdd />} />
         <Route path="/StorageEdit" element={<StorageEdit />} />

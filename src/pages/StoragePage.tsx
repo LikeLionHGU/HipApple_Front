@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
+import AcceptModal from '../components/AcceptModal'
 import './StoragePage.css'
 
 type StorageStatus = 'good' | 'warning'
@@ -27,9 +28,11 @@ const STORAGE_DATA: Record<string, StorageMetric[]> = {
   ],
 }
 
-function StoragePage() {
+function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?: boolean }) {
   const navigate = useNavigate()
   const [selectedStorage, setSelectedStorage] = useState('A동')
+  const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(showAiRecommendations)
+  const [isAnalysisVisible, setIsAnalysisVisible] = useState(false)
   const metrics = useMemo(() => STORAGE_DATA[selectedStorage], [selectedStorage])
   const hasWarning = metrics.some(metric => metric.status === 'warning')
 
@@ -104,11 +107,69 @@ function StoragePage() {
           )}
         </section>
 
-        <button className="ai-recommend-button" type="button" onClick={() => navigate('/ai')}>
+        <button className="ai-recommend-button" type="button" onClick={() => navigate('/StorageAI')}>
           AI 추천 받기
         </button>
+
+        {showAiRecommendations && isAnalysisVisible && <AiRecommendations />}
       </main>
+      <AcceptModal
+        isOpen={isAnalysisModalOpen}
+        onClose={() => setIsAnalysisModalOpen(false)}
+        onConfirm={() => {
+          setIsAnalysisModalOpen(false)
+          setIsAnalysisVisible(true)
+        }}
+        title="분석이 완료되었습니다"
+        subtitle="저장고 상태를 바탕으로 출하 시기를 분석했습니다."
+      />
     </div>
+  )
+}
+
+function AiRecommendations() {
+  const days = [
+    { date: '7월 15일', status: '우수', price: '2,341원' },
+    { date: '7월 16일', status: '양호', price: '2,341원' },
+    { date: '7월 17일', status: '우수', price: '2,341원', recommended: true },
+    { date: '7월 18일', status: '불량', price: '2,341원' },
+    { date: '7월 19일', status: '양호', price: '2,341원' },
+  ]
+
+  return (
+    <section className="ai-recommendations" aria-labelledby="ai-title">
+      <div className="ai-intro">
+        <h2 id="ai-title"><span>땡땡땡</span> 농가님,</h2>
+        <p>현재 보관 중인 부사 사과의 최적 출하 시기를 분석했습니다.</p>
+      </div>
+
+      <div className="ai-summary-grid">
+        <article className="recommendation-card">
+          <span className="recommendation-label">출하 추천일</span>
+          <strong>7월 17일 <small>7일 뒤</small></strong>
+          <span className="recommendation-grade">우수</span>
+          <p>가격이 가장 높고, 현재 저장 상태에서도<br />품질이 유지될 것으로 예상됩니다.</p>
+        </article>
+        <article className="analysis-card">
+          <h3>데이터 분석 근거</h3>
+          <div><strong>가격 상승폭 우세</strong><p>다가오는 추석 명절 수요 급증으로 인해 시장 가격이 상승할 것으로 예측됩니다.</p></div>
+          <div><strong>품질 저하 손실액 최소화</strong><p>현재 출하 시 품질과 가격의 균형이 가장 좋습니다.</p></div>
+        </article>
+      </div>
+
+      <h3 className="daily-analysis-title">출하일 별 분석</h3>
+      <div className="daily-analysis-list">
+        {days.map(day => (
+          <article className={`daily-card ${day.recommended ? 'recommended' : ''}`} key={day.date}>
+            {day.recommended && <span className="ai-tag">AI 추천</span>}
+            <span className="weather-icon">☀</span>
+            <strong>{day.date}</strong>
+            <span className={`daily-status ${day.status}`}>{day.status}</span>
+            <b>{day.price} <small>/1kg</small></b>
+          </article>
+        ))}
+      </div>
+    </section>
   )
 }
 

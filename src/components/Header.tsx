@@ -5,6 +5,7 @@ export default function Header() {
   const location = useLocation()
 
   const isStoragePage = ['/storage', '/StorageInfo', '/StorageAdd'].includes(location.pathname)
+  const isAiPage = ['/ai', '/StorageAI'].includes(location.pathname)
 
   const navLinks = [
     { label: '저장고 현황', path: '/storage' },
@@ -23,6 +24,7 @@ export default function Header() {
             to={link.path}
             className={`nav-link ${
               link.path === '/storage' ? (isStoragePage ? 'active' : '')
+                : link.path === '/ai' ? (isAiPage ? 'active' : '')
                 : location.pathname === link.path ? 'active' : ''
             }`}
           >
