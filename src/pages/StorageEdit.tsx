@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import { STORAGE_LIST_KEY } from './StorageInfo'
-import EditAcceptModal from '../components/EditAcceptModal'
+import AcceptModal from '../components/AcceptModal'
 import './StorageEdit.css'
 
 type Storage = {
@@ -26,7 +26,7 @@ type EditForm = {
 const getInitialForm = (storage?: Storage): EditForm => ({
   name: storage?.name ?? 'A동',
   variety: storage?.description.match(/^사과 (.+?) ·/)?.[1] ?? '홍로',
-  harvestDate: storage?.date.replaceAll('.', '-').replace(' ~', '') ?? '2026-04-01',
+  harvestDate: storage ? normalizeDate(storage.date) : '2026-04-01',
   storageMethod: storage?.description.match(/· (.+?) ·/)?.[1] ?? 'CA 저장',
   brix: storage?.description.match(/당도 (.+)$/)?.[1] ?? '13',
   weight: '',
@@ -34,6 +34,12 @@ const getInitialForm = (storage?: Storage): EditForm => ({
   expectedAmount: '',
   expectedTime: '추석 일주일 전',
 })
+
+function normalizeDate(date: string) {
+  const [year, month, day] = date.replace(' ~', '').split('.')
+  if (!year || !month || !day) return ''
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+}
 
 function StorageEdit() {
   const navigate = useNavigate()
@@ -116,10 +122,12 @@ function StorageEdit() {
           <button className="storage-update-button" type="submit" disabled={!isFormValid}>수정하기</button>
         </form>
       </main>
-      <EditAcceptModal
+      <AcceptModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={() => navigate('/StorageInfo')}
+        title="수정이 완료되었습니다"
+        subtitle="저장고 정보가 성공적으로 수정되었습니다."
       />
     </div>
   )

@@ -4,6 +4,7 @@
   min-height: 100vh;
   background: #fff;
   color: #1f1f1f;
+  color-scheme: light;
   font-family: 'Inter', sans-serif;
 }
 
@@ -124,6 +125,12 @@
   color: #1f1f1f;
 }
 
+.form-field input[type='date']::-webkit-calendar-picker-indicator {
+  display: block;
+  opacity: 1;
+  cursor: pointer;
+}
+
 .storage-save-button {
   position: absolute;
   right: 0;
@@ -138,7 +145,7 @@
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .storage-save-button:disabled {
@@ -146,7 +153,16 @@
   cursor: not-allowed;
 }
 
-.storage-save-button:not(:disabled):hover { background: #14ad73; }
+.storage-save-button:not(:disabled):hover {
+  background: #14ad73;
+  box-shadow: 0 4px 10px rgba(27, 196, 133, 0.25);
+  transform: translateY(-2px);
+}
+
+.storage-save-button:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: none;
+}
 
 @media (max-width: 1150px) {
   .storage-add-form {

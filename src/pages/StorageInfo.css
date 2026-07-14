@@ -4,6 +4,7 @@
   min-height: 100vh;
   background: #fff;
   color: #1f1f1f;
+  color-scheme: light;
   font-family: 'Inter', sans-serif;
 }
 
@@ -35,17 +36,19 @@
 }
 
 .storage-list {
-  display: flex;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
   gap: 23px;
   margin-top: 58px;
 }
 
 .storage-card {
   position: relative;
-  width: 320px;
-  height: 198px;
-  padding: 24px 32px;
+  width: 100%;
+  min-height: 198px;
+  height: auto;
+  padding: 24px 32px 58px;
   box-sizing: border-box;
   border: 1px solid #e5e7eb;
   border-radius: 20px;
@@ -57,21 +60,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
 .storage-card h1 {
+  min-width: 0;
+  flex: 1 1 auto;
   margin: 0;
+  color: #1F1F1F;
   font-size: 34px;
   line-height: 1.2;
   font-weight: 700;
 }
 
 .storage-card time {
+  max-width: 100%;
   color: #697386;
   font-size: 17px;
   font-weight: 600;
-  white-space: nowrap;
+  line-height: 1.4;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .storage-card p {
@@ -80,7 +90,9 @@
   font-size: 17px;
   line-height: 1.4;
   font-weight: 600;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 
 .edit-storage-button {
@@ -118,7 +130,7 @@
 
 @media (max-width: 1050px) {
   .storage-list {
-    flex-wrap: wrap;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -129,7 +141,6 @@
   }
 
   .storage-list {
-    display: grid;
     grid-template-columns: 1fr;
     gap: 18px;
     margin-top: 42px;

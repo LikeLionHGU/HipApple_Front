@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
+import AcceptModal from '../components/AcceptModal'
 import { STORAGE_LIST_KEY } from './StorageInfo'
 import './StorageAdd.css'
 
@@ -31,6 +32,7 @@ const INITIAL_FORM: StorageForm = {
 function StorageAdd() {
   const navigate = useNavigate()
   const [form, setForm] = useState<StorageForm>(INITIAL_FORM)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const updateField = (field: keyof StorageForm, value: string) => {
     setForm(currentForm => ({ ...currentForm, [field]: value }))
@@ -60,7 +62,7 @@ function StorageAdd() {
       STORAGE_LIST_KEY,
       JSON.stringify([...currentStorages, newStorage]),
     )
-    navigate('/StorageInfo')
+    setIsModalOpen(true)
   }
 
   return (
@@ -142,6 +144,13 @@ function StorageAdd() {
           </button>
         </form>
       </main>
+      <AcceptModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => navigate('/StorageInfo')}
+        title="저장이 완료되었습니다"
+        subtitle="새로운 저장고 정보가 추가되었습니다."
+      />
     </div>
   )
 }
