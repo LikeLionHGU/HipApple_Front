@@ -6,6 +6,8 @@ import SignupCompletePage from './pages/SignupCompletePage'
 import MarketPricePage from './pages/MarketPricePage'
 import StoragePage from './pages/StoragePage'
 import StorageInfo from './pages/StorageInfo'
+import StorageAdd from './pages/StorageAdd'
+import StorageEdit from './pages/StorageEdit'
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/market" element={<MarketPricePage />} />
         <Route path="/storage" element={<StoragePage />} />
         <Route path="/StorageInfo" element={<StorageInfo />} />
+        <Route path="/StorageAdd" element={<StorageAdd />} />
+        <Route path="/StorageEdit" element={<StorageEdit />} />
       </Routes>
     </BrowserRouter>
   )

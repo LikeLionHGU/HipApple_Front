@@ -1,0 +1,66 @@
+.edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.edit-modal-container {
+  position: relative;
+  width: min(500px, calc(100% - 40px));
+  padding: 40px;
+  box-sizing: border-box;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.edit-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #999;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.edit-modal-container h2 {
+  margin: 0 0 8px;
+  color: #333;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.edit-modal-container p {
+  margin: 0 0 30px;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+.edit-modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.edit-modal-buttons button {
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.edit-modal-cancel { background: #f5f5f5; color: #666; }
+.edit-modal-confirm { background: #1bc485; color: #fff; }
