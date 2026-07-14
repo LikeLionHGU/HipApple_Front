@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.storage-info-page {
+  min-height: 100vh;
+  background: #fff;
+  color: #1f1f1f;
+  font-family: 'Inter', sans-serif;
+}
+
+.storage-info-main {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 42px 0 48px;
+}
+
+.storage-info-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #1f1f1f;
+  font: inherit;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.8px;
+  cursor: pointer;
+}
+
+.storage-info-back-button span {
+  font-size: 38px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.storage-list {
+  display: flex;
+  align-items: flex-end;
+  gap: 23px;
+  margin-top: 58px;
+}
+
+.storage-card {
+  position: relative;
+  width: 320px;
+  height: 198px;
+  padding: 24px 32px;
+  box-sizing: border-box;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.storage-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.storage-card h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.storage-card time {
+  color: #697386;
+  font-size: 17px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.storage-card p {
+  margin: 33px 0 0;
+  color: #697386;
+  font-size: 17px;
+  line-height: 1.4;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.edit-storage-button {
+  position: absolute;
+  right: 19px;
+  bottom: 17px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid #1bc485;
+  background: transparent;
+  color: #1bc485;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-storage-button {
+  width: 205px;
+  height: 50px;
+  margin-bottom: 0;
+  border: 0;
+  border-radius: 12px;
+  background: #1bc485;
+  color: #fff;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.add-storage-button:hover { background: #14ad73; }
+.add-storage-button:active { transform: translateY(1px); }
+
+@media (max-width: 1050px) {
+  .storage-list {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 720px) {
+  .storage-info-main {
+    width: calc(100% - 32px);
+    padding-top: 32px;
+  }
+
+  .storage-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 42px;
+  }
+
+  .storage-card,
+  .add-storage-button {
+    width: 100%;
+  }
+
+  .storage-info-back-button {
+    font-size: 21px;
+  }
+}
