@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import { STORAGE_LIST_KEY } from './StorageInfo'
+import EditAcceptModal from '../components/EditAcceptModal'
 import './StorageEdit.css'
 
 type Storage = {
@@ -39,6 +40,7 @@ function StorageEdit() {
   const location = useLocation()
   const storage = (location.state as { storage?: Storage } | null)?.storage
   const [form, setForm] = useState(() => getInitialForm(storage))
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const updateField = (field: keyof EditForm, value: string) => {
     setForm(currentForm => ({ ...currentForm, [field]: value }))
@@ -65,7 +67,7 @@ function StorageEdit() {
     ))
 
     window.localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(updatedStorages))
-    navigate('/StorageInfo')
+    setIsModalOpen(true)
   }
 
   return (
@@ -114,6 +116,11 @@ function StorageEdit() {
           <button className="storage-update-button" type="submit" disabled={!isFormValid}>수정하기</button>
         </form>
       </main>
+      <EditAcceptModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => navigate('/StorageInfo')}
+      />
     </div>
   )
 }
