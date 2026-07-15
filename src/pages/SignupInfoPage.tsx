@@ -48,13 +48,13 @@ function SignupInfoPage() {
         <div className="signup-info-card">
           <div className="form-field">
             <label className="field-label" htmlFor="location">
-              농장 소재지 (시/군/구)
+              농장 이름
             </label>
             <input
               id="location"
               type="text"
               className="field-input"
-              placeholder="지역을 작성해주세요"
+              placeholder="농장 이름을 작성해주세요"
               value={location}
               onChange={e => setLocation(e.target.value)}
             />
