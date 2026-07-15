@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { consumeAuthIntent, setToken, verifyOauthState } from '../api/auth'
 import { apiFetch } from '../api/client'
+import farmsignLogo from '../assets/farmsign-logo.svg'
+import Spinner from '../components/Spinner'
 import './LoginPage.css'
 
 type LoginResponse = {
@@ -45,7 +47,7 @@ function AuthCallbackPage() {
   return (
     <div className="login-page">
       <header className="navbar">
-        <div className="logo">로고</div>
+        <img className="logo" src={farmsignLogo} alt="팜사인 로고" />
       </header>
 
       <main className="login-main">
@@ -53,12 +55,12 @@ function AuthCallbackPage() {
           {error ? (
             <>
               <h1 className="login-title">{error}</h1>
-              <button className="google-login-btn" type="button" onClick={() => navigate('/', { replace: true })}>
+              <button className="google-login-btn" type="button" onClick={() => navigate('/login', { replace: true })}>
                 로그인 페이지로 돌아가기
               </button>
             </>
           ) : (
-            <h1 className="login-title">로그인 중...</h1>
+            <Spinner size={44} label="로그인 중..." />
           )}
         </div>
       </main>

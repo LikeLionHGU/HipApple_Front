@@ -167,6 +167,12 @@
   cursor: default;
 }
 
+/* 버튼 안 스피너는 흰색 계열로 */
+.forecast-search-btn .spinner {
+  border-color: rgba(255, 255, 255, 0.5);
+  border-top-color: #ffffff;
+}
+
 /* ===== 검색 칩 ===== */
 .search-chip {
   /* 차트 박스(왼쪽 컬럼)와 동일 너비 = 전체폭 - 요약컬럼(320) - gap(24) */

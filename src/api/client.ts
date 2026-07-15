@@ -17,7 +17,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
 
   if (response.status === 401) {
     clearToken()
-    window.location.href = '/'
+    window.location.href = '/login'
     throw new Error('로그인이 만료되었습니다.')
   }
   if (!response.ok) {
