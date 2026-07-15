@@ -20,10 +20,19 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     window.location.href = '/'
     throw new Error('로그인이 만료되었습니다.')
   }
-  if (!response.ok) {
-    throw new Error(`요청 실패 (${response.status})`)
-  }
   // DELETE 등 본문 없는 응답도 안전하게 처리
   const text = await response.text()
+
+  if (!response.ok) {
+    // 서버가 내려준 검증 메시지를 함께 노출해 원인 파악을 돕는다
+    let detail = ''
+    try {
+      const body = text ? JSON.parse(text) : null
+      detail = body?.message || body?.error || text
+    } catch {
+      detail = text
+    }
+    throw new Error(`요청 실패 (${response.status})${detail ? `: ${detail}` : ''}`)
+  }
   return (text ? JSON.parse(text) : undefined) as T
 }

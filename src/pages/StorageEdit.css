@@ -13,6 +13,7 @@
 .edit-field label { display: block; margin-bottom: 9px; font-size: 16px; font-weight: 500; }
 .edit-field label span { color: #1bc485; }
 .edit-field input, .edit-field select { width: 100%; height: 51px; box-sizing: border-box; padding: 0 20px; border: 1px solid #687386; border-radius: 12px; background: #fff; color: #1f1f1f; font: inherit; font-size: 20px; }
+.edit-field select { appearance: none; -webkit-appearance: none; -moz-appearance: none; padding-right: 48px; background-image: url('../assets/Sort Down.svg'); background-repeat: no-repeat; background-position: right 20px center; }
 .edit-field input[type='date']::-webkit-calendar-picker-indicator { display: block; opacity: 1; cursor: pointer; }
 .storage-update-button { position: absolute; right: 0; bottom: 0; width: 205px; height: 50px; border: 0; border-radius: 12px; background: #1bc485; color: #fff; font: inherit; font-size: 20px; font-weight: 600; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
 .storage-update-button:disabled { background: #C7C7C7; cursor: not-allowed; }

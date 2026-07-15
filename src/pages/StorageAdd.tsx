@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import AcceptModal from '../components/AcceptModal'
-import { STORAGE_LIST_KEY } from './StorageInfo'
+import { createStorage } from '../api/storage'
 import './StorageAdd.css'
 
 type StorageForm = {
@@ -39,30 +39,36 @@ function StorageAdd() {
     setForm(currentForm => ({ ...currentForm, [field]: value }))
   }
 
-  const isFormValid = Boolean(
-    form.name && form.variety && form.harvestDate && form.storageMethod && form.brix,
-  )
+  // 저장 버튼 활성화 조건은 화면에서 *가 표시된 항목만 사용한다.
+  const requiredFields = [
+    form.name,
+    form.variety,
+    form.harvestDate,
+    form.storageMethod,
+    form.brix,
+  ]
+  const isFormValid = requiredFields.every(value => value.trim().length > 0)
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!isFormValid) return
 
-    const savedStorages = window.localStorage.getItem(STORAGE_LIST_KEY)
-    const currentStorages = savedStorages ? JSON.parse(savedStorages) : [
-      { name: 'A동', date: '2026.7.1 ~', description: '사과 부사 · CA 저장 · 당도 12' },
-      { name: 'B동', date: '2026.7.4 ~', description: '사과 홍로 · CA 저장 · 당도 15' },
-    ]
+    // brix/hardness/amount는 서버 스키마상 정수(int32)이므로 반올림해 전송
+    const hardness = Number(form.weight)
+    const amount = Number(form.expectedAmount)
 
-    const newStorage = {
+    await createStorage({
       name: form.name,
-      date: `${form.harvestDate.replaceAll('-', '.')} ~`,
-      description: `사과 ${form.variety} · ${form.storageMethod} · 당도 ${form.brix}`,
-    }
-
-    window.localStorage.setItem(
-      STORAGE_LIST_KEY,
-      JSON.stringify([...currentStorages, newStorage]),
-    )
+      appleType: form.variety,
+      storeDate: `${form.harvestDate}T00:00:00`,
+      storageMethod: form.storageMethod,
+      brix: Math.round(Number(form.brix)),
+      // 현재 백엔드가 hardness 누락 시 0으로 처리하고 0을 거부하므로 기본값 1을 전송한다.
+      hardness: hardness > 0 ? Math.round(hardness) : 1,
+      condition: form.condition || '보통',
+      amount: amount > 0 ? Math.round(amount) : undefined,
+      preferredDate: form.expectedTime || '미정',
+    })
     setIsModalOpen(true)
   }
 

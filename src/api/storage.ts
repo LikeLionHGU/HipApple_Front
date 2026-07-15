@@ -15,6 +15,8 @@ export type StorageRequest = {
 
 export type StorageSummary = {
   storageId: number
+  storageName?: string
+  name?: string
   startDate: number
   type: string
   storageMethod: string
@@ -23,6 +25,7 @@ export type StorageSummary = {
 
 export type StorageDetail = {
   storageId: number
+  storageName?: string
   name: string
   type: string
   startDate: number
@@ -38,6 +41,12 @@ export type StorageDetail = {
   humidity: number
   ethylene: number
   qualityStatus: string
+  shipmentRecommendation: string
+  analysisReason: string
+  nearbyDates: number[]
+  lastMeasuredAt?: string
+  measuredAt?: string
+  updatedAt?: string
 }
 
 // 전체 저장고 조회
