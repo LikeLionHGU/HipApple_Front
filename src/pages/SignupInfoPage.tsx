@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import farmsignLogo from '../assets/farmsign-logo.svg'
 import './SignupInfoPage.css'
 
 function SignupInfoPage() {
@@ -27,7 +28,7 @@ function SignupInfoPage() {
   return (
     <div className="signup-info-page">
       <header className="navbar">
-        <div className="logo">로고</div>
+        <img className="logo" src={farmsignLogo} alt="팜사인 로고" />
       </header>
 
       <main className="signup-info-main">

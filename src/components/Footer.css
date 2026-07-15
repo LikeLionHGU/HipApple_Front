@@ -1,0 +1,77 @@
+.site-footer {
+  width: 100%;
+  background: #F8F9FC;
+  margin-top: 80px;
+}
+
+.footer-inner {
+  max-width: 1280px;
+  min-height: 267px;
+  margin: 0 auto;
+  padding: 55px 80px 28px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-logo {
+  height: 44px;
+  width: auto;
+}
+
+.footer-tagline {
+  margin: 22px 0 0;
+  color: #1F1F1F;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.footer-copyright {
+  margin: auto 0 0;
+  padding-top: 40px;
+  color: #9CA3AF;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.footer-team {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 56px;
+  padding-top: 72px;
+}
+
+.footer-team-group {
+  margin: 0;
+  min-width: 56px;
+}
+
+.footer-team-group dt {
+  color: #1F1F1F;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.footer-team-group dd {
+  margin: 0;
+  color: #1F1F1F;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 21px;
+}
+
+.footer-accent {
+  height: 14px;
+  background: #1BC485;
+}

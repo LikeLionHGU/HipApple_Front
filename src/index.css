@@ -17,7 +17,7 @@
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -30,7 +30,6 @@
   :root {
     --text: #9ca3af;
     --text-h: #f3f4f6;
-    --bg: #16171d;
     --border: #2e303a;
     --code-bg: #1f2028;
     --accent: #c084fc;
@@ -54,8 +53,11 @@
   box-sizing: border-box;
 }
 
+/* 스크롤 바운스 때 보이는 바깥 영역도 페이지 배경색과 통일 */
+html,
 body {
   margin: 0;
+  background: #fff;
 }
 
 h1,

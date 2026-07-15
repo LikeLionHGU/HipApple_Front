@@ -24,22 +24,9 @@
 }
 
 .signup-page .logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  background: #D2D2D2;
-  border-radius: 4px;
-  font-size: 24px;
-  font-weight: 600;
-  color: #000000;
-  min-width: 89px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.signup-page .logo:hover {
-  background: #c0c0c0;
+  height: 30px;
+  width: auto;
+  display: block;
 }
 
 .signup-main {
