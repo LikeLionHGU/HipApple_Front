@@ -5,6 +5,9 @@ import Footer from '../components/Footer'
 import AcceptModal from '../components/AcceptModal'
 import suitableIcon from '../assets/적합.svg'
 import cautionIcon from '../assets/주의.svg'
+import sunIcon from '../assets/Sun.svg'
+import snowflakeIcon from '../assets/Snowflake.svg'
+import keepDryIcon from '../assets/Keep Dry.svg'
 import { getStorage, getStorages, type StorageDetail, type StorageSummary } from '../api/storage'
 import './StoragePage.css'
 
@@ -201,26 +204,73 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
   )
 }
 
-const WEATHER_ICONS = [
-  { label: 'SnowFlake', icon: '❄' },
-  { label: 'Sun', icon: '☀' },
-  { label: 'Keep Dry', icon: '☂' },
+const ANALYSIS_DATES = [
+  '2026-07-15',
+  '2026-07-16',
+  '2026-07-17',
+  '2026-07-18',
+  '2026-07-19',
 ]
 
+type Weather = {
+  label: string
+  icon: string
+}
+
+const DEFAULT_WEATHER: Weather = { label: 'Sun', icon: sunIcon }
+
+function weatherFromCode(code: number): Weather {
+  if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    return { label: 'Snowflake', icon: snowflakeIcon }
+  }
+  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99].includes(code)) {
+    return { label: 'Keep Dry', icon: keepDryIcon }
+  }
+  return DEFAULT_WEATHER
+}
+
+async function fetchWeatherByDate(): Promise<Record<string, Weather>> {
+  if (!navigator.geolocation) return {}
+
+  const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject)
+  })
+  const { latitude, longitude } = position.coords
+  const startDate = ANALYSIS_DATES[0]
+  const endDate = ANALYSIS_DATES[ANALYSIS_DATES.length - 1]
+  const params = new URLSearchParams({
+    latitude: String(latitude),
+    longitude: String(longitude),
+    daily: 'weather_code',
+    timezone: 'auto',
+    start_date: startDate,
+    end_date: endDate,
+  })
+  const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`)
+  if (!response.ok) throw new Error('날씨 정보를 불러오지 못했습니다.')
+
+  const data = await response.json() as { daily?: { time?: string[]; weather_code?: number[] } }
+  const dates = data.daily?.time ?? []
+  const codes = data.daily?.weather_code ?? []
+  return Object.fromEntries(dates.map((date, index) => [date, weatherFromCode(codes[index] ?? 0)]))
+}
+
 function AiRecommendations() {
-  const days = useMemo(() => {
-    const baseDays = [
-      { date: '7월 15일', status: '우수', price: '2,341원' },
-      { date: '7월 16일', status: '양호', price: '2,341원' },
-      { date: '7월 17일', status: '우수', price: '2,341원', recommended: true },
-      { date: '7월 18일', status: '불량', price: '2,341원' },
-      { date: '7월 19일', status: '양호', price: '2,341원' },
-    ]
-    return baseDays.map(day => ({
-      ...day,
-      weather: WEATHER_ICONS[Math.floor(Math.random() * WEATHER_ICONS.length)],
-    }))
+  const [weatherByDate, setWeatherByDate] = useState<Record<string, Weather>>({})
+
+  useEffect(() => {
+    fetchWeatherByDate()
+      .then(setWeatherByDate)
+      .catch(() => setWeatherByDate({}))
   }, [])
+
+  const days = [
+    { apiDate: '2026-07-15', date: '7월 15일', status: '우수', price: '2,341원' },
+    { apiDate: '2026-07-16', date: '7월 16일', status: '양호', price: '2,341원' },
+    { apiDate: '2026-07-17', date: '7월 17일', status: '우수', price: '2,341원', recommended: true },
+    { apiDate: '2026-07-18', date: '7월 18일', status: '불량', price: '2,341원' },
+    { apiDate: '2026-07-19', date: '7월 19일', status: '양호', price: '2,341원' },
+  ]
 
   return (
     <section className="ai-recommendations" aria-labelledby="ai-title">
@@ -251,7 +301,11 @@ function AiRecommendations() {
         {days.map(day => (
           <article className={`daily-card ${day.recommended ? 'recommended' : ''}`} key={day.date}>
             {day.recommended && <span className="ai-tag">AI 추천</span>}
-            <span className="weather-icon" title={day.weather.label} aria-label={day.weather.label}>{day.weather.icon}</span>
+            <img
+              className="weather-icon"
+              src={weatherByDate[day.apiDate]?.icon ?? DEFAULT_WEATHER.icon}
+              alt={weatherByDate[day.apiDate]?.label ?? DEFAULT_WEATHER.label}
+            />
             <strong>{day.date}</strong>
             <span className={`daily-status ${day.status}`}>{day.status}</span>
             <b>{day.price} <small>/1kg</small></b>
