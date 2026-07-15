@@ -6,7 +6,7 @@ function SignupCompletePage() {
   const navigate = useNavigate()
 
   const handleStart = () => {
-    navigate('/')
+    navigate('/storage')
   }
 
   return (

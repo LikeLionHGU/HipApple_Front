@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ForecastChart from '../components/ForecastChart'
+import Spinner from '../components/Spinner'
 import {
   getForecast,
   getPriceOptions,
@@ -144,12 +145,16 @@ function MarketPricePage() {
               onClick={() => fetchForecast(market, variety)}
               disabled={loading}
             >
-              {loading ? '조회 중...' : '검색하기'}
+              {loading ? <Spinner size={20} className="spinner-inline" /> : '검색하기'}
             </button>
           </div>
         </div>
 
-        {loading && <div className="forecast-status">예측을 불러오는 중입니다...</div>}
+        {loading && (
+          <div className="forecast-status">
+            <Spinner label="예측을 불러오는 중입니다..." />
+          </div>
+        )}
         {error && <div className="forecast-status error">{error}</div>}
 
         {!loading && !error && data && (

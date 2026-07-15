@@ -1,0 +1,324 @@
+/* 저장고 선택 */
+.m-storage-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.m-storage-selector .m-select {
+  flex: 1;
+}
+
+.m-storage-info-link {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1bc485;
+  cursor: pointer;
+}
+
+/* 측정 헤더 */
+.m-metrics-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.m-metrics-head .m-section-title {
+  margin: 0;
+}
+
+.m-metrics-head time {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* 지표 카드 2x2 */
+.m-metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.m-metric-card {
+  background: #f8f8f8;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.m-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.m-metric-top h3 {
+  font-size: 15px;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0;
+}
+
+.m-metric-top img {
+  width: 20px;
+  height: 20px;
+}
+
+.m-metric-card strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin-bottom: 4px;
+}
+
+.m-metric-card p {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* 품질 패널 */
+.m-quality-panel {
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.m-quality-panel.good {
+  background: #eefaf4;
+}
+
+.m-quality-panel.warning {
+  background: #fff6e6;
+}
+
+.m-quality-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.m-quality-head .m-section-title {
+  margin: 0;
+}
+
+.m-quality-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.m-quality-badge img {
+  width: 16px;
+  height: 16px;
+}
+
+.m-quality-badge.good {
+  color: #1bc485;
+}
+
+.m-quality-badge.warning {
+  color: #e9a900;
+}
+
+.m-quality-panel p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #6b7280;
+  margin: 0;
+}
+
+.m-ai-btn {
+  margin-top: 4px;
+}
+
+/* ===== AI 추천 ===== */
+.m-ai-recommend {
+  margin-top: 28px;
+}
+
+.m-ai-intro h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.m-ai-intro h2 span {
+  color: #1bc485;
+}
+
+.m-ai-intro p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 18px;
+}
+
+.m-recommend-card {
+  position: relative;
+  background: #1bc485;
+  color: #ffffff;
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 14px;
+}
+
+.m-recommend-label {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.m-recommend-card strong {
+  display: block;
+  font-size: 30px;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.m-recommend-card strong small {
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.m-recommend-grade {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  background: #ffffff;
+  color: #1bc485;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+.m-recommend-card p {
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 8px 0 0;
+  opacity: 0.95;
+}
+
+.m-analysis-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.m-analysis-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+
+.m-analysis-card > div {
+  margin-bottom: 14px;
+}
+
+.m-analysis-card > div:last-child {
+  margin-bottom: 0;
+}
+
+.m-analysis-card > div strong {
+  display: block;
+  font-size: 15px;
+  color: #1bc485;
+  margin-bottom: 4px;
+}
+
+.m-analysis-card > div p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b7280;
+  margin: 0;
+}
+
+.m-daily-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+
+.m-daily-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scroll-snap-type: x mandatory;
+}
+
+.m-daily-card {
+  position: relative;
+  flex: 0 0 130px;
+  scroll-snap-align: start;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+}
+
+.m-daily-card.recommended {
+  border-color: #1bc485;
+  box-shadow: 0 2px 10px rgba(27, 196, 133, 0.2);
+}
+
+.m-ai-tag {
+  position: absolute;
+  top: -10px;
+  background: #1bc485;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 8px;
+}
+
+.m-weather {
+  font-size: 26px;
+}
+
+.m-daily-card strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.m-daily-status {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 999px;
+}
+
+.m-daily-status.우수 { background: #e2f8eb; color: #1bc485; }
+.m-daily-status.양호 { background: #fff4d9; color: #e9a900; }
+.m-daily-status.불량 { background: #ffe8e8; color: #ff5d5d; }
+
+.m-daily-card b {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.m-daily-card b small {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9ca3af;
+}

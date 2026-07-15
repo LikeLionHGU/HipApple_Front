@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.m-auth {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.m-auth-nav {
+  height: 60px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.08);
+}
+
+.m-auth-logo {
+  height: 26px;
+  width: auto;
+}
+
+.m-auth-main {
+  flex: 1;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* 진행 단계 */
+.m-step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.m-step {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m-step.active {
+  background: #1bc485;
+  color: #ffffff;
+}
+
+.m-step-line {
+  width: 40px;
+  height: 2px;
+  background: #e5e7eb;
+}
+
+.m-step-line.active {
+  background: #1bc485;
+}
+
+.m-auth-head {
+  text-align: center;
+}
+
+.m-auth-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin: 0 0 8px;
+}
+
+.m-auth-sub {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Google 버튼 */
+.m-google-btn {
+  width: 100%;
+  max-width: 360px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 500;
+  color: #1f1f1f;
+  cursor: pointer;
+}
+
+.m-google-btn:active {
+  background: #f8f8f8;
+}
+
+.m-google-btn .google-icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* 기본(초록) 버튼 */
+.m-primary-btn {
+  width: 100%;
+  max-width: 360px;
+  height: 54px;
+  border: none;
+  border-radius: 14px;
+  background: #1bc485;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.m-primary-btn:active {
+  background: #17ae76;
+}
+
+/* 텍스트 링크 */
+.m-auth-link {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 15px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.m-auth-link b {
+  color: #1bc485;
+  font-weight: 600;
+}
+
+/* 폼형 인증 화면 (회원가입 정보 입력) */
+.m-auth-main-form {
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.m-auth-form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.m-auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.m-auth-field label,
+.m-auth-field-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f1f1f;
+}
+
+.m-auth-field input {
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #1f1f1f;
+}
+
+.m-auth-field input:focus {
+  outline: none;
+  border-color: #1bc485;
+}
+
+.m-market-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.m-market-chip {
+  flex: 1;
+  min-width: 90px;
+  height: 46px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.m-market-chip.selected {
+  border-color: #1bc485;
+  background: rgba(27, 196, 133, 0.08);
+  color: #1bc485;
+  font-weight: 600;
+}
+
+/* 완료 체크 아이콘 */
+.m-complete-check {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(27, 196, 133, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m-complete-check svg {
+  width: 40px;
+  height: 40px;
+}
