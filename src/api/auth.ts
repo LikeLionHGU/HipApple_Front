@@ -9,6 +9,13 @@ export const setToken = (token: string) => window.localStorage.setItem(TOKEN_KEY
 export const clearToken = () => window.localStorage.removeItem(TOKEN_KEY)
 export const isLoggedIn = () => Boolean(getToken())
 
+// 로그아웃: 저장된 토큰과 로그인 관련 임시 데이터를 모두 지운다.
+export function logout() {
+  window.localStorage.removeItem(TOKEN_KEY)
+  window.sessionStorage.removeItem(OAUTH_STATE_KEY)
+  window.sessionStorage.removeItem(AUTH_INTENT_KEY)
+}
+
 export const getRedirectUri = () => `${window.location.origin}/auth/callback`
 
 // 구글 로그인 화면으로 이동. 백엔드가 ID 토큰 방식(/user/google, { idToken })이라

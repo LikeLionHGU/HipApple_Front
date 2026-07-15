@@ -1,9 +1,11 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import farmsignLogo from '../assets/farmsign-logo.svg'
+import { logout } from '../api/auth'
 import './Header.css'
 
 export default function Header() {
   const location = useLocation()
+  const navigate = useNavigate()
 
   const isAiPage = location.pathname === '/storage/ai'
   const isStoragePage = location.pathname.startsWith('/storage') && !isAiPage
@@ -12,8 +14,13 @@ export default function Header() {
     { label: '저장고 현황', path: '/storage' },
     { label: '출하 AI', path: '/storage/ai' },
     { label: '시장 가격', path: '/market' },
-    { label: '마이페이지', path: '/mypage' },
   ]
+
+  const handleLogout = () => {
+    if (!window.confirm('로그아웃 하시겠습니까?')) return
+    logout()
+    navigate('/', { replace: true })
+  }
 
   return (
     <header className="market-navbar">
@@ -32,6 +39,9 @@ export default function Header() {
             {link.label}
           </Link>
         ))}
+        <button type="button" className="nav-link nav-link-logout" onClick={handleLogout}>
+          로그아웃
+        </button>
       </nav>
     </header>
   )
