@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import ProtectedRoute from './components/ProtectedRoute'
+import AuthCallbackPage from './pages/AuthCallbackPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import SignupInfoPage from './pages/SignupInfoPage'
@@ -14,15 +16,18 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/signup/info" element={<SignupInfoPage />} />
-        <Route path="/signup/step3" element={<SignupCompletePage />} />
-        <Route path="/market" element={<MarketPricePage />} />
-        <Route path="/storage" element={<StoragePage />} />
-        <Route path="/StorageAI" element={<StoragePage showAiRecommendations />} />
-        <Route path="/StorageInfo" element={<StorageInfo />} />
-        <Route path="/StorageAdd" element={<StorageAdd />} />
-        <Route path="/StorageEdit" element={<StorageEdit />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/signup/info" element={<SignupInfoPage />} />
+          <Route path="/signup/step3" element={<SignupCompletePage />} />
+          <Route path="/market" element={<MarketPricePage />} />
+          <Route path="/storage" element={<StoragePage />} />
+          <Route path="/storage/ai" element={<StoragePage showAiRecommendations />} />
+          <Route path="/storage/info" element={<StorageInfo />} />
+          <Route path="/storage/add" element={<StorageAdd />} />
+          <Route path="/storage/edit" element={<StorageEdit />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

@@ -80,7 +80,7 @@ function StorageEdit() {
     <div className="storage-edit-page">
       <Header />
       <main className="storage-edit-main">
-        <button className="storage-edit-back-button" type="button" onClick={() => navigate('/StorageInfo')}>
+        <button className="storage-edit-back-button" type="button" onClick={() => navigate('/storage/info')}>
           <span aria-hidden="true">‹</span> 저장고 정보 수정하기
         </button>
 
@@ -125,7 +125,7 @@ function StorageEdit() {
       <AcceptModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onConfirm={() => navigate('/StorageInfo')}
+        onConfirm={() => navigate('/storage/info')}
         title="수정이 완료되었습니다"
         subtitle="저장고 정보가 성공적으로 수정되었습니다."
       />

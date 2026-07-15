@@ -32,11 +32,11 @@ function StorageInfo() {
   const [storages] = useState<Storage[]>(getStoredStorages)
 
   const handleEdit = (storage: Storage) => {
-    navigate('/StorageEdit', { state: { storage } })
+    navigate('/storage/edit', { state: { storage } })
   }
 
   const handleAdd = () => {
-    navigate('/StorageAdd')
+    navigate('/storage/add')
   }
 
   return (

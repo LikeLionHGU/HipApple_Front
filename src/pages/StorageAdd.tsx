@@ -72,7 +72,7 @@ function StorageAdd() {
         <button
           className="storage-add-back-button"
           type="button"
-          onClick={() => navigate('/StorageInfo')}
+          onClick={() => navigate('/storage/info')}
         >
           <span aria-hidden="true">‹</span> 저장고 정보 추가하기
         </button>
@@ -147,7 +147,7 @@ function StorageAdd() {
       <AcceptModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onConfirm={() => navigate('/StorageInfo')}
+        onConfirm={() => navigate('/storage/info')}
         title="저장이 완료되었습니다"
         subtitle="새로운 저장고 정보가 추가되었습니다."
       />

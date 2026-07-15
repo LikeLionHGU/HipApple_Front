@@ -61,7 +61,7 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
             <button
               className="storage-info-link"
               type="button"
-              onClick={() => navigate('/StorageInfo')}
+              onClick={() => navigate('/storage/info')}
             >
               저장고 정보
             </button>
@@ -107,7 +107,7 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
           )}
         </section>
 
-        <button className="ai-recommend-button" type="button" onClick={() => navigate('/StorageAI')}>
+        <button className="ai-recommend-button" type="button" onClick={() => navigate('/storage/ai')}>
           AI 추천 받기
         </button>
 
