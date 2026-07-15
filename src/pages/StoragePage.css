@@ -15,6 +15,7 @@
 
 .storage-heading h1 {
   margin: 0;
+  color: #1F1F1F;
   font-size: 36px;
   line-height: 1.35;
   font-weight: 700;
@@ -39,6 +40,7 @@
 .metrics-heading h2 {
   display: block;
   margin: 0 0 10px;
+  color: #1F1F1F;
   font-size: 16px;
   line-height: 1.4;
   font-weight: 600;
@@ -46,15 +48,24 @@
 
 .storage-selector select {
   width: 205px;
-  height: 52px;
-  padding: 0 14px;
-  border: 1px solid #687386;
+  height: 50px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 124px;
+  align-self: stretch;
+  border: 1px solid #6B7280;
   border-radius: 12px;
-  background: #fff;
+  background-color: #FFF;
+  background-image: url('../assets/arrow.png');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 18px 30px;
   color: #1f1f1f;
   font: inherit;
   font-size: 20px;
-  appearance: auto;
+  appearance: none;
 }
 
 .storage-info-link {
@@ -130,18 +141,17 @@
 .status-icon,
 .badge-icon {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+  object-fit: contain;
   border-radius: 50%;
-  color: #fff;
-  font-weight: 700;
 }
 
 .status-icon {
-  width: 22px;
-  height: 22px;
-  font-size: 16px;
+  width: 27px;
+  height: 28px;
 }
 
 .status-icon.good,
@@ -168,6 +178,7 @@
 
 .quality-title-row h2 {
   margin: 0;
+  color: #1F1F1F;
   font-size: 20px;
   font-weight: 600;
 }
@@ -175,11 +186,15 @@
 .quality-badge {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
+  width: 108px;
   height: 54px;
-  padding: 0 19px;
+  padding: 16.761px;
+  box-sizing: border-box;
+  gap: 7px;
   border: 1px solid #f7b500;
   border-radius: 13px;
+  background: #fff8e6;
   color: #f0ad00;
   font-size: 20px;
   font-weight: 600;
@@ -187,13 +202,39 @@
 
 .quality-badge.good {
   border-color: #31c56b;
+  background: #e9f9ef;
   color: #31c56b;
 }
 
 .badge-icon {
-  width: 22px;
-  height: 22px;
-  font-size: 15px;
+  position: relative;
+  width: 27px;
+  height: 28px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #f7b500;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  text-align: center;
+}
+
+.quality-badge.good .badge-icon {
+  background: #31c56b;
+}
+
+.badge-icon img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.badge-icon > span {
+  position: relative;
+  z-index: 1;
 }
 
 .quality-panel p {
@@ -254,16 +295,19 @@
 }
 
 .ai-recommendations { margin-top: 62px; }
-.ai-intro h2 { margin: 0; font-size: 32px; font-weight: 700; }
+.ai-intro h2 { margin: 0; font-size: 32px; font-weight: 700; color: #000; }
 .ai-intro h2 span { color: #1bc485; }
 .ai-intro p { margin-top: 10px; font-size: 22px; }
 .ai-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 34px; }
 .recommendation-card, .analysis-card { min-height: 292px; box-sizing: border-box; border-radius: 20px; }
 .recommendation-card { position: relative; padding: 28px 48px; background: #1bc485; color: #fff; }
 .recommendation-label { font-size: 20px; }
-.recommendation-card strong { display: block; margin-top: 14px; font-size: 44px; }
-.recommendation-card strong small { font-size: 17px; font-weight: 400; }
-.recommendation-grade { position: absolute; top: 22px; right: 28px; padding: 8px 20px; border-radius: 22px; background: #e6f8ef; color: #1bc485; }
+.recommendation-date-row { display: flex; align-items: baseline; justify-content: space-between; margin-top: 14px; }
+.recommendation-card strong { display: block; font-size: 44px; line-height: 1.2; }
+.recommendation-card strong small { color: #fff; font-family: 'Inter', sans-serif; font-size: 20px; font-style: normal; font-weight: 500; line-height: 32px; }
+.recommendation-remaining { color: #fff; font-family: 'Inter', sans-serif; font-size: 15px; font-style: normal; font-weight: 600; line-height: 15px; }
+.recommendation-remaining b { line-height: 20px; }
+.recommendation-grade { position: absolute; top: 22px; right: 28px; display: flex; width: 70px; height: 34px; padding: 10px; flex-direction: column; justify-content: center; align-items: center; gap: 10px; box-sizing: border-box; border-radius: 20px; background: #e2f9e9; color: #1bc485; }
 .recommendation-card p { margin-top: 48px; font-size: 18px; line-height: 1.7; font-weight: 600; }
 .analysis-card { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; padding: 28px 46px; border: 1px solid #e5e7eb; background: #fafafa; }
 .analysis-card h3 { grid-column: 1 / -1; margin: 0; font-size: 20px; }
@@ -272,8 +316,8 @@
 .daily-analysis-title { margin: 28px 0 12px; font-size: 18px; }
 .daily-analysis-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px; }
 .daily-card { position: relative; display: flex; min-height: 226px; padding: 25px 15px 0; box-sizing: border-box; align-items: center; flex-direction: column; border: 1px solid #e5e7eb; border-radius: 20px; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.08); }
-.daily-card.recommended { border: 2px solid #1bc485; }
-.ai-tag { position: absolute; top: -28px; padding: 6px 14px; border-radius: 10px 10px 0 0; background: #1bc485; color: #fff; font-size: 14px; }
+.daily-card.recommended { border-radius: 20px; border: 2px solid var(--main, #1bc485); background: #fff; box-shadow: 0 0 12px 0 rgba(27, 196, 133, 0.35); }
+.ai-tag { position: absolute; top: -27px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; justify-content: center; width: 74px; height: 27px; border-radius: 10px 10px 0 0; background: var(--main, #1bc485); color: #fff; font-size: 14px; }
 .weather-icon { color: #9ca3af; font-size: 22px; }
 .daily-card > strong { margin-top: 7px; font-size: 16px; }
 .daily-status { margin-top: 22px; padding: 7px 18px; border-radius: 20px; font-size: 14px; }

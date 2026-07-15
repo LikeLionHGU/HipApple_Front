@@ -103,7 +103,7 @@ function StorageAdd() {
               <label htmlFor="storage-method"><span>*</span> 저장 방식</label>
               <select id="storage-method" value={form.storageMethod} onChange={event => updateField('storageMethod', event.target.value)}>
                 <option value="" disabled>저장 방식 선택</option>
-                <option value="CA 저장 (제어 분위기 저장)">CA 저장 (제어 분위기 저장)</option>
+                <option value="CA저장">CA저장</option>
                 <option value="일반 저온 저장">일반 저온 저장</option>
               </select>
             </div>

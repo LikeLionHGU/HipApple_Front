@@ -2,8 +2,9 @@
 
 .storage-edit-page { min-height: 100vh; background: #fff; color: #1f1f1f; color-scheme: light; font-family: 'Inter', sans-serif; }
 .storage-edit-main { width: min(1120px, calc(100% - 48px)); margin: 0 auto; padding: 42px 0 48px; }
-.storage-edit-back-button { display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: transparent; color: #1f1f1f; font: inherit; font-size: 24px; font-weight: 600; cursor: pointer; }
-.storage-edit-back-button span { font-size: 38px; font-weight: 400; line-height: 20px; }
+.storage-edit-back-button { display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: transparent; color: #1f1f1f; font: inherit; font-size: 24px; font-weight: 600; line-height: 1; cursor: pointer; }
+.storage-edit-back-button span { display: inline-flex; align-items: center; justify-content: center; position: relative; width: 18px; height: 24px; font-size: 0; }
+.storage-edit-back-button span::before { width: 10px; height: 10px; border-bottom: 3px solid #1F1F1F; border-left: 3px solid #1F1F1F; content: ''; transform: rotate(45deg); }
 .storage-edit-form { position: relative; display: grid; grid-template-columns: 550px 550px; grid-template-rows: 328px 160px; gap: 24px 22px; margin-top: 76px; }
 .edit-panel { display: grid; box-sizing: border-box; border: 1px solid #e5e7eb; border-radius: 20px; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.1); }
 .edit-basic-panel { grid-template-columns: 1fr 1fr; gap: 60px 24px; padding: 40px 32px; }
