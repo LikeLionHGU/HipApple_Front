@@ -19,7 +19,7 @@ type StorageForm = {
 }
 
 const INITIAL_FORM: StorageForm = {
-  name: 'A동',
+  name: '',
   variety: '',
   harvestDate: '',
   storageMethod: '',
@@ -88,7 +88,7 @@ function StorageAdd() {
           <section className="storage-form-panel storage-basic-panel">
             <div className="form-field">
               <label htmlFor="storage-name"><span>*</span> 저장고</label>
-              <input id="storage-name" value={form.name} onChange={event => updateField('name', event.target.value)} />
+              <input id="storage-name" placeholder="예시: A동" value={form.name} onChange={event => updateField('name', event.target.value)} />
             </div>
             <div className="form-field">
               <label htmlFor="storage-variety"><span>*</span> 사과 품종</label>
