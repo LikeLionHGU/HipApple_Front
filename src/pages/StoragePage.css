@@ -318,7 +318,7 @@
 .daily-card { position: relative; display: flex; min-height: 226px; padding: 25px 15px 0; box-sizing: border-box; align-items: center; flex-direction: column; border: 1px solid #e5e7eb; border-radius: 20px; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.08); }
 .daily-card.recommended { border-radius: 20px; border: 2px solid var(--main, #1bc485); background: #fff; box-shadow: 0 0 12px 0 rgba(27, 196, 133, 0.35); }
 .ai-tag { position: absolute; top: -27px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; justify-content: center; width: 74px; height: 27px; border-radius: 10px 10px 0 0; background: var(--main, #1bc485); color: #fff; font-size: 14px; }
-.weather-icon { color: #9ca3af; font-size: 22px; }
+.weather-icon { width: 24px; height: 24px; object-fit: contain; }
 .daily-card > strong { margin-top: 7px; font-size: 16px; }
 .daily-status { margin-top: 22px; padding: 7px 18px; border-radius: 20px; font-size: 14px; }
 .daily-status.우수 { background: #e2f8eb; color: #1bc485; }

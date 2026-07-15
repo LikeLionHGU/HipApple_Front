@@ -4,6 +4,7 @@
 - 최근 약 2개월, 3일 간격으로 샘플링한 날짜들을 페이지네이션하여 수집
 - 결과를 ml/data/apple_auction_raw.csv 로 저장
 """
+import os
 import time
 from datetime import date, timedelta
 
@@ -13,7 +14,7 @@ import pandas as pd
 URL = "https://apis.data.go.kr/B552845/katRealTime2/trades2"
 KEY = "17b6e0a4fb8a2cf74a3be46df5370fa35ff57ee631bf22d848bdf8ab744c4146"
 
-OUT = "/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml/data/apple_auction_raw.csv"
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "apple_auction_raw.csv")
 
 NUM_ROWS = 1000          # API 페이지당 최대 건수
 END_DATE = date(2026, 7, 14)

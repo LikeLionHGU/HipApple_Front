@@ -17,14 +17,13 @@ common_hist.build_daily_ext() 로 생성한다 — 히스토리 유무에 따라
 import os
 import sys
 
-sys.path.insert(0, '/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml')
+BASE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, BASE)
 
 import pandas as pd
 import joblib
 
 import common_hist as ch
-
-BASE = "/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml"
 MODEL_PATH = os.path.join(BASE, "models", "final_daily_model2.joblib")
 
 _bundle = None
@@ -98,10 +97,10 @@ def predict_next(whsl_mrkt_nm, gds_sclsf_nm):
     month = int(pd.to_datetime(asof).month)
     grades = _grade_prices(pred, var, month)
     if grades:
+        # 실데이터 등급 체계: 특/상/보통/4~8등/무등급 등 — 비싼 순으로 전부 출력
         print("  등급별 예상가(과거 비율 기반):")
-        for g in ["특", "상", "중", "하"]:
-            if g in grades:
-                print(f"    {g}: {grades[g]:,.1f} 원/kg")
+        for g, p in sorted(grades.items(), key=lambda kv: -kv[1]):
+            print(f"    {g}: {p:,.1f} 원/kg")
     return pred
 
 
