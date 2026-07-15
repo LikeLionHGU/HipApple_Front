@@ -1,7 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import AcceptModal from '../components/AcceptModal'
+import suitableIcon from '../assets/적합.svg'
+import cautionIcon from '../assets/주의.svg'
 import './StoragePage.css'
 
 type StorageStatus = 'good' | 'warning'
@@ -33,6 +35,13 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
   const [selectedStorage, setSelectedStorage] = useState('A동')
   const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(showAiRecommendations)
   const [isAnalysisVisible, setIsAnalysisVisible] = useState(false)
+
+  useEffect(() => {
+    if (showAiRecommendations) {
+      setIsAnalysisModalOpen(true)
+      setIsAnalysisVisible(false)
+    }
+  }, [showAiRecommendations])
   const metrics = useMemo(() => STORAGE_DATA[selectedStorage], [selectedStorage])
   const hasWarning = metrics.some(metric => metric.status === 'warning')
 
@@ -77,9 +86,11 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
                 <article className="metric-card" key={metric.label}>
                   <div className="metric-card-topline">
                     <h3>{metric.label}</h3>
-                    <span className={`status-icon ${metric.status}`} aria-label={metric.status === 'good' ? '적합' : '주의'}>
-                      {metric.status === 'good' ? '✓' : '!'}
-                    </span>
+                    <img
+                      className="status-icon"
+                      src={metric.status === 'good' ? suitableIcon : cautionIcon}
+                      alt={metric.status === 'good' ? '적합' : '주의'}
+                    />
                   </div>
                   <strong>{metric.value}</strong>
                   <p>{metric.description}</p>
@@ -93,7 +104,10 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
           <div className="quality-title-row">
             <h2 id="quality-title">저장 품질 상태</h2>
             <span className={`quality-badge ${hasWarning ? 'warning' : 'good'}`}>
-              <span className="badge-icon">{hasWarning ? '!' : '✓'}</span>
+              <span className="badge-icon">
+                <img src={hasWarning ? cautionIcon : suitableIcon} alt="" />
+                <span>{hasWarning ? '!' : '✓'}</span>
+              </span>
               {hasWarning ? '주의' : '적합'}
             </span>
           </div>
@@ -127,26 +141,41 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
   )
 }
 
+const WEATHER_ICONS = [
+  { label: 'SnowFlake', icon: '❄' },
+  { label: 'Sun', icon: '☀' },
+  { label: 'Keep Dry', icon: '☂' },
+]
+
 function AiRecommendations() {
-  const days = [
-    { date: '7월 15일', status: '우수', price: '2,341원' },
-    { date: '7월 16일', status: '양호', price: '2,341원' },
-    { date: '7월 17일', status: '우수', price: '2,341원', recommended: true },
-    { date: '7월 18일', status: '불량', price: '2,341원' },
-    { date: '7월 19일', status: '양호', price: '2,341원' },
-  ]
+  const days = useMemo(() => {
+    const baseDays = [
+      { date: '7월 15일', status: '우수', price: '2,341원' },
+      { date: '7월 16일', status: '양호', price: '2,341원' },
+      { date: '7월 17일', status: '우수', price: '2,341원', recommended: true },
+      { date: '7월 18일', status: '불량', price: '2,341원' },
+      { date: '7월 19일', status: '양호', price: '2,341원' },
+    ]
+    return baseDays.map(day => ({
+      ...day,
+      weather: WEATHER_ICONS[Math.floor(Math.random() * WEATHER_ICONS.length)],
+    }))
+  }, [])
 
   return (
     <section className="ai-recommendations" aria-labelledby="ai-title">
       <div className="ai-intro">
-        <h2 id="ai-title"><span>땡땡땡</span> 농가님,</h2>
+        <h2 id="ai-title"><span>억수로 별난</span> 농가</h2>
         <p>현재 보관 중인 부사 사과의 최적 출하 시기를 분석했습니다.</p>
       </div>
 
       <div className="ai-summary-grid">
         <article className="recommendation-card">
           <span className="recommendation-label">출하 추천일</span>
-          <strong>7월 17일 <small>7일 뒤</small></strong>
+          <div className="recommendation-date-row">
+            <strong>7월 17일 <small>7일 뒤</small></strong>
+            <span className="recommendation-remaining">잔여 저장 가능일 <b>7일</b></span>
+          </div>
           <span className="recommendation-grade">우수</span>
           <p>가격이 가장 높고, 현재 저장 상태에서도<br />품질이 유지될 것으로 예상됩니다.</p>
         </article>
@@ -162,7 +191,7 @@ function AiRecommendations() {
         {days.map(day => (
           <article className={`daily-card ${day.recommended ? 'recommended' : ''}`} key={day.date}>
             {day.recommended && <span className="ai-tag">AI 추천</span>}
-            <span className="weather-icon">☀</span>
+            <span className="weather-icon" title={day.weather.label} aria-label={day.weather.label}>{day.weather.icon}</span>
             <strong>{day.date}</strong>
             <span className={`daily-status ${day.status}`}>{day.status}</span>
             <b>{day.price} <small>/1kg</small></b>
