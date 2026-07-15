@@ -41,8 +41,8 @@ function MobileSignupInfoPage() {
 
         <div className="m-auth-form">
           <div className="m-auth-field">
-            <label htmlFor="location">농장 소재지 (시/군/구)</label>
-            <input id="location" type="text" placeholder="지역을 작성해주세요" value={location} onChange={e => setLocation(e.target.value)} />
+            <label htmlFor="location">농장 이름</label>
+            <input id="location" type="text" placeholder="농장 이름을 작성해주세요" value={location} onChange={e => setLocation(e.target.value)} />
           </div>
           <div className="m-auth-field">
             <label htmlFor="variety">재배 품종</label>

@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { isLoggedIn } from '../../api/auth'
+import { isLoggedIn, startGoogleLogin } from '../../api/auth'
 import farmsignLogo from '../../assets/farmsign-logo.svg'
+import GoogleIcon from '../../components/GoogleIcon'
 import './LandingPage.css'
 
 const FEATURES = [
@@ -45,9 +46,6 @@ function MobileLandingPage() {
     <div className="m-landing">
       <header className="m-landing-nav">
         <img className="m-landing-logo" src={farmsignLogo} alt="팜사인 로고" />
-        <button className="m-landing-link" type="button" onClick={() => navigate('/login')}>
-          로그인
-        </button>
       </header>
 
       <main className="m-landing-main">
@@ -106,8 +104,9 @@ function MobileLandingPage() {
 
       {/* 하단 고정 시작 버튼 */}
       <div className="m-cta-bar">
-        <button className="m-btn" type="button" onClick={() => navigate('/signup')}>
-          무료로 시작하기
+        <button className="m-landing-google-btn" type="button" onClick={() => startGoogleLogin()}>
+          <GoogleIcon />
+          <span>Google로 시작하기</span>
         </button>
       </div>
     </div>

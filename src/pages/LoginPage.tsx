@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { startGoogleLogin } from '../api/auth'
 import farmsignLogo from '../assets/farmsign-logo.svg'
 import './LoginPage.css'
@@ -16,7 +15,7 @@ function LoginPage() {
 
       <main className="login-main">
         <div className="login-card">
-          <h1 className="login-title">로그인</h1>
+          <h1 className="login-title">시작하기</h1>
 
           <button
             id="google-login-btn"
@@ -37,12 +36,6 @@ function LoginPage() {
             </svg>
             <span>Google로 시작하기</span>
           </button>
-
-          <div className="login-footer">
-            <Link to="/signup" className="signup-link">
-              회원가입
-            </Link>
-          </div>
         </div>
       </main>
     </div>

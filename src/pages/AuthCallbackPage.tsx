@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { consumeAuthIntent, setToken, verifyOauthState } from '../api/auth'
+import { setToken, verifyOauthState } from '../api/auth'
 import { apiFetch } from '../api/client'
 import farmsignLogo from '../assets/farmsign-logo.svg'
 import Spinner from '../components/Spinner'
@@ -8,6 +8,7 @@ import './LoginPage.css'
 
 type LoginResponse = {
   accessToken: string
+  isNewUser: boolean
 }
 
 function AuthCallbackPage() {
@@ -36,8 +37,8 @@ function AuthCallbackPage() {
     })
       .then(data => {
         setToken(data.accessToken)
-        const intent = consumeAuthIntent()
-        navigate(intent === 'signup' ? '/signup/info' : '/storage', { replace: true })
+        // 첫 로그인이면 농가 정보 입력, 기존 회원이면 저장고 현황으로
+        navigate(data.isNewUser ? '/signup/info' : '/storage', { replace: true })
       })
       .catch(() => {
         setError('로그인 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')

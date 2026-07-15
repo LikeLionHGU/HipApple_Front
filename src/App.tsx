@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import { responsive } from './components/responsive'
 import LandingPage from './pages/LandingPage'
@@ -6,8 +6,6 @@ import MobileLandingPage from './pages/mobile/LandingPage'
 import AuthCallbackPage from './pages/AuthCallbackPage'
 import LoginPage from './pages/LoginPage'
 import MobileLoginPage from './pages/mobile/LoginPage'
-import SignupPage from './pages/SignupPage'
-import MobileSignupPage from './pages/mobile/SignupPage'
 import SignupInfoPage from './pages/SignupInfoPage'
 import MobileSignupInfoPage from './pages/mobile/SignupInfoPage'
 import SignupCompletePage from './pages/SignupCompletePage'
@@ -25,7 +23,6 @@ import MobileStorageEdit from './pages/mobile/StorageEdit'
 
 const Landing = responsive(LandingPage, MobileLandingPage)
 const Login = responsive(LoginPage, MobileLoginPage)
-const Signup = responsive(SignupPage, MobileSignupPage)
 const SignupInfo = responsive(SignupInfoPage, MobileSignupInfoPage)
 const SignupComplete = responsive(SignupCompletePage, MobileSignupCompletePage)
 const Market = responsive(MarketPricePage, MobileMarketPricePage)
@@ -41,7 +38,8 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
-        <Route path="/signup" element={<Signup />} />
+        {/* 로그인/회원가입 통합: 예전 링크 호환용 리다이렉트 */}
+        <Route path="/signup" element={<Navigate to="/login" replace />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/signup/info" element={<SignupInfo />} />
           <Route path="/signup/step3" element={<SignupComplete />} />
