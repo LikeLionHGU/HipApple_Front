@@ -4,12 +4,12 @@ import './Header.css'
 export default function Header() {
   const location = useLocation()
 
-  const isStoragePage = ['/storage', '/StorageInfo', '/StorageAdd'].includes(location.pathname)
-  const isAiPage = ['/ai', '/StorageAI'].includes(location.pathname)
+  const isAiPage = location.pathname === '/storage/ai'
+  const isStoragePage = location.pathname.startsWith('/storage') && !isAiPage
 
   const navLinks = [
     { label: '저장고 현황', path: '/storage' },
-    { label: '출하 AI', path: '/ai' },
+    { label: '출하 AI', path: '/storage/ai' },
     { label: '시장 가격', path: '/market' },
     { label: '마이페이지', path: '/mypage' },
   ]
@@ -24,7 +24,7 @@ export default function Header() {
             to={link.path}
             className={`nav-link ${
               link.path === '/storage' ? (isStoragePage ? 'active' : '')
-                : link.path === '/ai' ? (isAiPage ? 'active' : '')
+                : link.path === '/storage/ai' ? (isAiPage ? 'active' : '')
                 : location.pathname === link.path ? 'active' : ''
             }`}
           >

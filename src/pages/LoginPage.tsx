@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
+import { startGoogleLogin } from '../api/auth'
 import './LoginPage.css'
 
 function LoginPage() {
   const handleGoogleLogin = () => {
-    console.log('구글 로그인 버튼 물릴 때 내용 추가하면 댐')
+    startGoogleLogin()
   }
 
   return (

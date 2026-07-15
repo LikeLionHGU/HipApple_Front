@@ -1,15 +1,19 @@
 import { useNavigate } from 'react-router-dom'
+import { isLoggedIn, startGoogleLogin } from '../api/auth'
 import './SignupPage.css'
 
 function SignupPage() {
   const navigate = useNavigate()
 
   const handleGoogleSignup = () => {
-    console.log('구글 아이디로 회원가입하러 가는 버튼~')
+    startGoogleLogin('signup')
   }
 
   const handleNext = () => {
-    console.log('구글 로그인 완료하고 다음 페이지로 넘어가는 버튼 ㅇㅇ')
+    if (!isLoggedIn()) {
+      alert('먼저 Google로 로그인해 주세요.')
+      return
+    }
     navigate('/signup/info')
   }
 
