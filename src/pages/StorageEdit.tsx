@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import { STORAGE_LIST_KEY } from './StorageInfo'
 import AcceptModal from '../components/AcceptModal'
 import './StorageEdit.css'
@@ -122,6 +123,7 @@ function StorageEdit() {
           <button className="storage-update-button" type="submit" disabled={!isFormValid}>수정하기</button>
         </form>
       </main>
+      <Footer />
       <AcceptModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { startGoogleLogin } from '../api/auth'
+import farmsignLogo from '../assets/farmsign-logo.svg'
 import './LoginPage.css'
 
 function LoginPage() {
@@ -10,7 +11,7 @@ function LoginPage() {
   return (
     <div className="login-page">
       <header className="navbar">
-        <div className="logo">로고</div>
+        <img className="logo" src={farmsignLogo} alt="팜사인 로고" />
       </header>
 
       <main className="login-main">

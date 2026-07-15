@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import AcceptModal from '../components/AcceptModal'
 import { STORAGE_LIST_KEY } from './StorageInfo'
 import './StorageAdd.css'
@@ -144,6 +145,7 @@ function StorageAdd() {
           </button>
         </form>
       </main>
+      <Footer />
       <AcceptModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

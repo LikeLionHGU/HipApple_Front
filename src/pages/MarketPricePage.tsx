@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import './MarketPricePage.css'
 
 const SAMPLE_PRICES = [2180, 2210, 2195, 2240, 2260, 2290, 2310]
@@ -238,6 +239,7 @@ function MarketPricePage() {
           </p>
         </div>
       </main>
+      <Footer />
     </div>
   )
 }

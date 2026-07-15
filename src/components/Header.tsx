@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import farmsignLogo from '../assets/farmsign-logo.svg'
 import './Header.css'
 
 export default function Header() {
@@ -16,7 +17,7 @@ export default function Header() {
 
   return (
     <header className="market-navbar">
-      <div className="market-logo">로고</div>
+      <img className="market-logo" src={farmsignLogo} alt="팜사인 로고" />
       <nav className="market-nav">
         {navLinks.map(link => (
           <Link

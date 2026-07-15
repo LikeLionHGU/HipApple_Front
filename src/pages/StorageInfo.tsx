@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import './StorageInfo.css'
 
 type Storage = {
@@ -70,6 +71,7 @@ function StorageInfo() {
           </button>
         </section>
       </main>
+      <Footer />
     </div>
   )
 }
