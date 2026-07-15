@@ -124,6 +124,13 @@
 
 .form-field select {
   color: #9ca3af;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 48px;
+  background-image: url('../assets/Sort Down.svg');
+  background-repeat: no-repeat;
+  background-position: right 20px center;
 }
 
 .form-field select:valid {

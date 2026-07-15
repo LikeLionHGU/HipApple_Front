@@ -1,16 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { STORAGE_LIST_KEY } from './StorageInfo'
+import { getStorage, updateStorage } from '../api/storage'
 import AcceptModal from '../components/AcceptModal'
 import './StorageEdit.css'
-
-type Storage = {
-  name: string
-  date: string
-  description: string
-}
 
 type EditForm = {
   name: string
@@ -24,57 +18,74 @@ type EditForm = {
   expectedTime: string
 }
 
-const getInitialForm = (storage?: Storage): EditForm => ({
-  name: storage?.name ?? 'A동',
-  variety: storage?.description.match(/^사과 (.+?) ·/)?.[1] ?? '홍로',
-  harvestDate: storage ? normalizeDate(storage.date) : '2026-04-01',
-  storageMethod: storage?.description.match(/· (.+?) ·/)?.[1] ?? 'CA 저장',
-  brix: storage?.description.match(/당도 (.+)$/)?.[1] ?? '13',
+const EMPTY_FORM: EditForm = {
+  name: '',
+  variety: '',
+  harvestDate: '',
+  storageMethod: '',
+  brix: '',
   weight: '',
-  condition: '특',
+  condition: '',
   expectedAmount: '',
-  expectedTime: '추석 일주일 전',
-})
-
-function normalizeDate(date: string) {
-  const [year, month, day] = date.replace(' ~', '').split('.')
-  if (!year || !month || !day) return ''
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+  expectedTime: '',
 }
 
 function StorageEdit() {
   const navigate = useNavigate()
   const location = useLocation()
-  const storage = (location.state as { storage?: Storage } | null)?.storage
-  const [form, setForm] = useState(() => getInitialForm(storage))
+  const storageId = (location.state as { storageId?: number } | null)?.storageId
+  const [form, setForm] = useState<EditForm>(EMPTY_FORM)
+  const [error, setError] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // 세부 저장고 정보를 조회해 폼을 채운다 (StorageDetail 기준)
+  useEffect(() => {
+    if (storageId == null) return
+    getStorage(storageId)
+      .then(detail => setForm({
+        name: detail.storageName ?? detail.name ?? '',
+        variety: detail.type ?? '',
+        harvestDate: detail.storeDate ? detail.storeDate.split('T')[0] : '',
+        storageMethod: detail.storageMethod ?? '',
+        brix: detail.brix != null ? String(detail.brix) : '',
+        weight: detail.hardness != null ? String(detail.hardness) : '',
+        condition: detail.condition ?? '',
+        expectedAmount: detail.amount != null ? String(detail.amount) : '',
+        expectedTime: detail.preferredDate ?? '',
+      }))
+      .catch(err => setError(err instanceof Error ? err.message : '저장고 정보를 불러오지 못했습니다.'))
+  }, [storageId])
 
   const updateField = (field: keyof EditForm, value: string) => {
     setForm(currentForm => ({ ...currentForm, [field]: value }))
   }
 
+  // 백엔드 필수값: name, appleType, storeDate, storageMethod, condition, preferredDate
   const isFormValid = Boolean(
-    form.name && form.variety && form.harvestDate && form.storageMethod && form.brix,
+    form.name && form.variety && form.harvestDate && form.storageMethod && form.brix &&
+    form.condition && form.expectedTime,
   )
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!isFormValid) return
+    if (!isFormValid || storageId == null) return
 
-    const savedStorages = window.localStorage.getItem(STORAGE_LIST_KEY)
-    const currentStorages: Storage[] = savedStorages ? JSON.parse(savedStorages) : []
-    const updatedStorages = currentStorages.map(currentStorage => (
-      currentStorage.name === storage?.name
-        ? {
-            name: form.name,
-            date: `${form.harvestDate.replaceAll('-', '.')} ~`,
-            description: `사과 ${form.variety} · ${form.storageMethod} · 당도 ${form.brix}`,
-          }
-        : currentStorage
-    ))
-
-    window.localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(updatedStorages))
-    setIsModalOpen(true)
+    try {
+      await updateStorage(storageId, {
+        name: form.name,
+        appleType: form.variety,
+        storeDate: `${form.harvestDate}T00:00:00`,
+        storageMethod: form.storageMethod,
+        brix: Math.round(Number(form.brix)),
+        hardness: form.weight ? Math.round(Number(form.weight)) : undefined,
+        condition: form.condition,
+        amount: form.expectedAmount ? Math.round(Number(form.expectedAmount)) : undefined,
+        preferredDate: form.expectedTime,
+      })
+      setIsModalOpen(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '수정에 실패했습니다.')
+    }
   }
 
   return (
@@ -85,6 +96,8 @@ function StorageEdit() {
           <span aria-hidden="true">‹</span> 저장고 정보 수정하기
         </button>
 
+        {error && <p role="alert" className="storage-edit-error">{error}</p>}
+
         <form className="storage-edit-form" onSubmit={handleSubmit}>
           <section className="edit-panel edit-basic-panel">
             <EditField label="저장고" required id="edit-name">
@@ -92,6 +105,7 @@ function StorageEdit() {
             </EditField>
             <EditField label="사과 품종" required id="edit-variety">
               <select id="edit-variety" value={form.variety} onChange={event => updateField('variety', event.target.value)}>
+                <option value="" disabled>품종 선택</option>
                 <option value="부사 (후지)">부사 (후지)</option><option value="홍로">홍로</option><option value="감홍">감홍</option><option value="양광">양광</option><option value="시나노스위트">시나노스위트</option>
               </select>
             </EditField>
@@ -99,7 +113,7 @@ function StorageEdit() {
               <input id="edit-date" type="date" value={form.harvestDate} onChange={event => updateField('harvestDate', event.target.value)} />
             </EditField>
             <EditField label="저장 방식" required id="edit-method">
-              <select id="edit-method" value={form.storageMethod} onChange={event => updateField('storageMethod', event.target.value)}><option value="CA 저장">CA 저장</option><option value="일반 저온 저장">일반 저온 저장</option></select>
+              <select id="edit-method" value={form.storageMethod} onChange={event => updateField('storageMethod', event.target.value)}><option value="" disabled>저장 방식 선택</option><option value="CA저장">CA저장</option><option value="일반 저온 저장">일반 저온 저장</option></select>
             </EditField>
           </section>
 
@@ -110,14 +124,14 @@ function StorageEdit() {
             <EditField label="경도 (kg)" id="edit-weight">
               <input id="edit-weight" type="number" value={form.weight} onChange={event => updateField('weight', event.target.value)} />
             </EditField>
-            <EditField label="외관 상태" id="edit-condition">
-              <select id="edit-condition" value={form.condition} onChange={event => updateField('condition', event.target.value)}><option value="특">특</option><option value="상">상</option><option value="보통">보통</option></select>
+            <EditField label="외관 상태" required id="edit-condition">
+              <select id="edit-condition" value={form.condition} onChange={event => updateField('condition', event.target.value)}><option value="" disabled>외관 선택</option><option value="특 (무결점)">특 (무결점)</option><option value="상 (미세상처)">상 (미세상처)</option><option value="보통 (상처/ 변색있음)">보통 (상처/ 변색있음)</option></select>
             </EditField>
           </section>
 
           <section className="edit-panel edit-shipment-panel">
             <EditField label="예상 출하량 (톤)" id="edit-amount"><input id="edit-amount" type="number" value={form.expectedAmount} onChange={event => updateField('expectedAmount', event.target.value)} /></EditField>
-            <EditField label="희망 출하 시기" id="edit-time"><input id="edit-time" value={form.expectedTime} onChange={event => updateField('expectedTime', event.target.value)} /></EditField>
+            <EditField label="희망 출하 시기" required id="edit-time"><input id="edit-time" value={form.expectedTime} onChange={event => updateField('expectedTime', event.target.value)} /></EditField>
           </section>
 
           <button className="storage-update-button" type="submit" disabled={!isFormValid}>수정하기</button>
