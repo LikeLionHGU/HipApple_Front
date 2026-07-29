@@ -8,7 +8,7 @@ train_daily.build_pipeline() 을 그대로 사용(동일 구성). train-only 학
 import os
 import sys
 
-sys.path.insert(0, '/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml')
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 import matplotlib
@@ -28,7 +28,7 @@ plt.rcParams["axes.unicode_minus"] = False
 import common_daily as cd
 from train_daily import build_pipeline
 
-BASE = "/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml"
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPORTS = os.path.join(BASE, "reports")
 SCATTER_PATH = os.path.join(REPORTS, "daily_pred_vs_actual.png")
 TS_PATH = os.path.join(REPORTS, "daily_timeseries.png")
