@@ -14,7 +14,7 @@ train_daily.py 와 동일한 HistGradientBoosting 구성(하이퍼파라미터 �
 import os
 import sys
 
-sys.path.insert(0, '/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import numpy as np
 import pandas as pd
@@ -28,7 +28,7 @@ from sklearn.inspection import permutation_importance
 
 import common_hist as ch
 
-BASE = "/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml"
+BASE = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE, "models", "final_daily_model2.joblib")
 
 # train_daily.py 와 동일 — TEST 셋 기반 재선택 금지(고정)

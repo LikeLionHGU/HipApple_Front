@@ -41,7 +41,7 @@ import requests
 import pandas as pd
 
 BASE_URL = "http://211.237.50.150:7080/openapi/{key}/xml/Grid_20151127000000000313_1/{start}/{end}"
-OUT_CSV = "/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml/data/apple_history_raw.csv"
+OUT_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "apple_history_raw.csv")
 
 TIMEOUT = 150       # 서버가 매우 느림 (실측: 요청당 60~120초+)
 RETRIES = 3

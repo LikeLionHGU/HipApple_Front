@@ -15,14 +15,14 @@ models/final_daily_model.joblib (전체 데이터 학습본; dict 로 model/medi
 import os
 import sys
 
-sys.path.insert(0, '/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import pandas as pd
 import joblib
 
 import common_daily as cd
 
-BASE = "/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml"
+BASE = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE, "models", "final_daily_model.joblib")
 
 _bundle = None

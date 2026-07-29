@@ -26,7 +26,7 @@
 import os
 import sys
 
-sys.path.insert(0, '/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import numpy as np
 import pandas as pd
@@ -40,7 +40,7 @@ from sklearn.inspection import permutation_importance
 
 import common_daily as cd
 
-BASE = "/Users/parkseoyeon/Downloads/3학년/멋쟁이사자처럼/HipApple_Front/ml"
+BASE = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE, "models", "final_daily_model.joblib")
 
 # 검증 통과 winner (TEST 셋에서 재선택하지 않도록 고정)
