@@ -5,8 +5,8 @@ const TEAM = [
   { role: 'Team', members: ['멋쟁이사과'] },
   { role: 'Planner', members: ['최서연'] },
   { role: 'Designer', members: ['현하나'] },
-  { role: 'Frontend', members: ['김원진', '박서연'] },
-  { role: 'Backend', members: ['박해석', '박주아'] },
+  { role: 'Frontend', members: ['박형찬', '윤유원'] },
+  { role: 'Backend', members: ['조나은', '박주아'] },
 ]
 
 export default function Footer() {

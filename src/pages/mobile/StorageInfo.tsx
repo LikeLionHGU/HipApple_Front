@@ -1,48 +1,39 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MobileHeader from '../../components/MobileHeader'
-import { STORAGE_LIST_KEY } from '../StorageInfo'
+import { getStorages, type StorageSummary } from '../../api/storage'
 import './app.css'
 import './StorageCrud.css'
 
-type Storage = { name: string; date: string; description: string }
-
-const INITIAL_STORAGES: Storage[] = [
-  { name: 'A동', date: '2026.7.1 ~', description: '사과 부사 · CA 저장 · 당도 12' },
-  { name: 'B동', date: '2026.7.4 ~', description: '사과 홍로 · CA 저장 · 당도 15' },
-]
-
-const getStoredStorages = (): Storage[] => {
-  const saved = window.localStorage.getItem(STORAGE_LIST_KEY)
-  if (!saved) return INITIAL_STORAGES
-  try {
-    return JSON.parse(saved) as Storage[]
-  } catch {
-    return INITIAL_STORAGES
-  }
-}
-
 function MobileStorageInfo() {
   const navigate = useNavigate()
-  const [storages] = useState<Storage[]>(getStoredStorages)
+  const [storages, setStorages] = useState<StorageSummary[]>([])
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    getStorages()
+      .then(setStorages)
+      .catch(err => setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.'))
+  }, [])
 
   return (
     <div className="m-app">
-      <MobileHeader back title="저장고 정보" onBack={() => navigate('/storage')} />
+      <MobileHeader back title="저장고 목록" onBack={() => navigate('/storage')} />
 
       <main className="m-body">
+        {error && <p role="alert" className="m-error">{error}</p>}
         <div className="m-storage-list">
           {storages.map(storage => (
-            <article className="m-storage-card" key={storage.name}>
+            <article className="m-storage-card" key={storage.storageId}>
               <div className="m-storage-card-head">
-                <h2>{storage.name}</h2>
-                <time>{storage.date}</time>
+                <h2>{storage.storageName ?? storage.name ?? `저장고 ${storage.storageId}`}</h2>
+                <time>{String(storage.startDate).replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3')} ~</time>
               </div>
-              <p>{storage.description}</p>
+              <p>사과 {storage.type} · {storage.storageMethod} · 당도 {storage.brix}</p>
               <button
                 className="m-storage-edit-btn"
                 type="button"
-                onClick={() => navigate('/storage/edit', { state: { storage } })}
+                onClick={() => navigate('/storage/edit', { state: { storageId: storage.storageId, storage } })}
               >
                 수정하기
               </button>

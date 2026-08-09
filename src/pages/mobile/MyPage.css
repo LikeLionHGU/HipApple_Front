@@ -1,0 +1,374 @@
+.m-mypage-hero {
+  padding: 32px 20px 40px;
+  background: linear-gradient(90deg, #15dc92 0%, #0bc7c4 100%);
+  border-radius: 0 0 0 36px;
+  color: #fff;
+}
+
+.m-mypage-hero h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.m-mypage-hero p {
+  margin: 8px 0 0;
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+.m-mypage-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.m-mypage-card h2 {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.m-mypage-empty {
+  color: #9ca3af;
+  font-size: 13px;
+  margin: 0;
+}
+
+.m-mypage-info-list {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 14px;
+}
+
+.m-mypage-info-list dt {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.m-mypage-info-list dd {
+  margin: 0;
+  font-size: 13px;
+}
+
+.m-mypage-storage-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.m-mypage-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #15dc92;
+  color: #15dc92;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.m-mypage-major-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m-mypage-major-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.m-mypage-major-date {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.m-mypage-calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.m-mypage-calendar-head h2 {
+  margin: 0;
+}
+
+.m-mypage-calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.m-mypage-calendar-nav button {
+  border: 0;
+  background: none;
+  font-size: 16px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.m-mypage-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.m-mypage-calendar-weekday {
+  text-align: center;
+  font-size: 11px;
+  color: #9ca3af;
+  padding-bottom: 6px;
+}
+
+.m-mypage-calendar-cell {
+  min-height: 36px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.m-mypage-calendar-cell.empty {
+  cursor: default;
+}
+
+.m-mypage-calendar-cell.today {
+  border-color: #15dc92;
+}
+
+.m-mypage-calendar-day {
+  font-size: 12px;
+}
+
+.m-mypage-calendar-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #15dc92;
+}
+
+.m-mypage-today-schedules {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.m-mypage-today-schedules li {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #e2f8eb;
+  color: #15dc92;
+  font-size: 12px;
+}
+
+.m-mypage-add-btn {
+  margin-top: 16px;
+}
+
+.m-mypage-report-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.m-mypage-report-head h2 {
+  margin: 0;
+}
+
+.m-mypage-pdf-button {
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #15dc92;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.m-mypage-period-tabs {
+  display: flex;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.m-mypage-period-tabs button {
+  flex: 1;
+  border: 0;
+  background: #fff;
+  padding: 8px 0;
+  font: inherit;
+  font-size: 13px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.m-mypage-period-tabs button.active {
+  background: #15dc92;
+  color: #fff;
+  font-weight: 600;
+}
+
+.m-mypage-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.m-mypage-summary-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m-mypage-summary-grid span {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.m-mypage-summary-grid strong {
+  font-size: 14px;
+}
+
+.m-mypage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.m-mypage-table th,
+.m-mypage-table td {
+  padding: 6px 4px;
+  text-align: right;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.m-mypage-table th:first-child,
+.m-mypage-table td:first-child {
+  text-align: left;
+  color: #6b7280;
+}
+
+.m-mypage-table td.up { color: #15dc92; }
+.m-mypage-table td.down { color: #ff5d5d; }
+
+/* ===== 일정 추가 모달 ===== */
+.m-mypage-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0 20px;
+}
+
+.m-mypage-modal {
+  width: 100%;
+  max-width: 380px;
+  box-sizing: border-box;
+  padding: 24px;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.m-mypage-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.m-mypage-modal-head h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.m-mypage-modal-head button {
+  border: 0;
+  background: none;
+  font-size: 20px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.m-mypage-modal-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.m-mypage-modal-input {
+  width: 100%;
+  height: 46px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.m-mypage-modal-input:focus {
+  outline: none;
+  border-color: #15dc92;
+}
+
+.m-mypage-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.m-mypage-modal-buttons button {
+  height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.m-mypage-modal-close {
+  background: #f2f2f2;
+  color: #6b7280;
+}
+
+.m-mypage-modal-confirm {
+  background: #15dc92;
+  color: #fff;
+}
+
+.m-mypage-modal-confirm:disabled {
+  background: #a7e5cd;
+  cursor: not-allowed;
+}

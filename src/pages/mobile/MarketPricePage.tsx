@@ -81,10 +81,12 @@ function MobileMarketPricePage() {
     <div className="m-app with-tabbar">
       <MobileHeader />
 
-      <main className="m-body">
-        <h1 className="m-page-title">시장 가격 예측</h1>
+      <section className="m-page-hero">
+        <h1 className="m-page-title">판매 수익 예측</h1>
         <p className="m-page-sub">향후 일주일의 시장 가격을 확인해보세요</p>
+      </section>
 
+      <main className="m-body">
         <div className="m-field">
           <span className="m-field-label">시장</span>
           <select className="m-select" value={market} onChange={e => setMarket(e.target.value)}>

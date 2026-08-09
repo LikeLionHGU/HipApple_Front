@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MobileHeader from '../../components/MobileHeader'
 import AcceptModal from '../../components/AcceptModal'
-import { STORAGE_LIST_KEY } from '../StorageInfo'
+import { createStorage } from '../../api/storage'
 import './app.css'
 import './StorageCrud.css'
 
@@ -19,7 +19,7 @@ type StorageForm = {
 }
 
 const INITIAL_FORM: StorageForm = {
-  name: 'A동', variety: '', harvestDate: '', storageMethod: '', brix: '13',
+  name: '', variety: '', harvestDate: '', storageMethod: '', brix: '13',
   weight: '', condition: '', expectedAmount: '', expectedTime: '',
 }
 
@@ -27,32 +27,43 @@ function MobileStorageAdd() {
   const navigate = useNavigate()
   const [form, setForm] = useState<StorageForm>(INITIAL_FORM)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [error, setError] = useState('')
 
   const update = (field: keyof StorageForm, value: string) =>
     setForm(f => ({ ...f, [field]: value }))
 
   const isValid = Boolean(form.name && form.variety && form.harvestDate && form.storageMethod && form.brix)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!isValid) return
-    const saved = window.localStorage.getItem(STORAGE_LIST_KEY)
-    const current = saved ? JSON.parse(saved) : [
-      { name: 'A동', date: '2026.7.1 ~', description: '사과 부사 · CA 저장 · 당도 12' },
-      { name: 'B동', date: '2026.7.4 ~', description: '사과 홍로 · CA 저장 · 당도 15' },
-    ]
-    const newStorage = {
-      name: form.name,
-      date: `${form.harvestDate.replaceAll('-', '.')} ~`,
-      description: `사과 ${form.variety} · ${form.storageMethod} · 당도 ${form.brix}`,
+
+    const hardness = Number(form.weight)
+    const amount = Number(form.expectedAmount)
+
+    try {
+      await createStorage({
+        name: form.name,
+        appleType: form.variety,
+        storeDate: `${form.harvestDate}T00:00:00`,
+        storageMethod: form.storageMethod,
+        brix: Math.round(Number(form.brix)),
+        hardness: hardness > 0 ? Math.round(hardness) : 1,
+        condition: form.condition || '보통',
+        amount: amount > 0 ? Math.round(amount) : undefined,
+        preferredDate: form.expectedTime || '미정',
+      })
+      setIsModalOpen(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '저장에 실패했습니다.')
     }
-    window.localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify([...current, newStorage]))
-    setIsModalOpen(true)
   }
 
   return (
     <div className="m-app">
       <MobileHeader back title="저장고 추가" onBack={() => navigate('/storage/info')} />
+
+      {error && <p role="alert" className="m-error">{error}</p>}
 
       <form className="m-body m-crud-form" onSubmit={handleSubmit}>
         <div className="m-field">

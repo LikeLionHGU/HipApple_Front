@@ -19,11 +19,22 @@ const TABS = [
     ),
   },
   {
-    label: '시장 가격',
+    label: '수익 예측',
     path: '/market',
     match: (p: string) => p === '/market',
     icon: (
       <path d="M4 19V5M4 19h16M7 15l4-4 3 3 5-6" />
+    ),
+  },
+  {
+    label: '마이페이지',
+    path: '/mypage',
+    match: (p: string) => p === '/mypage',
+    icon: (
+      <>
+        <circle cx="12" cy="8" r="3.2" />
+        <path d="M4.5 20c1.4-3.4 4-5 7.5-5s6.1 1.6 7.5 5" />
+      </>
     ),
   },
 ]

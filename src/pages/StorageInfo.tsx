@@ -7,9 +7,6 @@ import './StorageInfo.css'
 
 type Storage = StorageSummary
 
-// 모바일 페이지의 기존 localStorage 로직과의 호환을 위한 키
-export const STORAGE_LIST_KEY = 'hipapple-storage-list'
-
 function StorageInfo() {
   const navigate = useNavigate()
   const [storages, setStorages] = useState<Storage[]>([])
@@ -36,7 +33,7 @@ function StorageInfo() {
           type="button"
           onClick={() => navigate('/storage')}
         >
-          <span aria-hidden="true">‹</span> 저장고 정보
+          <span aria-hidden="true">‹</span> 저장고 목록
         </button>
 
         {error && <p role="alert">{error}</p>}

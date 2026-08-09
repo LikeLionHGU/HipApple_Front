@@ -65,7 +65,7 @@
 }
 
 .signup-complete-page .step-circle.active {
-  background: #1BC485;
+  background: #15DC92;
 }
 
 .signup-complete-page .step-line {
@@ -75,7 +75,7 @@
 }
 
 .signup-complete-page .step-line.active {
-  background: #1BC485;
+  background: #15DC92;
 }
 
 .signup-complete-page .signup-title-block {
@@ -109,7 +109,7 @@
 .start-btn {
   width: 204px;
   height: 50px;
-  background: #1BC485;
+  background: #15DC92;
   border: none;
   border-radius: 12px;
   display: flex;
@@ -129,7 +129,7 @@
 
 .start-btn:hover {
   background: #17ae76;
-  box-shadow: 0 4px 16px rgba(27, 196, 133, 0.35);
+  box-shadow: 0 4px 16px rgba(21, 220, 146, 0.35);
   transform: translateY(-1px);
 }
 

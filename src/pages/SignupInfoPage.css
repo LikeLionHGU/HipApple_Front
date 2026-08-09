@@ -65,7 +65,7 @@
 }
 
 .signup-info-page .step-circle.active {
-  background: #1BC485;
+  background: #15DC92;
 }
 
 .signup-info-page .step-line {
@@ -75,7 +75,7 @@
 }
 
 .signup-info-page .step-line.active {
-  background: #1BC485;
+  background: #15DC92;
 }
 
 .signup-info-page .signup-title-block {
@@ -156,8 +156,8 @@
 }
 
 .field-input:focus {
-  outline: 1.5px solid #1BC485;
-  box-shadow: 0 0 0 3px rgba(27, 196, 133, 0.12);
+  outline: 1.5px solid #15DC92;
+  box-shadow: 0 0 0 3px rgba(21, 220, 146, 0.12);
 }
 
 .market-options {
@@ -185,13 +185,13 @@
 }
 
 .market-btn:hover {
-  outline-color: #1BC485;
-  color: #1BC485;
+  outline-color: #15DC92;
+  color: #15DC92;
 }
 
 .market-btn.selected {
-  background: #1BC485;
-  outline-color: #1BC485;
+  background: #15DC92;
+  outline-color: #15DC92;
   color: #ffffff;
   font-weight: 500;
 }
@@ -199,7 +199,7 @@
 .signup-info-page .next-btn {
   width: 204px;
   height: 50px;
-  background: #1BC485;
+  background: #15DC92;
   border: none;
   border-radius: 12px;
   display: flex;
@@ -218,7 +218,7 @@
 
 .signup-info-page .next-btn:hover {
   background: #17ae76;
-  box-shadow: 0 4px 16px rgba(27, 196, 133, 0.35);
+  box-shadow: 0 4px 16px rgba(21, 220, 146, 0.35);
   transform: translateY(-1px);
 }
 

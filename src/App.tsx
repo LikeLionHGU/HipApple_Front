@@ -14,6 +14,12 @@ import MarketPricePage from './pages/MarketPricePage'
 import MobileMarketPricePage from './pages/mobile/MarketPricePage'
 import StoragePage from './pages/StoragePage'
 import MobileStoragePage from './pages/mobile/StoragePage'
+import ShipmentAiPage from './pages/ShipmentAiPage'
+import MobileShipmentAiPage from './pages/mobile/ShipmentAiPage'
+import PhotoUploadPage from './pages/PhotoUploadPage'
+import MobilePhotoUploadPage from './pages/mobile/PhotoUploadPage'
+import MyPage from './pages/MyPage'
+import MobileMyPage from './pages/mobile/MyPage'
 import StorageInfo from './pages/StorageInfo'
 import MobileStorageInfo from './pages/mobile/StorageInfo'
 import StorageAdd from './pages/StorageAdd'
@@ -27,6 +33,9 @@ const SignupInfo = responsive(SignupInfoPage, MobileSignupInfoPage)
 const SignupComplete = responsive(SignupCompletePage, MobileSignupCompletePage)
 const Market = responsive(MarketPricePage, MobileMarketPricePage)
 const Storage = responsive(StoragePage, MobileStoragePage)
+const ShipmentAi = responsive(ShipmentAiPage, MobileShipmentAiPage)
+const PhotoUpload = responsive(PhotoUploadPage, MobilePhotoUploadPage)
+const My = responsive(MyPage, MobileMyPage)
 const StorageInfoPage = responsive(StorageInfo, MobileStorageInfo)
 const StorageAddPage = responsive(StorageAdd, MobileStorageAdd)
 const StorageEditPage = responsive(StorageEdit, MobileStorageEdit)
@@ -45,7 +54,9 @@ function App() {
           <Route path="/signup/step3" element={<SignupComplete />} />
           <Route path="/market" element={<Market />} />
           <Route path="/storage" element={<Storage />} />
-          <Route path="/storage/ai" element={<Storage showAiRecommendations />} />
+          <Route path="/storage/ai" element={<ShipmentAi />} />
+          <Route path="/storage/photo-upload" element={<PhotoUpload />} />
+          <Route path="/mypage" element={<My />} />
           <Route path="/storage/info" element={<StorageInfoPage />} />
           <Route path="/storage/add" element={<StorageAddPage />} />
           <Route path="/storage/edit" element={<StorageEditPage />} />
