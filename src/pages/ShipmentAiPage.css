@@ -1,0 +1,390 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.ai-page {
+  min-height: 100vh;
+  background: #fff;
+  color: #1f1f1f;
+  font-family: 'Inter', sans-serif;
+}
+
+.ai-hero {
+  padding: 43px min(calc((100% - 1122px) / 2 + 24px), 25%) 42px;
+  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
+  border-radius: 0 0 0 60px;
+  box-sizing: border-box;
+  color: #fff;
+}
+
+.ai-hero h1 {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 40px;
+  color: #fff;
+}
+
+.ai-hero p {
+  margin: 18px 0 0;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.ai-main {
+  width: min(1122px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0 64px;
+}
+
+.ai-error {
+  color: #ff5d5d;
+  margin: 0 0 20px;
+}
+
+.ai-alarm-saved {
+  color: #15dc92;
+  font-weight: 600;
+  margin: 0 0 20px;
+}
+
+/* ===== 저장고 개요 (저장고 박스 + 현재 저장 현황 카드) ===== */
+.ai-overview {
+  display: grid;
+  grid-template-columns: 204px 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.ai-overview-label {
+  display: block;
+  margin: 0 0 10px;
+  color: #1f1f1f;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.ai-storage-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-storage-name {
+  width: 204px;
+  height: 50px;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #6b7280;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 20px;
+  color: #1f1f1f;
+}
+
+.ai-metrics-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ai-metrics-heading time {
+  color: #9ca3af;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.ai-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.ai-metric-card {
+  min-width: 0;
+  height: 113px;
+  padding: 23px 26px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 0 4px #e1e1e1;
+}
+
+.ai-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ai-metric-card h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.ai-metric-card strong {
+  display: block;
+  margin-top: 14px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.status-icon {
+  width: 27px;
+  height: 28px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* ===== 로딩 ===== */
+.ai-loading {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.ai-loading-emojis {
+  font-size: 40px;
+}
+
+.ai-loading-emojis span {
+  display: inline-block;
+  animation: ai-bounce 1s ease-in-out infinite;
+}
+
+.ai-loading-emojis span:nth-child(2) { animation-delay: 0.1s; }
+.ai-loading-emojis span:nth-child(3) { animation-delay: 0.2s; }
+.ai-loading-emojis span:nth-child(4) { animation-delay: 0.3s; }
+.ai-loading-emojis span:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes ai-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+.ai-loading p {
+  color: #15dc92;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+/* ===== 요약 카드 ===== */
+.ai-summary-grid { display: grid; grid-template-columns: 319px 1fr; gap: 24px; margin-top: 8px; }
+.recommendation-card, .analysis-card { box-sizing: border-box; border-radius: 20px; }
+.recommendation-card { min-height: 186px; padding: 39px 36px; background: #15dc92; color: #fff; box-shadow: 0 0 10px rgba(21, 220, 146, 0.3); }
+.recommendation-top-row { display: flex; align-items: baseline; gap: 12px; }
+.recommendation-label { font-size: 24px; font-weight: 400; }
+.recommendation-days { font-size: 20px; font-weight: 500; line-height: 32px; opacity: 0.5; }
+.recommendation-date { display: block; margin-top: 30px; font-size: 64px; line-height: 45px; font-weight: 700; }
+
+.analysis-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  min-height: 126px;
+  padding: 27px 42px;
+  border: 2px solid #15dc92;
+  background: #f5fbf6;
+}
+.analysis-badge {
+  position: absolute;
+  top: -27px;
+  left: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 27px;
+  padding: 0 16px;
+  border-radius: 10px 10px 0 0;
+  background: #15dc92;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.analysis-card p { flex: 1 1 320px; min-width: 0; margin: 0; color: #15dc92; font-size: 22px; line-height: 34px; font-weight: 700; }
+.market-link-button { flex-shrink: 0; border: 0; border-radius: 999px; background: #15dc92; color: #fff; padding: 12px 22px; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.market-link-button:hover { background: #11b478; }
+
+.daily-analysis-title { margin: 40px 0 32px; font-size: 17px; font-weight: 600; }
+.daily-analysis-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
+.daily-card { position: relative; display: flex; height: 228px; padding: 19px 15px 0; box-sizing: border-box; align-items: center; flex-direction: column; border: none; border-radius: 20px; background: #fff; box-shadow: 0 0 4px #e1e1e1; }
+.daily-card.recommended { border: 2px solid #15dc92; box-shadow: 0 0 12px rgba(21, 220, 146, 0.35); }
+.ai-tag { position: absolute; top: -27px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; justify-content: center; width: 74px; height: 27px; border-radius: 10px 10px 0 0; background: #15dc92; color: #fff; font-size: 15px; font-weight: 400; }
+.weather-icon { width: 19px; height: 19px; object-fit: contain; }
+.daily-card > strong { margin-top: 12px; font-size: 18px; font-weight: 500; color: #414141; }
+.daily-card.recommended > strong { color: #15dc92; }
+.daily-status { width: 70px; height: 34px; box-sizing: border-box; margin-top: 24px; display: flex; align-items: center; justify-content: center; border-radius: 20px; font-size: 16px; font-weight: 500; }
+.daily-status.우수 { background: #e2f9e9; color: #34c759; }
+.daily-status.양호 { background: #fff7e1; color: #f4b400; }
+.daily-status.불량 { background: #ffeeed; color: #ff4f4f; border: 1px solid #ffeeed; }
+.daily-card > b { width: calc(100% + 30px); margin-top: auto; padding: 16px 0; border-top: 2px solid #eeeeee; text-align: center; font-size: 32px; font-weight: 700; }
+.daily-card > b small { font-size: 15px; font-weight: 400; }
+.daily-card.recommended > b { color: #15dc92; border-top-color: #15dc92; }
+
+/* ===== 데이터 분석 근거 (하단) ===== */
+.data-analysis-card {
+  margin-top: 40px;
+  padding: 35px 46px;
+  border: 1px solid #15dc92;
+  border-radius: 20px;
+  background: #f5fbf6;
+  box-shadow: 0 0 4px #e1e1e1;
+  box-sizing: border-box;
+}
+.data-analysis-card h3 { margin: 0 0 30px; font-size: 20px; font-weight: 500; }
+.data-analysis-card p { margin: 0; color: #6b7280; font-size: 15px; line-height: 23px; }
+.data-analysis-card p strong { color: #6b7280; font-weight: 600; }
+
+.alarm-button {
+  display: block;
+  margin: 40px auto 0;
+  padding: 0 28px;
+  height: 50px;
+  border: 0;
+  border-radius: 12px;
+  background: #15dc92;
+  color: #fff;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.alarm-button:disabled {
+  background: #c6c6c6;
+  cursor: not-allowed;
+}
+
+/* ===== 출하 알람 모달 ===== */
+.alarm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.alarm-modal {
+  width: min(420px, calc(100% - 40px));
+  box-sizing: border-box;
+  padding: 32px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.alarm-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.alarm-modal-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.alarm-modal-head button {
+  border: 0;
+  background: none;
+  font-size: 22px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.alarm-date-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px;
+  border-radius: 14px;
+  background: #15dc92;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.alarm-date-box strong {
+  font-size: 26px;
+}
+
+.alarm-price-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.alarm-price-box strong {
+  color: #1f1f1f;
+}
+
+.alarm-question {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 16px;
+}
+
+.alarm-modal-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.alarm-modal-buttons button {
+  flex: 1;
+  height: 48px;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.alarm-later-button {
+  background: #f2f2f2;
+  color: #6b7280;
+}
+
+.alarm-confirm-button {
+  background: #15dc92;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .ai-overview { grid-template-columns: 1fr; }
+  .ai-storage-name { width: 100%; }
+  .ai-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ai-summary-grid { grid-template-columns: 1fr; }
+  .daily-analysis-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .ai-hero { padding: 32px 24px 40px; border-radius: 0 0 0 40px; }
+  .ai-hero h1 { font-size: 24px; }
+  .ai-main { padding-top: 28px; }
+  .ai-metrics-heading { display: block; }
+  .ai-metrics-heading time { display: block; margin-bottom: 12px; }
+  .ai-metric-grid { grid-template-columns: 1fr; }
+  .analysis-card { flex-direction: column; align-items: flex-start; }
+  .market-link-button { width: 100%; text-align: center; }
+}

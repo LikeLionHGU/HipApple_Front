@@ -47,6 +47,32 @@ export type StorageDetail = {
   lastMeasuredAt?: string
   measuredAt?: string
   updatedAt?: string
+  // AI 사진 품질 판정 결과 (사진 업로드 후 채워짐)
+  qualityGrade?: string
+  qualityRipeness?: string
+  qualityColorDescription?: string
+  qualityShipmentComment?: string
+  qualityConfidence?: string
+  qualityCheckedAt?: string
+}
+
+// 사진 기반 AI 사과 품질 판정 응답
+export type QualityCheckResponse = {
+  storageId: number
+  checkedAt: string
+  grade: string
+  ripeness: string
+  colorDescription: string
+  shipmentComment: string
+  confidence: string
+  disclaimer: string
+}
+
+// 저장고의 주요 일정 (수확일/출하 예정일 등)
+export type MajorSchedule = {
+  title: string
+  date: string
+  eventType: string
 }
 
 // 전체 저장고 조회
@@ -73,3 +99,24 @@ export const updateStorage = (storageId: number, data: StorageRequest) =>
 // 저장고 삭제
 export const deleteStorage = (storageId: number) =>
   apiFetch<void>(`/storage/${storageId}`, { method: 'DELETE' })
+
+// 사진 기반 AI 사과 품질 판정 (미제출 시 사진 없이 진행 가능)
+export const checkQuality = (storageId: number, photo: File) => {
+  const formData = new FormData()
+  formData.append('photo', photo)
+  return apiFetch<QualityCheckResponse>(`/storage/${storageId}/quality-check`, {
+    method: 'POST',
+    body: formData,
+  })
+}
+
+// AI 출하 시기 분석 시작
+export const startAnalysis = (storageId: number) =>
+  apiFetch<StorageDetail>(`/storage/${storageId}/analyze`, { method: 'POST' })
+
+// 로그인 농가의 저장고 이름 목록 (드롭다운용)
+export const myStorageNames = () => apiFetch<string[]>('/storage/me')
+
+// 저장고의 주요 일정 목록
+export const getMajorSchedules = (storageId: number) =>
+  apiFetch<MajorSchedule[]>(`/storage/${storageId}/major-schedules`)

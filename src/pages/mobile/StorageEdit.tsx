@@ -1,65 +1,78 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import MobileHeader from '../../components/MobileHeader'
 import AcceptModal from '../../components/AcceptModal'
-import { STORAGE_LIST_KEY } from '../StorageInfo'
+import { getStorage, updateStorage } from '../../api/storage'
 import './app.css'
 import './StorageCrud.css'
 
-type Storage = { name: string; date: string; description: string }
 type EditForm = {
   name: string; variety: string; harvestDate: string; storageMethod: string
   brix: string; weight: string; condition: string; expectedAmount: string; expectedTime: string
 }
 
-function normalizeDate(date: string) {
-  const [year, month, day] = date.replace(' ~', '').split('.')
-  if (!year || !month || !day) return ''
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+const EMPTY_FORM: EditForm = {
+  name: '', variety: '', harvestDate: '', storageMethod: '',
+  brix: '', weight: '', condition: '', expectedAmount: '', expectedTime: '',
 }
-
-const getInitialForm = (storage?: Storage): EditForm => ({
-  name: storage?.name ?? 'A동',
-  variety: storage?.description.match(/^사과 (.+?) ·/)?.[1] ?? '홍로',
-  harvestDate: storage ? normalizeDate(storage.date) : '2026-04-01',
-  storageMethod: storage?.description.match(/· (.+?) ·/)?.[1] ?? 'CA 저장',
-  brix: storage?.description.match(/당도 (.+)$/)?.[1] ?? '13',
-  weight: '', condition: '특', expectedAmount: '', expectedTime: '추석 일주일 전',
-})
 
 function MobileStorageEdit() {
   const navigate = useNavigate()
   const location = useLocation()
-  const storage = (location.state as { storage?: Storage } | null)?.storage
-  const [form, setForm] = useState(() => getInitialForm(storage))
+  const storageId = (location.state as { storageId?: number } | null)?.storageId
+  const [form, setForm] = useState<EditForm>(EMPTY_FORM)
+  const [error, setError] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (storageId == null) return
+    getStorage(storageId)
+      .then(detail => setForm({
+        name: detail.storageName ?? detail.name ?? '',
+        variety: detail.type ?? '',
+        harvestDate: detail.storeDate ? detail.storeDate.split('T')[0] : '',
+        storageMethod: detail.storageMethod ?? '',
+        brix: detail.brix != null ? String(detail.brix) : '',
+        weight: detail.hardness != null ? String(detail.hardness) : '',
+        condition: detail.condition ?? '',
+        expectedAmount: detail.amount != null ? String(detail.amount) : '',
+        expectedTime: detail.preferredDate ?? '',
+      }))
+      .catch(err => setError(err instanceof Error ? err.message : '저장고 정보를 불러오지 못했습니다.'))
+  }, [storageId])
 
   const update = (field: keyof EditForm, value: string) =>
     setForm(f => ({ ...f, [field]: value }))
 
   const isValid = Boolean(form.name && form.variety && form.harvestDate && form.storageMethod && form.brix)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!isValid) return
-    const saved = window.localStorage.getItem(STORAGE_LIST_KEY)
-    const current: Storage[] = saved ? JSON.parse(saved) : []
-    const updated = current.map(s =>
-      s.name === storage?.name
-        ? {
-            name: form.name,
-            date: `${form.harvestDate.replaceAll('-', '.')} ~`,
-            description: `사과 ${form.variety} · ${form.storageMethod} · 당도 ${form.brix}`,
-          }
-        : s,
-    )
-    window.localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(updated))
-    setIsModalOpen(true)
+    if (!isValid || storageId == null) return
+
+    try {
+      await updateStorage(storageId, {
+        name: form.name,
+        appleType: form.variety,
+        storeDate: `${form.harvestDate}T00:00:00`,
+        storageMethod: form.storageMethod,
+        brix: Math.round(Number(form.brix)),
+        hardness: form.weight ? Math.round(Number(form.weight)) : undefined,
+        condition: form.condition,
+        amount: form.expectedAmount ? Math.round(Number(form.expectedAmount)) : undefined,
+        preferredDate: form.expectedTime,
+      })
+      setIsModalOpen(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '수정에 실패했습니다.')
+    }
   }
 
   return (
     <div className="m-app">
       <MobileHeader back title="저장고 수정" onBack={() => navigate('/storage/info')} />
+
+      {error && <p role="alert" className="m-error">{error}</p>}
 
       <form className="m-body m-crud-form" onSubmit={handleSubmit}>
         <div className="m-field">
@@ -69,6 +82,7 @@ function MobileStorageEdit() {
         <div className="m-field">
           <label className="m-field-label" htmlFor="e-variety"><span>*</span> 사과 품종</label>
           <select id="e-variety" className="m-select" value={form.variety} onChange={e => update('variety', e.target.value)}>
+            <option value="" disabled>품종 선택</option>
             <option value="부사 (후지)">부사 (후지)</option>
             <option value="홍로">홍로</option>
             <option value="감홍">감홍</option>
@@ -83,7 +97,8 @@ function MobileStorageEdit() {
         <div className="m-field">
           <label className="m-field-label" htmlFor="e-method"><span>*</span> 저장 방식</label>
           <select id="e-method" className="m-select" value={form.storageMethod} onChange={e => update('storageMethod', e.target.value)}>
-            <option value="CA 저장">CA 저장</option>
+            <option value="" disabled>저장 방식 선택</option>
+            <option value="CA저장">CA저장</option>
             <option value="일반 저온 저장">일반 저온 저장</option>
           </select>
         </div>
@@ -98,9 +113,10 @@ function MobileStorageEdit() {
         <div className="m-field">
           <label className="m-field-label" htmlFor="e-condition">외관 상태</label>
           <select id="e-condition" className="m-select" value={form.condition} onChange={e => update('condition', e.target.value)}>
-            <option value="특">특</option>
-            <option value="상">상</option>
-            <option value="보통">보통</option>
+            <option value="" disabled>외관 선택</option>
+            <option value="특 (무결점)">특 (무결점)</option>
+            <option value="상 (미세상처)">상 (미세상처)</option>
+            <option value="보통 (상처/ 변색있음)">보통 (상처/ 변색있음)</option>
           </select>
         </div>
         <div className="m-field">

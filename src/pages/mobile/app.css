@@ -60,6 +60,13 @@
   padding: 20px 16px 32px;
 }
 
+.m-error {
+  color: #ff5d5d;
+  font-size: 14px;
+  margin: 0 0 16px;
+  padding: 0 16px;
+}
+
 .m-page-title {
   font-size: 24px;
   font-weight: 700;
@@ -70,6 +77,26 @@
   font-size: 15px;
   color: #6b7280;
   margin: 0 0 20px;
+}
+
+.m-page-hero {
+  padding: 28px 20px 36px;
+  background: linear-gradient(90deg, #15dc92 0%, #0bc7c4 100%);
+  border-radius: 0 0 0 32px;
+}
+
+.m-page-hero .m-page-title,
+.m-page-hero .m-page-sub {
+  color: #fff;
+  margin: 0;
+}
+
+.m-page-hero .m-page-title {
+  margin-bottom: 6px;
+}
+
+.m-page-hero .m-page-sub {
+  opacity: 0.95;
 }
 
 .m-section-title {
@@ -114,7 +141,7 @@
 }
 
 .m-tab.active {
-  color: #1bc485;
+  color: #15dc92;
 }
 
 /* ===== 공용 카드 ===== */
@@ -140,7 +167,7 @@
 }
 
 .m-field-label span {
-  color: #1bc485;
+  color: #15dc92;
 }
 
 .m-input,
@@ -160,7 +187,7 @@
 .m-input:focus,
 .m-select:focus {
   outline: none;
-  border-color: #1bc485;
+  border-color: #15dc92;
 }
 
 .m-select {
@@ -178,7 +205,7 @@
   height: 52px;
   border: none;
   border-radius: 14px;
-  background: #1bc485;
+  background: #15dc92;
   color: #ffffff;
   font-family: inherit;
   font-size: 17px;

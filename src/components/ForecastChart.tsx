@@ -72,7 +72,7 @@ export default function ForecastChart({ data }: { data: ForecastResponse }) {
         </g>
       ))}
 
-      <path d={bandPath} fill="#1BC485" fillOpacity="0.12" />
+      <path d={bandPath} fill="#15DC92" fillOpacity="0.12" />
 
       {history.length > 0 && forecast.length > 0 && (
         <line
@@ -82,26 +82,26 @@ export default function ForecastChart({ data }: { data: ForecastResponse }) {
         />
       )}
 
-      <polyline points={forecastLine} fill="none" stroke="#1BC485"
+      <polyline points={forecastLine} fill="none" stroke="#15DC92"
         strokeWidth="2.5" strokeDasharray="6 5"
         strokeLinejoin="round" strokeLinecap="round" />
 
-      <polyline points={histLine} fill="none" stroke="#1BC485"
+      <polyline points={histLine} fill="none" stroke="#15DC92"
         strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
 
       {history.map((p, i) => (
         <circle key={`h${i}`} cx={toX(i)} cy={toY(p.price)} r="4"
-          fill="#1BC485" stroke="#fff" strokeWidth="1.5" />
+          fill="#15DC92" stroke="#fff" strokeWidth="1.5" />
       ))}
       {forecast.map((p, i) => (
         <circle key={`f${i}`} cx={toX(history.length + i)} cy={toY(p.price)} r="4"
-          fill="#fff" stroke="#1BC485" strokeWidth="2" />
+          fill="#fff" stroke="#15DC92" strokeWidth="2" />
       ))}
 
       {all.map((p, i) => (
         <text key={i} x={toX(i)} y={pad.top + chartH + 22}
           textAnchor="middle" fontSize="12"
-          fill={i > lastHistIdx ? '#1BC485' : '#9CA3AF'}>
+          fill={i > lastHistIdx ? '#15DC92' : '#9CA3AF'}>
           {shortDate(p.date)}
         </text>
       ))}

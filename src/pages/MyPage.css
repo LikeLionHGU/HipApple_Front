@@ -1,0 +1,526 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.mypage {
+  min-height: 100vh;
+  background: #fff;
+  color: #1f1f1f;
+  font-family: 'Inter', sans-serif;
+}
+
+.mypage-hero {
+  padding: 48px min(calc((100% - 1122px) / 2 + 24px), 25%) 56px;
+  background: linear-gradient(90deg, #15dc92 0%, #0bc7c4 100%);
+  border-radius: 0 0 0 64px;
+  box-sizing: border-box;
+  color: #fff;
+}
+
+.mypage-hero h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.mypage-hero p {
+  margin: 10px 0 0;
+  font-size: 16px;
+  opacity: 0.95;
+}
+
+.mypage-main {
+  width: min(1122px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0 80px;
+}
+
+.mypage-error {
+  color: #ff5d5d;
+  margin: 0 0 20px;
+}
+
+.mypage-empty {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ===== 상단: 정보 + 캘린더 ===== */
+.mypage-top-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+}
+
+.mypage-side {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mypage-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.mypage-card h2 {
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.mypage-info-list {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 16px;
+}
+
+.mypage-info-list dt {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.mypage-info-list dd {
+  margin: 0;
+  font-size: 14px;
+}
+
+.mypage-storage-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mypage-pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid #15dc92;
+  color: #15dc92;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mypage-major-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mypage-major-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+}
+
+.mypage-major-date {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.mypage-calendar-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.mypage-calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.mypage-calendar-head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.mypage-calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+}
+
+.mypage-calendar-nav button {
+  border: 0;
+  background: none;
+  font-size: 18px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.mypage-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mypage-calendar-weekday {
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+  padding-bottom: 8px;
+}
+
+.mypage-calendar-cell {
+  min-height: 64px;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.mypage-calendar-cell:hover {
+  background: #f4faf7;
+}
+
+.mypage-calendar-cell.empty {
+  cursor: default;
+}
+
+.mypage-calendar-cell.empty:hover {
+  background: none;
+}
+
+.mypage-calendar-cell.today {
+  border-color: #15dc92;
+}
+
+.mypage-calendar-day {
+  font-size: 13px;
+  color: #1f1f1f;
+}
+
+.mypage-calendar-tag {
+  display: block;
+  width: 100%;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #e2f8eb;
+  color: #15dc92;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mypage-add-schedule-button {
+  display: block;
+  margin: 20px 0 0 auto;
+  height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 12px;
+  background: #15dc92;
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===== 리포트 ===== */
+.mypage-report {
+  margin-top: 40px;
+}
+
+.mypage-report-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.mypage-report-head h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.mypage-report-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mypage-report-date {
+  font-size: 13px;
+  color: #9ca3af;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mypage-report-date strong {
+  color: #1f1f1f;
+  font-size: 14px;
+}
+
+.mypage-period-tabs {
+  display: flex;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mypage-period-tabs button {
+  border: 0;
+  background: #fff;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.mypage-period-tabs button.active {
+  background: #15dc92;
+  color: #fff;
+  font-weight: 600;
+}
+
+.mypage-pdf-button {
+  height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 12px;
+  background: #15dc92;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mypage-report-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.mypage-report-panel {
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.mypage-report-panel h3 {
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.mypage-chart-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.mypage-chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mypage-chart-legend i {
+  width: 16px;
+  height: 2px;
+  background: #15dc92;
+}
+
+.mypage-chart-legend i.dashed {
+  background: repeating-linear-gradient(90deg, #9ca3af 0 4px, transparent 4px 7px);
+}
+
+.mypage-chart {
+  width: 100%;
+  height: auto;
+}
+
+.mypage-chart-empty {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.mypage-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+.mypage-table th,
+.mypage-table td {
+  padding: 8px 6px;
+  text-align: right;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mypage-table th:first-child,
+.mypage-table td:first-child {
+  text-align: left;
+  color: #6b7280;
+}
+
+.mypage-table td.up { color: #15dc92; }
+.mypage-table td.down { color: #ff5d5d; }
+
+.mypage-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.mypage-summary-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mypage-summary-grid span {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.mypage-summary-grid strong {
+  font-size: 16px;
+}
+
+/* ===== 일정 추가 모달 ===== */
+.mypage-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0 20px;
+}
+
+.mypage-modal {
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  padding: 28px;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.mypage-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.mypage-modal-head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.mypage-modal-head button {
+  border: 0;
+  background: none;
+  font-size: 20px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.mypage-modal-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.mypage-modal-input {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  padding: 0 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.mypage-modal-input:focus {
+  outline: none;
+  border-color: #15dc92;
+}
+
+.mypage-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.mypage-modal-buttons button {
+  height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mypage-modal-close {
+  background: #f2f2f2;
+  color: #6b7280;
+}
+
+.mypage-modal-confirm {
+  background: #15dc92;
+  color: #fff;
+}
+
+.mypage-modal-confirm:disabled {
+  background: #a7e5cd;
+  cursor: not-allowed;
+}
+
+@media print {
+  .mypage-hero,
+  .mypage-calendar-card,
+  .mypage-side,
+  .mypage-add-schedule-button,
+  .mypage-pdf-button,
+  header,
+  footer {
+    display: none !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .mypage-top-grid { grid-template-columns: 1fr; }
+  .mypage-report-grid { grid-template-columns: 1fr; }
+}

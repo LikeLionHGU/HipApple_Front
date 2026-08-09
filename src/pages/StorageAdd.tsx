@@ -81,7 +81,7 @@ function StorageAdd() {
           type="button"
           onClick={() => navigate('/storage/info')}
         >
-          <span aria-hidden="true">‹</span> 저장고 정보 추가하기
+          <span aria-hidden="true">‹</span> 저장고 추가하기
         </button>
 
         <form className="storage-add-form" onSubmit={handleSubmit}>

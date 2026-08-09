@@ -5,7 +5,8 @@ const API_URL = import.meta.env.VITE_API_URL
 // 토큰을 자동으로 붙여주는 공용 fetch 래퍼
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers)
-  if (options.body && !headers.has('Content-Type')) {
+  // FormData는 브라우저가 boundary를 포함해 Content-Type을 직접 설정해야 하므로 건드리지 않는다
+  if (options.body && !(options.body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
   const token = getToken()

@@ -99,12 +99,12 @@ function MarketPricePage() {
     <div className="market-page">
       <Header />
 
-      <main className="market-main">
-        <div className="page-header">
-          <h1 className="page-title">시장 가격 예측</h1>
-          <p className="page-subtitle">향후 일주일의 시장 가격을 확인해보세요</p>
-        </div>
+      <div className="page-header">
+        <h1 className="page-title">판매 수익 예측</h1>
+        <p className="page-subtitle">향후 일주일의 시장 가격을 확인해보세요</p>
+      </div>
 
+      <main className="market-main">
         <div className="forecast-filters">
           <div className="filter-top">
             <div className="filter-field">

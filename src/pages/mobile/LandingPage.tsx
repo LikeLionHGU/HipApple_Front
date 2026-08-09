@@ -5,34 +5,31 @@ import farmsignLogo from '../../assets/farmsign-logo.svg'
 import GoogleIcon from '../../components/GoogleIcon'
 import './LandingPage.css'
 
+function NumberedAppleIcon({ index }: { index: number }) {
+  return (
+    <span className="numbered-apple">
+      <span aria-hidden="true">{index % 2 === 0 ? '🍎' : '🍏'}</span>
+      <span className="numbered-apple-badge">{index + 1}</span>
+    </span>
+  )
+}
+
+const PROBLEMS = [
+  { title: '경험 의존 판단', desc: '사과를 직접 꺼내 먹어보며 후숙 상태를 확인하고, 개인의 감각으로 출하 여부를 결정해요' },
+  { title: '데이터 축적 부재', desc: '매년 비슷한 점검을 반복하지만, 다음 판단에 쓸 수 있는 데이터는 남지 않아요' },
+  { title: '반복되는 손실', desc: '한번 출하한 사과는 되돌릴 수 없어, 기대보다 낮은 가격에도 판매할 수밖에 없어요' },
+]
+
+const STATS = [
+  { value: '약 1,000만원', label: '농가 한 곳당 연간 손실 가능성' },
+  { value: '62.7%', label: '경북이 차지하는 전국 사과 생산 비중' },
+  { value: '약 3조원 +', label: '국내 원예농산물 저장, 유통 손실 규모' },
+]
+
 const FEATURES = [
-  {
-    title: '저장고 현황 모니터링',
-    desc: '온도·습도·에틸렌을 한눈에 확인하고 이상 시 바로 알려드립니다.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 3v18M5 8l7-5 7 5M5 8v9l7 4 7-4V8" stroke="#1BC485" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: '출하 AI 추천',
-    desc: '저장 상태와 시세를 함께 분석해 최적 출하 시기를 제안합니다.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 2l2.4 5.6L20 9l-4.5 4 1.3 6L12 16l-4.8 3 1.3-6L4 9l5.6-1.4L12 2z" stroke="#1BC485" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: '시장 가격 예측',
-    desc: '머신러닝으로 향후 7일 도매 시세를 예측해 드립니다.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M4 19V5M4 19h16M7 15l4-4 3 3 5-6" stroke="#1BC485" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
-      </svg>
-    ),
-  },
+  { title: '저장고 현황 모니터링', desc: '온도, 습도, 에틸렌 가스 농도를 한눈에 확인하고, 권장 기준을 벗어나면 알려드려요' },
+  { title: '출하 AI 추천', desc: '저장 상태와 시세를 함께 분석해, 손실을 줄이는 최적의 출하 시기를 제안해요' },
+  { title: '시장 가격 예측', desc: '향후 7일 도매 시세를 예측해, 데이터 기반으로 판매 시점을 정하세요' },
 ]
 
 function MobileLandingPage() {
@@ -50,55 +47,51 @@ function MobileLandingPage() {
 
       <main className="m-landing-main">
         <section className="m-hero">
-          <span className="m-hero-badge">AI 사과 출하 의사결정 플랫폼</span>
+          <div className="m-hero-emojis" aria-hidden="true">
+            <span>🍎</span>
+            <span>🍏</span>
+          </div>
           <h1 className="m-hero-title">
-            사과, <span className="accent">언제 팔지</span>를<br />
-            데이터로 결정하세요
+            사과, <span className="accent">가장 잘 팔리는 순간</span>을<br />
+            AI가 찾아드립니다
           </h1>
-          <p className="m-hero-desc">
-            저장고 상태부터 시장 시세 예측까지,<br />
-            팜사인이 최적의 출하 시기를 찾아드립니다.
-          </p>
+          <p className="m-hero-desc">저장고 상태부터 시장 시세 예측까지 한 곳에서</p>
+          <span className="m-hero-badge">AI 기반 사과 최적 출하시점 추천 플랫폼</span>
+        </section>
 
-          <div className="m-visual-card" aria-hidden="true">
-            <div className="m-visual-head">
-              <span>서울가락 · 후지</span>
-              <span className="m-visual-badge">7일 예측</span>
-            </div>
-            <svg viewBox="0 0 260 110" className="m-visual-chart">
-              <defs>
-                <linearGradient id="mLandGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1BC485" stopOpacity="0.22" />
-                  <stop offset="100%" stopColor="#1BC485" stopOpacity="0.02" />
-                </linearGradient>
-              </defs>
-              <path d="M0,85 L40,76 L80,82 L120,56 L160,62 L200,38 L260,28 L260,110 L0,110 Z" fill="url(#mLandGrad)" />
-              <path d="M0,85 L40,76 L80,82 L120,56" fill="none" stroke="#1BC485" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M120,56 L160,62 L200,38 L260,28" fill="none" stroke="#1BC485" strokeWidth="3" strokeDasharray="6 5" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx="120" cy="56" r="4.5" fill="#fff" stroke="#1BC485" strokeWidth="3" />
-            </svg>
-            <div className="m-visual-rows">
-              <div className="m-visual-row"><span>현재가</span><strong className="accent">2,310원</strong></div>
-              <div className="m-visual-row"><span>7일 뒤 예측</span><strong>2,540원</strong></div>
-            </div>
+        <section className="m-problem-section">
+          <h2 className="m-section-title">출하 시기 판단을<br />'경험과 감'에 의존하고 있어요</h2>
+          {PROBLEMS.map((p, i) => (
+            <article className="m-problem-card" key={p.title}>
+              <h3><NumberedAppleIcon index={i} />{p.title}</h3>
+              <p>{p.desc}</p>
+            </article>
+          ))}
+        </section>
+
+        <section className="m-stats-section">
+          <h2 className="m-section-title">경북 사과 산업, 왜 중요할까요?</h2>
+          <div className="m-stats-grid">
+            {STATS.map(s => (
+              <div className="m-stat-card" key={s.label}>
+                <strong className="m-stat-value">{s.value}</strong>
+                <p className="m-stat-label">{s.label}</p>
+              </div>
+            ))}
           </div>
         </section>
 
         <section className="m-features">
-          {FEATURES.map(f => (
+          <h2 className="m-section-title">더 나은 <span className="accent">출하 결정</span>을 위해</h2>
+          {FEATURES.map((f, i) => (
             <article className="m-feature-card" key={f.title}>
-              <div className="m-feature-icon">{f.icon}</div>
+              <div className="m-feature-icon"><NumberedAppleIcon index={i} /></div>
               <div className="m-feature-text">
                 <h3>{f.title}</h3>
                 <p>{f.desc}</p>
               </div>
             </article>
           ))}
-        </section>
-
-        <section className="m-landing-cta">
-          <h2>지금 시작하세요</h2>
-          <p>Google 계정으로 바로 시작할 수 있어요.</p>
         </section>
       </main>
 

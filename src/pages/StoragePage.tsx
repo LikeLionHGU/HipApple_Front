@@ -2,12 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import AcceptModal from '../components/AcceptModal'
 import suitableIcon from '../assets/적합.svg'
 import cautionIcon from '../assets/주의.svg'
-import sunIcon from '../assets/Sun.svg'
-import snowflakeIcon from '../assets/Snowflake.svg'
-import keepDryIcon from '../assets/Keep Dry.svg'
 import { getStorage, getStorages, type StorageDetail, type StorageSummary } from '../api/storage'
 import './StoragePage.css'
 
@@ -64,21 +60,12 @@ function formatMeasurementDate(detail: StorageDetail) {
   return `마지막 측정 ${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
 }
 
-function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?: boolean }) {
+function StoragePage() {
   const navigate = useNavigate()
   const [storages, setStorages] = useState<StorageSummary[]>([])
   const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
   const [detail, setDetail] = useState<StorageDetail | null>(null)
   const [error, setError] = useState('')
-  const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(showAiRecommendations)
-  const [isAnalysisVisible, setIsAnalysisVisible] = useState(false)
-
-  useEffect(() => {
-    if (showAiRecommendations) {
-      setIsAnalysisModalOpen(true)
-      setIsAnalysisVisible(false)
-    }
-  }, [showAiRecommendations])
 
   // 저장고 목록 조회 후 첫 번째 저장고 선택
   useEffect(() => {
@@ -105,12 +92,12 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
     <div className="storage-page">
       <Header />
 
-      <main className="storage-main">
-        <section className="storage-heading" aria-labelledby="storage-title">
-          <h1 id="storage-title">저장고 현황</h1>
-          <p>저장고의 현재 상태를 한눈에 확인하세요.</p>
-        </section>
+      <section className="storage-heading" aria-labelledby="storage-title">
+        <h1 id="storage-title">저장고 현황</h1>
+        <p>저장고의 현재 상태를 한눈에 확인하세요.</p>
+      </section>
 
+      <main className="storage-main">
         {error && <p role="alert" className="storage-error">{error}</p>}
 
         <section className="storage-overview" aria-label="저장고 상태 요약">
@@ -132,7 +119,7 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
               type="button"
               onClick={() => navigate('/storage/info')}
             >
-              저장고 정보
+              저장고 목록
             </button>
           </div>
 
@@ -183,136 +170,28 @@ function StoragePage({ showAiRecommendations = false }: { showAiRecommendations?
           )}
         </section>
 
-        <button className="ai-recommend-button" type="button" onClick={() => navigate('/storage/ai')}>
-          AI 추천 받기
-        </button>
-
-        {showAiRecommendations && isAnalysisVisible && <AiRecommendations />}
+        <div className="storage-cta">
+          <p className="storage-cta-hint">*사진을 올리면 AI가 더 정확하게 분석해드려요</p>
+          <div className="storage-cta-buttons">
+            <button
+              className="photo-upload-button"
+              type="button"
+              onClick={() => navigate('/storage/photo-upload', { state: { storageId: selectedStorageId } })}
+            >
+              사진 업로드하기
+            </button>
+            <button
+              className="ai-recommend-button"
+              type="button"
+              onClick={() => navigate('/storage/ai', { state: { storageId: selectedStorageId } })}
+            >
+              AI 추천 받기
+            </button>
+          </div>
+        </div>
       </main>
       <Footer />
-      <AcceptModal
-        isOpen={isAnalysisModalOpen}
-        onClose={() => setIsAnalysisModalOpen(false)}
-        onConfirm={() => {
-          setIsAnalysisModalOpen(false)
-          setIsAnalysisVisible(true)
-        }}
-        title="분석이 완료되었습니다"
-        subtitle="저장고 상태를 바탕으로 출하 시기를 분석했습니다."
-      />
     </div>
-  )
-}
-
-const ANALYSIS_DATES = [
-  '2026-07-15',
-  '2026-07-16',
-  '2026-07-17',
-  '2026-07-18',
-  '2026-07-19',
-]
-
-type Weather = {
-  label: string
-  icon: string
-}
-
-const DEFAULT_WEATHER: Weather = { label: 'Sun', icon: sunIcon }
-
-function weatherFromCode(code: number): Weather {
-  if ([71, 73, 75, 77, 85, 86].includes(code)) {
-    return { label: 'Snowflake', icon: snowflakeIcon }
-  }
-  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99].includes(code)) {
-    return { label: 'Keep Dry', icon: keepDryIcon }
-  }
-  return DEFAULT_WEATHER
-}
-
-async function fetchWeatherByDate(): Promise<Record<string, Weather>> {
-  if (!navigator.geolocation) return {}
-
-  const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(resolve, reject)
-  })
-  const { latitude, longitude } = position.coords
-  const startDate = ANALYSIS_DATES[0]
-  const endDate = ANALYSIS_DATES[ANALYSIS_DATES.length - 1]
-  const params = new URLSearchParams({
-    latitude: String(latitude),
-    longitude: String(longitude),
-    daily: 'weather_code',
-    timezone: 'auto',
-    start_date: startDate,
-    end_date: endDate,
-  })
-  const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`)
-  if (!response.ok) throw new Error('날씨 정보를 불러오지 못했습니다.')
-
-  const data = await response.json() as { daily?: { time?: string[]; weather_code?: number[] } }
-  const dates = data.daily?.time ?? []
-  const codes = data.daily?.weather_code ?? []
-  return Object.fromEntries(dates.map((date, index) => [date, weatherFromCode(codes[index] ?? 0)]))
-}
-
-function AiRecommendations() {
-  const [weatherByDate, setWeatherByDate] = useState<Record<string, Weather>>({})
-
-  useEffect(() => {
-    fetchWeatherByDate()
-      .then(setWeatherByDate)
-      .catch(() => setWeatherByDate({}))
-  }, [])
-
-  const days = [
-    { apiDate: '2026-07-15', date: '7월 15일', status: '우수', price: '2,341원' },
-    { apiDate: '2026-07-16', date: '7월 16일', status: '양호', price: '2,341원' },
-    { apiDate: '2026-07-17', date: '7월 17일', status: '우수', price: '2,341원', recommended: true },
-    { apiDate: '2026-07-18', date: '7월 18일', status: '불량', price: '2,341원' },
-    { apiDate: '2026-07-19', date: '7월 19일', status: '양호', price: '2,341원' },
-  ]
-
-  return (
-    <section className="ai-recommendations" aria-labelledby="ai-title">
-      <div className="ai-intro">
-        <h2 id="ai-title"><span>억수로 별난</span> 농가</h2>
-        <p>현재 보관 중인 부사 사과의 최적 출하 시기를 분석했습니다.</p>
-      </div>
-
-      <div className="ai-summary-grid">
-        <article className="recommendation-card">
-          <span className="recommendation-label">출하 추천일</span>
-          <div className="recommendation-date-row">
-            <strong>7월 17일 <small>7일 뒤</small></strong>
-            <span className="recommendation-remaining">잔여 저장 가능일 <b>7일</b></span>
-          </div>
-          <span className="recommendation-grade">우수</span>
-          <p>가격이 가장 높고, 현재 저장 상태에서도<br />품질이 유지될 것으로 예상됩니다.</p>
-        </article>
-        <article className="analysis-card">
-          <h3>데이터 분석 근거</h3>
-          <div><strong>가격 상승폭 우세</strong><p>다가오는 추석 명절 수요 급증으로 인해 시장 가격이 상승할 것으로 예측됩니다.</p></div>
-          <div><strong>품질 저하 손실액 최소화</strong><p>현재 출하 시 품질과 가격의 균형이 가장 좋습니다.</p></div>
-        </article>
-      </div>
-
-      <h3 className="daily-analysis-title">출하일 별 분석</h3>
-      <div className="daily-analysis-list">
-        {days.map(day => (
-          <article className={`daily-card ${day.recommended ? 'recommended' : ''}`} key={day.date}>
-            {day.recommended && <span className="ai-tag">AI 추천</span>}
-            <img
-              className="weather-icon"
-              src={weatherByDate[day.apiDate]?.icon ?? DEFAULT_WEATHER.icon}
-              alt={weatherByDate[day.apiDate]?.label ?? DEFAULT_WEATHER.label}
-            />
-            <strong>{day.date}</strong>
-            <span className={`daily-status ${day.status}`}>{day.status}</span>
-            <b>{day.price} <small>/1kg</small></b>
-          </article>
-        ))}
-      </div>
-    </section>
   )
 }
 
