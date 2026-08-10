@@ -4,6 +4,8 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import suitableIcon from '../assets/적합.svg'
 import cautionIcon from '../assets/주의.svg'
+import qualityGoodBadge from '../assets/quality-badge-적합.svg'
+import qualityWarningBadge from '../assets/quality-badge-주의.svg'
 import { getStorage, getStorages, type StorageDetail, type StorageSummary } from '../api/storage'
 import './StoragePage.css'
 
@@ -152,13 +154,11 @@ function StoragePage() {
         <section className="quality-panel" aria-labelledby="quality-title">
           <div className="quality-title-row">
             <h2 id="quality-title">저장 품질 상태</h2>
-            <span className={`quality-badge ${hasWarning ? 'warning' : 'good'}`}>
-              <span className="badge-icon">
-                <img src={hasWarning ? cautionIcon : suitableIcon} alt="" />
-                <span>{hasWarning ? '!' : '✓'}</span>
-              </span>
-              {hasWarning ? '주의' : '적합'}
-            </span>
+            <img
+              className="quality-badge"
+              src={hasWarning ? qualityWarningBadge : qualityGoodBadge}
+              alt={hasWarning ? '주의' : '적합'}
+            />
           </div>
           {hasWarning ? (
             <p>

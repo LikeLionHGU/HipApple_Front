@@ -150,19 +150,17 @@
   text-align: center;
 }
 
-.ai-loading-emojis {
-  font-size: 40px;
-}
-
-.ai-loading-emojis span {
+.ai-loading-emojis img {
+  width: 40px;
+  height: 40px;
   display: inline-block;
   animation: ai-bounce 1s ease-in-out infinite;
 }
 
-.ai-loading-emojis span:nth-child(2) { animation-delay: 0.1s; }
-.ai-loading-emojis span:nth-child(3) { animation-delay: 0.2s; }
-.ai-loading-emojis span:nth-child(4) { animation-delay: 0.3s; }
-.ai-loading-emojis span:nth-child(5) { animation-delay: 0.4s; }
+.ai-loading-emojis img:nth-child(2) { animation-delay: 0.1s; }
+.ai-loading-emojis img:nth-child(3) { animation-delay: 0.2s; }
+.ai-loading-emojis img:nth-child(4) { animation-delay: 0.3s; }
+.ai-loading-emojis img:nth-child(5) { animation-delay: 0.4s; }
 
 @keyframes ai-bounce {
   0%, 100% { transform: translateY(0); }
@@ -224,10 +222,7 @@
 .weather-icon { width: 19px; height: 19px; object-fit: contain; }
 .daily-card > strong { margin-top: 12px; font-size: 18px; font-weight: 500; color: #414141; }
 .daily-card.recommended > strong { color: #15dc92; }
-.daily-status { width: 70px; height: 34px; box-sizing: border-box; margin-top: 24px; display: flex; align-items: center; justify-content: center; border-radius: 20px; font-size: 16px; font-weight: 500; }
-.daily-status.우수 { background: #e2f9e9; color: #34c759; }
-.daily-status.양호 { background: #fff7e1; color: #f4b400; }
-.daily-status.불량 { background: #ffeeed; color: #ff4f4f; border: 1px solid #ffeeed; }
+.daily-status-icon { width: 70px; height: 34px; margin-top: 24px; }
 .daily-card > b { width: calc(100% + 30px); margin-top: auto; padding: 16px 0; border-top: 2px solid #eeeeee; text-align: center; font-size: 32px; font-weight: 700; }
 .daily-card > b small { font-size: 15px; font-weight: 400; }
 .daily-card.recommended > b { color: #15dc92; border-top-color: #15dc92; }
@@ -245,6 +240,13 @@
 .data-analysis-card h3 { margin: 0 0 30px; font-size: 20px; font-weight: 500; }
 .data-analysis-card p { margin: 0; color: #6b7280; font-size: 15px; line-height: 23px; }
 .data-analysis-card p strong { color: #6b7280; font-weight: 600; }
+
+.alarm-button-icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: -3px;
+  margin-right: 4px;
+}
 
 .alarm-button {
   display: block;

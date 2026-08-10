@@ -146,8 +146,7 @@
   line-height: 1.3;
 }
 
-.status-icon,
-.badge-icon {
+.status-icon {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -155,17 +154,12 @@
   flex: 0 0 auto;
   object-fit: contain;
   border-radius: 50%;
-}
-
-.status-icon {
   width: 27px;
   height: 28px;
 }
 
-.status-icon.good,
-.quality-badge.good .badge-icon { background: #31c56b; }
-.status-icon.warning,
-.quality-badge.warning .badge-icon { background: #f7b500; }
+.status-icon.good { background: #31c56b; }
+.status-icon.warning { background: #f7b500; }
 
 .quality-panel {
   min-height: 187px;
@@ -192,57 +186,8 @@
 }
 
 .quality-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 108px;
   height: 54px;
-  padding: 16.761px;
-  box-sizing: border-box;
-  gap: 7px;
-  border: 1px solid #f7b500;
-  border-radius: 13px;
-  background: #fff8e6;
-  color: #f0ad00;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.quality-badge.good {
-  border-color: #31c56b;
-  background: #e9f9ef;
-  color: #31c56b;
-}
-
-.badge-icon {
-  position: relative;
-  width: 27px;
-  height: 28px;
-  overflow: hidden;
-  border-radius: 50%;
-  background: #f7b500;
-  color: #fff;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 28px;
-  text-align: center;
-}
-
-.quality-badge.good .badge-icon {
-  background: #31c56b;
-}
-
-.badge-icon img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-}
-
-.badge-icon > span {
-  position: relative;
-  z-index: 1;
 }
 
 .quality-panel p {

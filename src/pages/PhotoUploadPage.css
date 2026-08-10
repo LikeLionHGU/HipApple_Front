@@ -61,6 +61,11 @@
   font-size: 15px;
 }
 
+.photo-select-row {
+  display: flex;
+  gap: 12px;
+}
+
 .photo-select-button {
   height: 48px;
   padding: 0 28px;
@@ -76,6 +81,23 @@
 
 .photo-select-button:hover {
   background: #11b478;
+}
+
+.photo-camera-button {
+  height: 48px;
+  padding: 0 28px;
+  border: 2px solid #15dc92;
+  border-radius: 12px;
+  background: #fff;
+  color: #15dc92;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.photo-camera-button:hover {
+  background: rgba(21, 220, 146, 0.08);
 }
 
 .photo-file-input {
