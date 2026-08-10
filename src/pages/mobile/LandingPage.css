@@ -81,12 +81,20 @@
 }
 
 .m-hero-emojis {
-  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
   margin-bottom: 14px;
 }
 
-.m-hero-emojis span + span {
+.m-hero-emojis img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.m-hero-emojis img + img {
   margin-left: 4px;
 }
 
@@ -169,8 +177,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
   line-height: 1;
+}
+
+.numbered-apple img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 .numbered-apple-badge {
@@ -246,8 +259,9 @@
   justify-content: center;
 }
 
-.m-feature-icon .numbered-apple {
-  font-size: 26px;
+.m-feature-icon .numbered-apple img {
+  width: 26px;
+  height: 26px;
 }
 
 .m-feature-text h3 {

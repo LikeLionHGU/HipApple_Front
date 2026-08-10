@@ -2,13 +2,15 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isLoggedIn, startGoogleLogin } from '../../api/auth'
 import farmsignLogo from '../../assets/farmsign-logo.svg'
+import redAppleIcon from '../../assets/redapple.svg'
+import greenAppleIcon from '../../assets/greenapple.svg'
 import GoogleIcon from '../../components/GoogleIcon'
 import './LandingPage.css'
 
 function NumberedAppleIcon({ index }: { index: number }) {
   return (
     <span className="numbered-apple">
-      <span aria-hidden="true">{index % 2 === 0 ? '🍎' : '🍏'}</span>
+      <img src={index % 2 === 0 ? redAppleIcon : greenAppleIcon} alt="" aria-hidden="true" />
       <span className="numbered-apple-badge">{index + 1}</span>
     </span>
   )
@@ -48,8 +50,8 @@ function MobileLandingPage() {
       <main className="m-landing-main">
         <section className="m-hero">
           <div className="m-hero-emojis" aria-hidden="true">
-            <span>🍎</span>
-            <span>🍏</span>
+            <img src={redAppleIcon} alt="" />
+            <img src={greenAppleIcon} alt="" />
           </div>
           <h1 className="m-hero-title">
             사과, <span className="accent">가장 잘 팔리는 순간</span>을<br />

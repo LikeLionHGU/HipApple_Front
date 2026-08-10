@@ -153,12 +153,20 @@
 }
 
 .hero-emojis {
-  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
   margin-bottom: 20px;
 }
 
-.hero-emojis span + span {
+.hero-emojis img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.hero-emojis img + img {
   margin-left: 4px;
 }
 
@@ -250,14 +258,19 @@
   margin: 0;
 }
 
-/* 번호 배지가 붙은 사과 이모지 아이콘 */
+/* 번호 배지가 붙은 사과 아이콘 */
 .numbered-apple {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
   line-height: 1;
+}
+
+.numbered-apple img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .numbered-apple-badge {
@@ -342,8 +355,9 @@
   margin-bottom: 18px;
 }
 
-.feature-icon .numbered-apple {
-  font-size: 30px;
+.feature-icon .numbered-apple img {
+  width: 30px;
+  height: 30px;
 }
 
 .feature-card h3 {

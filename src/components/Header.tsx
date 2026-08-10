@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import farmsignLogo from "../assets/farmsign-logo.svg";
+import mypageIcon from "../assets/mypage.svg";
 import { logout } from "../api/auth";
 import "./Header.css";
 
@@ -70,11 +71,7 @@ export default function Header() {
             onClick={() => setMenuOpen((prev) => !prev)}
             aria-label="마이페이지 메뉴"
           >
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="12" fill="#B9C0C7" />
-              <circle cx="12" cy="9.5" r="3.5" fill="#fff" />
-              <path d="M4.5 19.5c1.4-3.2 4-4.8 7.5-4.8s6.1 1.6 7.5 4.8" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
+            <img src={mypageIcon} alt="" aria-hidden="true" />
           </button>
           {menuOpen && (
             <div className="profile-dropdown">

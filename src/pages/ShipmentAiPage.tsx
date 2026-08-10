@@ -7,10 +7,17 @@ import cautionIcon from '../assets/주의.svg'
 import sunIcon from '../assets/Sun.svg'
 import snowflakeIcon from '../assets/Snowflake.svg'
 import keepDryIcon from '../assets/Keep Dry.svg'
+import redAppleIcon from '../assets/redapple.svg'
+import greenAppleIcon from '../assets/greenapple.svg'
+import alarmIcon from '../assets/alarm.svg'
+import tierExcellentIcon from '../assets/tier-우수.svg'
+import tierGoodIcon from '../assets/tier-양호.svg'
+import tierPoorIcon from '../assets/tier-불량.svg'
 import { startAnalysis, type StorageDetail } from '../api/storage'
 import { getMe } from '../api/user'
 import { getMyForecast, type ForecastResponse } from '../api/forecast'
 import { createSchedule } from '../api/schedule'
+import { getLastAnalyzedStorageId, setLastAnalyzedStorageId } from '../utils/recentAnalysis'
 import './ShipmentAiPage.css'
 
 // 백엔드가 YYYYMMDD 정수로 내려주는 날짜를 Date로 변환
@@ -107,6 +114,8 @@ function priceTier(price: number | null, allPrices: number[]): '우수' | '양�
   return '불량'
 }
 
+const TIER_ICONS = { 우수: tierExcellentIcon, 양호: tierGoodIcon, 불량: tierPoorIcon } as const
+
 // 문장 속 "약 129만 원", "1,800원" 같은 금액 표현을 굵게 강조
 function highlightAmounts(text: string) {
   const parts = text.split(/(약\s?[\d,]+\s?(?:만\s?)?원)/g)
@@ -149,7 +158,9 @@ async function fetchWeatherByDate(isoDates: string[]): Promise<Record<string, We
 function ShipmentAiPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const storageId = (location.state as { storageId?: number } | null)?.storageId
+  const stateStorageId = (location.state as { storageId?: number } | null)?.storageId
+  // 헤더 '출하 AI' 메뉴 등 storageId 없이 진입한 경우, 가장 최근에 분석했던 저장고를 이어서 보여준다
+  const storageId = stateStorageId ?? getLastAnalyzedStorageId() ?? undefined
 
   const [farmerName, setFarmerName] = useState('')
   const [detail, setDetail] = useState<StorageDetail | null>(null)
@@ -169,6 +180,7 @@ function ShipmentAiPage() {
       setError('저장고 정보가 없습니다. 저장고 현황에서 다시 시도해주세요.')
       return
     }
+    setLastAnalyzedStorageId(storageId)
     startAnalysis(storageId)
       .then(setDetail)
       .catch(err => setError(err instanceof Error ? err.message : 'AI 분석에 실패했습니다.'))
@@ -219,7 +231,7 @@ function ShipmentAiPage() {
       {isLoading ? (
         <main className="ai-loading">
           <div className="ai-loading-emojis" aria-hidden="true">
-            <span>🍎</span><span>🍏</span><span>🍎</span><span>🍏</span><span>🍎</span>
+            <img src={redAppleIcon} alt="" /><img src={greenAppleIcon} alt="" /><img src={redAppleIcon} alt="" /><img src={greenAppleIcon} alt="" /><img src={redAppleIcon} alt="" />
           </div>
           <p>AI가 최적의 출하 시기를 분석하고 있어요<br />잠시만 기다려주세요</p>
         </main>
@@ -303,7 +315,7 @@ function ShipmentAiPage() {
                               alt={weatherByDate[iso]?.label ?? DEFAULT_WEATHER.label}
                             />
                             <strong>{formatMonthDay(date)}</strong>
-                            {tier && <span className={`daily-status ${tier}`}>{tier}</span>}
+                            {tier && <img className="daily-status-icon" src={TIER_ICONS[tier]} alt={tier} />}
                             {price != null && <b>{price.toLocaleString()}원 <small>/1kg</small></b>}
                           </article>
                         )
@@ -318,7 +330,7 @@ function ShipmentAiPage() {
                   onClick={() => setIsAlarmOpen(true)}
                   disabled={!recommendedDate}
                 >
-                  🔔 출하 알람 맞추기
+                  <img className="alarm-button-icon" src={alarmIcon} alt="" /> 출하 알람 맞추기
                 </button>
 
                 <section className="data-analysis-card">

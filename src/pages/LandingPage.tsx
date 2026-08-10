@@ -2,15 +2,17 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { isLoggedIn, startGoogleLogin } from "../api/auth";
 import farmsignLogo from "../assets/farmsign-logo.svg";
+import redAppleIcon from "../assets/redapple.svg";
+import greenAppleIcon from "../assets/greenapple.svg";
 import Footer from "../components/Footer";
 import GoogleIcon from "../components/GoogleIcon";
 import "./LandingPage.css";
 
-// 번호 배지가 붙은 사과 이모지 아이콘 (문제 제기 / 기능 소개 섹션 공용)
+// 번호 배지가 붙은 사과 아이콘 (문제 제기 / 기능 소개 섹션 공용)
 function NumberedAppleIcon({ index }: { index: number }) {
   return (
     <span className="numbered-apple">
-      <span aria-hidden="true">{index % 2 === 0 ? "🍎" : "🍏"}</span>
+      <img src={index % 2 === 0 ? redAppleIcon : greenAppleIcon} alt="" aria-hidden="true" />
       <span className="numbered-apple-badge">{index + 1}</span>
     </span>
   );
@@ -78,8 +80,8 @@ function LandingPage() {
       <main className="landing-main">
         <section className="hero">
           <div className="hero-emojis" aria-hidden="true">
-            <span>🍎</span>
-            <span>🍏</span>
+            <img src={redAppleIcon} alt="" />
+            <img src={greenAppleIcon} alt="" />
           </div>
           <h1 className="hero-title">
             사과, <span className="accent">가장 잘 팔리는 순간</span>을

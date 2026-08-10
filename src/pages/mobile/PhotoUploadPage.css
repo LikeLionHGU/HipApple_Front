@@ -35,6 +35,11 @@
   font-size: 13px;
 }
 
+.m-photo-select-row {
+  display: flex;
+  gap: 10px;
+}
+
 .m-photo-select-button {
   height: 44px;
   padding: 0 22px;
@@ -42,6 +47,19 @@
   border-radius: 12px;
   background: #15dc92;
   color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.m-photo-camera-button {
+  height: 44px;
+  padding: 0 22px;
+  border: 2px solid #15dc92;
+  border-radius: 12px;
+  background: #fff;
+  color: #15dc92;
   font: inherit;
   font-size: 15px;
   font-weight: 600;

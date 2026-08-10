@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import CameraCaptureModal from '../components/CameraCaptureModal'
 import { checkQuality } from '../api/storage'
 import './PhotoUploadPage.css'
 
@@ -21,6 +22,7 @@ function PhotoUploadPage() {
   const [isDragOver, setIsDragOver] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [isCameraOpen, setIsCameraOpen] = useState(false)
 
   useEffect(() => {
     if (!file) {
@@ -69,9 +71,14 @@ function PhotoUploadPage() {
           <span className="photo-dropzone-icon" aria-hidden="true">⬆</span>
           <p className="photo-dropzone-title">사진을 이곳에 끌어다 놓아주세요</p>
           <p className="photo-dropzone-sub">또는 아래 버튼으로 파일을 선택하세요</p>
-          <button type="button" className="photo-select-button" onClick={() => inputRef.current?.click()}>
-            {file ? '파일 다시 선택하기' : '파일 선택하기'}
-          </button>
+          <div className="photo-select-row">
+            <button type="button" className="photo-select-button" onClick={() => inputRef.current?.click()}>
+              {file ? '파일 다시 선택하기' : '파일 선택하기'}
+            </button>
+            <button type="button" className="photo-camera-button" onClick={() => setIsCameraOpen(true)}>
+              촬영하기
+            </button>
+          </div>
           <input
             ref={inputRef}
             type="file"
@@ -106,6 +113,13 @@ function PhotoUploadPage() {
         )}
       </main>
       <Footer />
+
+      {isCameraOpen && (
+        <CameraCaptureModal
+          onCapture={captured => setFile(captured)}
+          onClose={() => setIsCameraOpen(false)}
+        />
+      )}
     </div>
   )
 }
