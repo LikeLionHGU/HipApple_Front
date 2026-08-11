@@ -1,0 +1,47 @@
+/* design-spacs/banner-css.md (Rectangle 50 + Frame 35, mypagebanner.png) 스펙:
+   1280px 기준 rectangle height 167px = padding-top 47px + content 82px(36+18+24) + padding-bottom 38px */
+.hero-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  box-sizing: border-box;
+  padding: 47px min(calc((100% - 1280px) / 2 + 80px), 25%) 38px;
+  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
+  border-radius: 0 0 0 60px;
+}
+
+.hero-banner-title {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 40px;
+  color: #ffffff;
+}
+
+.hero-banner-subtitle {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 24px;
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .hero-banner {
+    padding: 32px 24px 40px;
+    border-radius: 0 0 0 60px;
+  }
+  .hero-banner-title {
+    font-size: 28px;
+    line-height: 32px;
+  }
+  .hero-banner-subtitle {
+    font-size: 18px;
+    line-height: 24px;
+  }
+}
