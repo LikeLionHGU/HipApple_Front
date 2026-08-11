@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import MobileHeader from '../../components/MobileHeader'
 import MobileTabBar from '../../components/MobileTabBar'
+import MobileHeroBanner from '../../components/MobileHeroBanner'
 import suitableIcon from '../../assets/적합.svg'
 import cautionIcon from '../../assets/주의.svg'
 import redAppleIcon from '../../assets/redapple.svg'
@@ -295,10 +296,10 @@ function MobileShipmentAiPage() {
         </main>
       ) : (
         <>
-          <section className="m-page-hero m-ai-hero">
-            <h1>{farmerName ? `${farmerName} 농가님,` : '농가님,'}</h1>
-            <p>현재 보관 중인 {detail?.type ?? '사과'} 사과의<br />최적 출하 시기를 분석했습니다.</p>
-          </section>
+          <MobileHeroBanner
+            title={farmerName ? `${farmerName} 농가님,` : '농가님,'}
+            subtitle={<>현재 보관 중인 {detail?.type ?? '사과'} 사과의<br />최적 출하 시기를 분석했습니다.</>}
+          />
 
           <main className="m-body">
             {actionError && <p role="alert" className="m-error">{actionError}</p>}

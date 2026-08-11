@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MobileHeader from '../../components/MobileHeader'
 import MobileTabBar from '../../components/MobileTabBar'
+import MobileHeroBanner from '../../components/MobileHeroBanner'
 import AppleLoading from '../../components/AppleLoading'
 import suitableIcon from '../../assets/적합.svg'
 import cautionIcon from '../../assets/주의.svg'
@@ -95,10 +96,7 @@ function MobileStoragePage() {
         <AppleLoading compact message={<>저장고 정보를 불러오는 중입니다...<br />잠시만 기다려주세요</>} />
       ) : (
         <>
-          <section className="m-page-hero">
-            <h1 className="m-page-title">저장고 현황</h1>
-            <p className="m-page-sub">저장고의 현재 상태를 한눈에 확인하세요.</p>
-          </section>
+          <MobileHeroBanner title="저장고 현황" subtitle="저장고의 현재 상태를 한눈에 확인하세요." />
 
           <main className="m-body">
             {error && <p role="alert" className="m-error">{error}</p>}

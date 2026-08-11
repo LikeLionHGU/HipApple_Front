@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import HeroBanner from '../components/HeroBanner'
 import AppleLoading from '../components/AppleLoading'
 import suitableIcon from '../assets/적합.svg'
 import cautionIcon from '../assets/주의.svg'
@@ -110,10 +111,7 @@ function StoragePage() {
         <AppleLoading message={<>저장고 정보를 불러오는 중입니다...<br />잠시만 기다려주세요</>} />
       ) : (
         <>
-          <section className="storage-heading" aria-labelledby="storage-title">
-            <h1 id="storage-title">저장고 현황</h1>
-            <p>저장고의 현재 상태를 한눈에 확인하세요.</p>
-          </section>
+          <HeroBanner title="저장고 현황" subtitle="저장고의 현재 상태를 한눈에 확인하세요." />
 
           <main className="storage-main">
             {error && <p role="alert" className="storage-error">{error}</p>}

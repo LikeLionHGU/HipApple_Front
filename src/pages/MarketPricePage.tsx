@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import HeroBanner from '../components/HeroBanner'
 import ForecastChart from '../components/ForecastChart'
 import Spinner from '../components/Spinner'
 import {
@@ -124,10 +125,7 @@ function MarketPricePage() {
     <div className="market-page">
       <Header />
 
-      <div className="page-header">
-        <h1 className="page-title">판매 수익 예측</h1>
-        <p className="page-subtitle">향후 일주일의 시장 가격을 확인해보세요</p>
-      </div>
+      <HeroBanner title="판매 수익 예측" subtitle="향후 일주일의 시장 가격을 확인해보세요" />
 
       <main className="market-main">
         <div className="forecast-filters">

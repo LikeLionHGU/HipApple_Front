@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import HeroBanner from '../components/HeroBanner'
 import { getStorage, getStorages, getMajorSchedules, type StorageDetail, type StorageSummary, type MajorSchedule } from '../api/storage'
 import { getMe, type UserMe } from '../api/user'
 import { getMonthlySchedules, createSchedule, deleteSchedule, type Schedule } from '../api/schedule'
@@ -185,10 +186,7 @@ function MyPage() {
     <div className="mypage">
       <Header />
 
-      <section className="mypage-hero">
-        <h1>마이페이지</h1>
-        <p>농가 정보와 일정을 한눈에 확인하고, 분석 리포트를 생성할 수 있어요</p>
-      </section>
+      <HeroBanner title="마이페이지" subtitle="농가 정보와 일정을 한눈에 확인하고, 분석 리포트를 생성할 수 있어요" />
 
       <main className="mypage-main">
         {error && <p role="alert" className="mypage-error">{error}</p>}

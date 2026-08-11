@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import MobileHeader from '../../components/MobileHeader'
 import MobileTabBar from '../../components/MobileTabBar'
+import MobileHeroBanner from '../../components/MobileHeroBanner'
 import ForecastChart from '../../components/ForecastChart'
 import Spinner from '../../components/Spinner'
 import { getForecast, getPriceOptions, type ForecastPoint, type ForecastResponse } from '../../api/forecast'
@@ -109,10 +110,7 @@ function MobileMarketPricePage() {
     <div className="m-app with-tabbar">
       <MobileHeader />
 
-      <section className="m-page-hero">
-        <h1 className="m-page-title">판매 수익 예측</h1>
-        <p className="m-page-sub">향후 일주일의 시장 가격을 확인해보세요</p>
-      </section>
+      <MobileHeroBanner title="판매 수익 예측" subtitle="향후 일주일의 시장 가격을 확인해보세요" />
 
       <main className="m-body">
         <div className="m-field">

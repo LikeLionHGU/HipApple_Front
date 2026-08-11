@@ -67,41 +67,6 @@
   padding: 0 16px;
 }
 
-.m-page-title {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 6px;
-}
-
-.m-page-sub {
-  font-size: 15px;
-  color: #6b7280;
-  margin: 0 0 20px;
-}
-
-/* 배너 공통 스펙: 모든 페이지(데스크톱/모바일) 상단 배너가 공유하는 그라데이션 + 모서리 둥글기.
-   개별 페이지 CSS(m-mypage-hero, m-ai-hero 등)는 이 클래스와 함께 사용하며 타이포그래피만 재정의한다. */
-.m-page-hero {
-  padding: 32px 20px 40px;
-  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
-  border-radius: 0 0 0 60px;
-  box-sizing: border-box;
-}
-
-.m-page-hero .m-page-title,
-.m-page-hero .m-page-sub {
-  color: #fff;
-  margin: 0;
-}
-
-.m-page-hero .m-page-title {
-  margin-bottom: 6px;
-}
-
-.m-page-hero .m-page-sub {
-  opacity: 0.95;
-}
-
 .m-section-title {
   font-size: 18px;
   font-weight: 700;

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import MobileHeader from '../../components/MobileHeader'
 import MobileTabBar from '../../components/MobileTabBar'
+import MobileHeroBanner from '../../components/MobileHeroBanner'
 import { getStorage, getStorages, getMajorSchedules, type StorageDetail, type StorageSummary, type MajorSchedule } from '../../api/storage'
 import { getMe, type UserMe } from '../../api/user'
 import { getMonthlySchedules, createSchedule, deleteSchedule, type Schedule } from '../../api/schedule'
@@ -135,10 +136,7 @@ function MobileMyPage() {
     <div className="m-app with-tabbar">
       <MobileHeader />
 
-      <section className="m-page-hero m-mypage-hero">
-        <h1>마이페이지</h1>
-        <p>농가 정보와 일정을 한눈에 확인하세요</p>
-      </section>
+      <MobileHeroBanner title="마이페이지" subtitle="농가 정보와 일정을 한눈에 확인하세요" />
 
       <main className="m-body">
         {error && <p role="alert" className="m-error">{error}</p>}

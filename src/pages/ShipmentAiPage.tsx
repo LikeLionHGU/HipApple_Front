@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import HeroBanner from '../components/HeroBanner'
 import suitableIcon from '../assets/적합.svg'
 import cautionIcon from '../assets/주의.svg'
 import sunIcon from '../assets/Sun.svg'
@@ -352,12 +353,10 @@ function ShipmentAiPage() {
         </main>
       ) : (
         <>
-          <section className="ai-hero">
-            <h1>{farmerName ? `${farmerName} 농가님,` : '농가님,'}</h1>
-            <p>
-              현재 보관 중인 {detail?.type ?? '사과'} 사과의 최적 출하 시기를 분석했습니다.
-            </p>
-          </section>
+          <HeroBanner
+            title={farmerName ? `${farmerName} 농가님,` : '농가님,'}
+            subtitle={<>현재 보관 중인 {detail?.type ?? '사과'} 사과의 최적 출하 시기를 분석했습니다.</>}
+          />
 
           <main className="ai-main">
             {actionError && <p role="alert" className="ai-error">{actionError}</p>}
