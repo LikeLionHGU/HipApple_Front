@@ -344,7 +344,6 @@
 @media (max-width: 900px) {
   .page-header {
     padding: 32px 24px 40px;
-    border-radius: 0 0 0 40px;
   }
   .page-title {
     font-size: 28px;

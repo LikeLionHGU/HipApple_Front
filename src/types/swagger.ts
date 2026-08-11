@@ -75,6 +75,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/storage/{storageId}/quality-classify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 이미지+저장고 데이터 기반 상/중/하 분류 (실험적, RandomForest) */
+        post: operations["classifyQuality"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/storage/{storageId}/quality-check": {
         parameters: {
             query?: never;
@@ -84,7 +101,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 사진 기반 AI 사과 품질 판정 */
+        /** AI 사과 품질 판정 (사진 미제출 시 저장고 데이터로 예측) */
         post: operations["checkQuality"];
         delete?: never;
         options?: never;
@@ -311,6 +328,21 @@ export interface components {
             accessToken?: string;
             isNewUser?: boolean;
         };
+        FeatureContribution: {
+            name?: string;
+            /** Format: double */
+            importance?: number;
+        };
+        QualityClassifyResponse: {
+            /** Format: int64 */
+            storageId?: number;
+            label?: string;
+            probabilities?: {
+                [key: string]: number;
+            };
+            topFeatures?: components["schemas"]["FeatureContribution"][];
+            disclaimer?: string;
+        };
         QualityCheckResponse: {
             /** Format: int64 */
             storageId?: number;
@@ -322,6 +354,33 @@ export interface components {
             shipmentComment?: string;
             confidence?: string;
             disclaimer?: string;
+        };
+        AiAnalysisSummary: {
+            /** Format: int32 */
+            analysisCount?: number;
+            /** Format: int32 */
+            shipmentRecommendationCount?: number;
+            /** Format: int32 */
+            maxPredictedPrice?: number;
+            /** Format: int32 */
+            minPredictedPrice?: number;
+            /** Format: int32 */
+            avgPredictedPrice?: number;
+            /** Format: int32 */
+            priceIncreaseDays?: number;
+            /** Format: int32 */
+            priceDecreaseDays?: number;
+        };
+        AnalysisPeriodSummaryResponse: {
+            aiAnalysisSummary?: components["schemas"]["AiAnalysisSummary"];
+            storageEnvironmentSummary?: components["schemas"]["StorageEnvironmentSummary"];
+        };
+        ShipmentAnalysisResponse: {
+            date?: string;
+            /** Format: int32 */
+            predictedPrice?: number;
+            qualityStatus?: string;
+            event?: string;
         };
         StorageDetailResponse: {
             /** Format: int64 */
@@ -352,7 +411,8 @@ export interface components {
             qualityStatus?: string;
             shipmentRecommendation?: string;
             analysisReason?: string;
-            nearbyDates?: number[];
+            priceRecommendationReason?: string;
+            shipmentAnalyses?: components["schemas"]["ShipmentAnalysisResponse"][];
             qualityGrade?: string;
             qualityRipeness?: string;
             qualityColorDescription?: string;
@@ -360,6 +420,23 @@ export interface components {
             qualityConfidence?: string;
             /** Format: date-time */
             qualityCheckedAt?: string;
+            periodSummary?: components["schemas"]["AnalysisPeriodSummaryResponse"];
+        };
+        StorageEnvironmentSummary: {
+            /** Format: double */
+            avgTemperature?: number;
+            /** Format: int32 */
+            avgHumidity?: number;
+            /** Format: int32 */
+            avgCo2?: number;
+            /** Format: int32 */
+            tempDeviationCount?: number;
+            /** Format: int32 */
+            humidityDeviationCount?: number;
+            /** Format: int32 */
+            co2AnomalyCount?: number;
+            /** Format: int32 */
+            environmentStabilityScore?: number;
         };
         ScheduleRequest: {
             title: string;
@@ -452,6 +529,7 @@ export interface components {
             current_price_info?: components["schemas"]["CurrentPriceInfo"];
             price_summary?: components["schemas"]["PriceSummary"];
             chart_data?: components["schemas"]["ChartData"][];
+            future_chart_data?: components["schemas"]["ChartData"][];
             ai_market_analysis?: components["schemas"]["AiMarketAnalysis"];
         };
         PriceSummary: {
@@ -665,7 +743,7 @@ export interface operations {
             };
         };
     };
-    checkQuality: {
+    classifyQuality: {
         parameters: {
             query?: never;
             header?: never;
@@ -679,6 +757,35 @@ export interface operations {
                 "multipart/form-data": {
                     /** Format: binary */
                     photo: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["QualityClassifyResponse"];
+                };
+            };
+        };
+    };
+    checkQuality: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                storageId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    photo?: string;
                 };
             };
         };

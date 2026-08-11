@@ -467,7 +467,7 @@ function ShipmentAiPage() {
 
       <Footer />
 
-      {isAlarmOpen && recommendedDate && (
+      {isAlarmOpen && recommendedDate && detail && (
         <div className="alarm-overlay" onClick={event => event.target === event.currentTarget && setIsAlarmOpen(false)}>
           <div className="alarm-modal" role="dialog" aria-modal="true">
             <div className="alarm-modal-head">

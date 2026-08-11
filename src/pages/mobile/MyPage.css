@@ -1,7 +1,6 @@
+/* 배너 레이아웃(그라데이션/모서리/여백)은 공통 클래스 .m-page-hero(app.css)가 담당하고,
+   여기서는 마이페이지 전용 타이포그래피만 재정의한다 */
 .m-mypage-hero {
-  padding: 32px 20px 40px;
-  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
-  border-radius: 0 0 0 36px;
   color: #fff;
 }
 

@@ -470,7 +470,7 @@
 }
 
 @media (max-width: 560px) {
-  .ai-hero { padding: 32px 24px 40px; border-radius: 0 0 0 40px; }
+  .ai-hero { padding: 32px 24px 40px; }
   .ai-hero h1 { font-size: 24px; }
   .ai-main { padding-top: 28px; }
   .ai-metrics-heading { display: block; }

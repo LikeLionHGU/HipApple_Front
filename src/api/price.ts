@@ -40,6 +40,7 @@ export type PriceDashboardResponse = {
   current_price_info: CurrentPriceInfo
   price_summary: PriceSummary
   chart_data: ChartData[]
+  future_chart_data: ChartData[]
   ai_market_analysis: AiMarketAnalysis
 }
 

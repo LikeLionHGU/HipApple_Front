@@ -32,6 +32,32 @@ export type ShipmentAnalysis = {
   event: string
 }
 
+// 저장 기간 전체에 대한 AI 분석/저장 환경 요약 (마이페이지 리포트 "4. 분석 기간 요약"에 대응)
+export type AiAnalysisSummary = {
+  analysisCount: number
+  shipmentRecommendationCount: number
+  maxPredictedPrice: number
+  minPredictedPrice: number
+  avgPredictedPrice: number
+  priceIncreaseDays: number
+  priceDecreaseDays: number
+}
+
+export type StorageEnvironmentSummary = {
+  avgTemperature: number
+  avgHumidity: number
+  avgCo2: number
+  tempDeviationCount: number
+  humidityDeviationCount: number
+  co2AnomalyCount: number
+  environmentStabilityScore: number
+}
+
+export type AnalysisPeriodSummary = {
+  aiAnalysisSummary: AiAnalysisSummary
+  storageEnvironmentSummary: StorageEnvironmentSummary
+}
+
 export type StorageDetail = {
   storageId: number
   name: string
@@ -61,6 +87,7 @@ export type StorageDetail = {
   qualityShipmentComment?: string
   qualityConfidence?: string
   qualityCheckedAt?: string
+  periodSummary?: AnalysisPeriodSummary
 }
 
 // 사진 기반 AI 사과 품질 판정 응답

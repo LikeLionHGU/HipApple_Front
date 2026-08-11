@@ -144,7 +144,7 @@ function MobileStoragePage() {
           <button
             className="m-secondary-btn"
             type="button"
-            onClick={() => navigate('/storage/photo-upload', { state: { storageId: selectedStorageId } })}
+            onClick={() => navigate('/storage/photo-upload', { state: { storageId: selectedStorageId, storageName: detail?.name } })}
           >
             사진 업로드하기
           </button>

@@ -143,7 +143,7 @@ function MobileMyPage() {
     <div className="m-app with-tabbar">
       <MobileHeader />
 
-      <section className="m-mypage-hero">
+      <section className="m-page-hero m-mypage-hero">
         <h1>마이페이지</h1>
         <p>농가 정보와 일정을 한눈에 확인하세요</p>
       </section>

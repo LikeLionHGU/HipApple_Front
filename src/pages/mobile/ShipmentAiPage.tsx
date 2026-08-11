@@ -295,7 +295,7 @@ function MobileShipmentAiPage() {
         </main>
       ) : (
         <>
-          <section className="m-ai-hero">
+          <section className="m-page-hero m-ai-hero">
             <h1>{farmerName ? `${farmerName} 농가님,` : '농가님,'}</h1>
             <p>현재 보관 중인 {detail?.type ?? '사과'} 사과의<br />최적 출하 시기를 분석했습니다.</p>
           </section>
@@ -386,7 +386,7 @@ function MobileShipmentAiPage() {
 
       <MobileTabBar />
 
-      {isAlarmOpen && recommendedDate && (
+      {isAlarmOpen && recommendedDate && detail && (
         <div className="m-alarm-overlay" onClick={event => event.target === event.currentTarget && setIsAlarmOpen(false)}>
           <div className="m-alarm-modal" role="dialog" aria-modal="true">
             <div className="m-alarm-modal-head">
