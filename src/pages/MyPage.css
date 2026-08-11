@@ -9,8 +9,8 @@
 
 .mypage-hero {
   padding: 48px min(calc((100% - 1122px) / 2 + 24px), 25%) 56px;
-  background: linear-gradient(90deg, #15dc92 0%, #0bc7c4 100%);
-  border-radius: 0 0 0 64px;
+  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
+  border-radius: 0 0 0 60px;
   box-sizing: border-box;
   color: #fff;
 }
@@ -389,6 +389,61 @@
 
 .mypage-table td.up { color: #15dc92; }
 .mypage-table td.down { color: #ff5d5d; }
+
+.mypage-quality-body {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.mypage-quality-chart {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mypage-quality-chart-label,
+.mypage-quality-box-label {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.mypage-quality-chart-svg {
+  width: 100%;
+  height: auto;
+}
+
+.mypage-quality-box {
+  flex: 0 0 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #f5fbf6;
+}
+
+.mypage-quality-box dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mypage-quality-box dt {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.mypage-quality-box dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #15dc92;
+}
 
 .mypage-summary-grid {
   display: grid;

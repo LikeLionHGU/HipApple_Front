@@ -41,6 +41,18 @@ function buildCalendarWeeks(year: number, month: number): (number | null)[][] {
   return weeks
 }
 
+// 품질 점수 추이 그래프 — 연결된 백엔드 리포트 API가 없어 피그마 카드 모양만 유지하는 플레이스홀더
+function QualityTrendPlaceholder() {
+  const width = 280
+  const height = 90
+  const y = height / 2
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="mypage-quality-chart-svg">
+      <line x1="0" y1={y} x2={width} y2={y} stroke="#e5e7eb" strokeWidth="2" strokeDasharray="6 6" />
+    </svg>
+  )
+}
+
 function PricePredictionChart({ data }: { data: PricePredictionHistoryResponse }) {
   const points = data.chartPoints
   if (points.length === 0) return <p className="mypage-chart-empty">표시할 데이터가 없습니다.</p>
@@ -202,7 +214,7 @@ function MyPage() {
                   {storages.length === 0 && '-'}
                   {storages.map(s => (
                     <span className="mypage-pill" key={s.storageId}>
-                      {(s.storageName ?? s.name ?? `저장고 ${s.storageId}`)} · {s.type}
+                      {s.name} · {s.type}
                     </span>
                   ))}
                 </dd>
@@ -302,7 +314,7 @@ function MyPage() {
 
           <div className="mypage-report-grid">
             <section className="mypage-report-panel">
-              <h3>AI 가격 예측 이력</h3>
+              <h3>1. AI 가격 예측 이력</h3>
               <div className="mypage-chart-legend">
                 <span><i className="solid" /> 예측 가격</span>
                 <span><i className="dashed" /> 실제 평균 가격(참고)</span>
@@ -330,7 +342,33 @@ function MyPage() {
             </section>
 
             <section className="mypage-report-panel">
-              <h3>분석 기간 요약</h3>
+              <h3>2. 시장 분석 기록</h3>
+              {/* 시장 분석 기록 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
+              <p className="mypage-empty">아직 시장 분석 기록이 없습니다. 데이터가 쌓이면 이곳에 표시돼요.</p>
+            </section>
+
+            <section className="mypage-report-panel mypage-quality-panel">
+              <h3>3. 품질 및 저장 환경 변화</h3>
+              {/* 품질/저장환경 리포트 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
+              <div className="mypage-quality-body">
+                <div className="mypage-quality-chart">
+                  <span className="mypage-quality-chart-label">품질 점수 변화 추이</span>
+                  <QualityTrendPlaceholder />
+                </div>
+                <div className="mypage-quality-box">
+                  <span className="mypage-quality-box-label">현재 품질 정보</span>
+                  <dl>
+                    <dt>현재 품질 등급</dt><dd>-</dd>
+                    <dt>품질 점수</dt><dd>-</dd>
+                    <dt>예상 저장 가능 기간</dt><dd>-</dd>
+                    <dt>품질 저하 속도</dt><dd>-</dd>
+                  </dl>
+                </div>
+              </div>
+            </section>
+
+            <section className="mypage-report-panel">
+              <h3>4. 분석 기간 요약</h3>
               {summary ? (
                 <div className="mypage-summary-grid">
                   <div><span>AI 분석 횟수</span><strong>{summary.count}회</strong></div>

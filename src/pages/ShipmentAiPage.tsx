@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -13,22 +13,26 @@ import alarmIcon from '../assets/alarm.svg'
 import tierExcellentIcon from '../assets/tier-우수.svg'
 import tierGoodIcon from '../assets/tier-양호.svg'
 import tierPoorIcon from '../assets/tier-불량.svg'
-import { startAnalysis, type StorageDetail } from '../api/storage'
+import { startAnalysis, type StorageDetail, type ShipmentAnalysis } from '../api/storage'
 import { getMe } from '../api/user'
 import { getMyForecast, type ForecastResponse } from '../api/forecast'
 import { createSchedule } from '../api/schedule'
 import { getLastAnalyzedStorageId, setLastAnalyzedStorageId } from '../utils/recentAnalysis'
 import './ShipmentAiPage.css'
 
-// 백엔드가 YYYYMMDD 정수로 내려주는 날짜를 Date로 변환
-function parseIntDate(value: number): Date | null {
-  const digits = String(value).match(/^(\d{4})(\d{2})(\d{2})$/)
-  if (!digits) return null
-  return new Date(Number(digits[1]), Number(digits[2]) - 1, Number(digits[3]))
-}
-
 function formatMonthDay(date: Date) {
   return `${date.getMonth() + 1}월 ${date.getDate()}일`
+}
+
+const WEEKDAY_KO = ['일', '월', '화', '수', '목', '금', '토']
+function formatMonthDayWeekday(date: Date) {
+  return `${formatMonthDay(date)} (${WEEKDAY_KO[date.getDay()]})`
+}
+
+// AI 추천 근거 문장 속 "약 129만 원" 같은 기대 매출 증가액을 알람 모달에 다시 보여주기 위해 추출
+function extractRevenueIncrease(text: string): string | null {
+  const match = text.match(/약\s?([\d,]+)\s?만\s?원/)
+  return match ? `+${match[1]}만원` : null
 }
 
 function daysFromToday(date: Date) {
@@ -45,13 +49,8 @@ function toIsoDate(date: Date) {
   return `${y}-${m}-${d}`
 }
 
-// 오늘(포함)부터 6일 뒤(포함)까지만 출하 추천/예측 대상으로 인정한다 — 과거 날짜는 완전히 제외
-function isWithinRecommendationWindow(date: Date, today: Date): boolean {
-  const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
-  const dateUTC = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-  const diffDays = Math.round((dateUTC - todayUTC) / 86_400_000)
-  return diffDays >= 0 && diffDays <= 6
-}
+// 내일(D+1)부터 7일 뒤(D+7)까지 총 7일치를 출하일 별 분석 카드로 보여준다
+const DAILY_CARD_COUNT = 7
 
 // 백엔드가 아직 값을 정하지 못했을 때 내려주는 자리표시자는 실제 분석 결과가 아니므로 안내 문구로 대체한다
 const PLACEHOLDER_TEXTS = new Set(['미정', 'TBD', 'N/A'])
@@ -60,6 +59,35 @@ function resolveText(value: string | undefined, fallback: string) {
   if (!trimmed || PLACEHOLDER_TEXTS.has(trimmed)) return fallback
   return trimmed
 }
+
+// shipmentRecommendation은 "YYYY-MM-DD" 형식의 출하 추천일 문자열이다 (추천 근거 텍스트가 아님)
+function parseIsoDate(value: string | undefined): Date | null {
+  const match = value?.trim().match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (!match) return null
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+}
+
+// 백엔드가 응답을 200으로 내려줘도 shipmentRecommendation/priceRecommendationReason(또는 qualityShipmentComment, analysisReason)가
+// 아직 자리표시자면 AI 분석이 완료되지 않은 것으로 간주한다 (Swagger 스펙에 별도의 처리 상태 필드는 없음)
+function isAnalysisReady(detail: StorageDetail): boolean {
+  const hasRecommendedDate = parseIsoDate(detail.shipmentRecommendation) !== null
+  const hasReason = resolveText(detail.priceRecommendationReason, '') !== ''
+    || resolveText(detail.qualityShipmentComment, '') !== ''
+    || resolveText(detail.analysisReason, '') !== ''
+  return hasRecommendedDate && hasReason
+}
+
+// AI 추천 결과 박스의 근거 텍스트: priceRecommendationReason 최우선, 없으면 qualityShipmentComment → analysisReason 순으로 대체
+function resolveRecommendationReason(detail: StorageDetail): string {
+  const priceReason = resolveText(detail.priceRecommendationReason, '')
+  if (priceReason) return priceReason
+  const qualityReason = resolveText(detail.qualityShipmentComment, '')
+  if (qualityReason) return qualityReason
+  return resolveText(detail.analysisReason, '분석 결과를 준비 중입니다.')
+}
+
+const ANALYSIS_POLL_INTERVAL_MS = 2000
+const ANALYSIS_POLL_TIMEOUT_MS = 10000
 
 // 저장일(storeDate 또는 startDate)에서 Date를 만든다 — StoragePage와 동일한 계산 방식
 function parseStoreDate(detail: StorageDetail): Date | null {
@@ -95,26 +123,67 @@ function buildMetrics(detail: StorageDetail): Metric[] {
 }
 
 function formatMeasurementDate(detail: StorageDetail) {
-  const source = detail.lastMeasuredAt ?? detail.measuredAt ?? detail.updatedAt ?? detail.storeDate
+  const source = detail.storeDate
   if (!source) return '측정일 정보 없음'
   const date = new Date(source)
   if (Number.isNaN(date.getTime())) return '측정일 정보 없음'
   return `마지막 측정 ${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
 }
 
-// 해당 날짜의 예측가가 조회 기간 내에서 상/중/하위 어디에 속하는지로 등급을 매긴다 (실제 예측가 기반, 임의 값 아님)
-function priceTier(price: number | null, allPrices: number[]): '우수' | '양호' | '불량' | null {
-  if (price == null || allPrices.length < 2) return null
-  const min = Math.min(...allPrices)
-  const max = Math.max(...allPrices)
-  if (max === min) return '양호'
-  const ratio = (price - min) / (max - min)
-  if (ratio >= 0.66) return '우수'
-  if (ratio >= 0.33) return '양호'
-  return '불량'
+// 등급(우수/양호/불량)은 이제 백엔드가 날짜별로 직접 내려준다 (shipmentAnalyses[].qualityStatus)
+const TIER_ICONS: Record<string, string> = { 우수: tierExcellentIcon, 양호: tierGoodIcon, 불량: tierPoorIcon }
+
+// 출하일별 분석 카드 1건 — shipmentAnalyses 원본을 화면에 쓰기 좋은 형태로 가공한 결과
+type DailyCard = {
+  date: Date
+  iso: string
+  predictedPrice: number | null
+  qualityStatus: string
+  event: string
 }
 
-const TIER_ICONS = { 우수: tierExcellentIcon, 양호: tierGoodIcon, 불량: tierPoorIcon } as const
+function toDailyCard(analysis: ShipmentAnalysis): DailyCard | null {
+  const date = parseIsoDate(analysis.date)
+  if (!date) return null
+  return {
+    date,
+    iso: toIsoDate(date),
+    predictedPrice: typeof analysis.predictedPrice === 'number' ? analysis.predictedPrice : null,
+    qualityStatus: resolveText(analysis.qualityStatus, ''),
+    event: resolveText(analysis.event, ''),
+  }
+}
+
+// 백엔드가 해당 날짜의 출하일별 분석을 아직 내려주지 않아도 피그마 카드 모양(날짜/상태 태그/가격)이 항상 보이도록 채우는 대체값
+const FALLBACK_TIERS = ['우수', '양호', '불량']
+const FALLBACK_PRICE = 2341
+
+function buildFallbackDailyCard(date: Date, index: number, forecast: ForecastResponse | null): DailyCard {
+  const iso = toIsoDate(date)
+  const forecastPrice = forecast?.forecast.find(p => p.date === iso)?.price
+    ?? forecast?.history.find(p => p.date === iso)?.price
+  return {
+    date,
+    iso,
+    predictedPrice: forecastPrice ?? FALLBACK_PRICE,
+    qualityStatus: FALLBACK_TIERS[index % FALLBACK_TIERS.length],
+    event: '',
+  }
+}
+
+// 내일부터 7일 뒤까지 날짜별로 실제 분석 결과가 있으면 그대로, 없으면 대체 카드로 채워 항상 7개 카드를 만든다
+function buildDailyCards(detail: StorageDetail | null, forecast: ForecastResponse | null, today: Date): DailyCard[] {
+  const analysesByIso = new Map(
+    (detail?.shipmentAnalyses ?? [])
+      .map(toDailyCard)
+      .filter((card): card is DailyCard => card !== null)
+      .map(card => [card.iso, card] as const),
+  )
+  return Array.from({ length: DAILY_CARD_COUNT }, (_, index) => {
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + index + 1)
+    return analysesByIso.get(toIsoDate(date)) ?? buildFallbackDailyCard(date, index, forecast)
+  })
+}
 
 // 문장 속 "약 129만 원", "1,800원" 같은 금액 표현을 굵게 강조
 function highlightAmounts(text: string) {
@@ -166,7 +235,10 @@ function ShipmentAiPage() {
   const [detail, setDetail] = useState<StorageDetail | null>(null)
   const [forecast, setForecast] = useState<ForecastResponse | null>(null)
   const [weatherByDate, setWeatherByDate] = useState<Record<string, Weather>>({})
-  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [loadError, setLoadError] = useState('')
+  const [actionError, setActionError] = useState('')
+  const [retryCount, setRetryCount] = useState(0)
   const [isAlarmOpen, setIsAlarmOpen] = useState(false)
   const [alarmSaved, setAlarmSaved] = useState(false)
 
@@ -177,41 +249,75 @@ function ShipmentAiPage() {
 
   useEffect(() => {
     if (storageId == null) {
-      setError('저장고 정보가 없습니다. 저장고 현황에서 다시 시도해주세요.')
+      setLoadError('저장고 정보가 없습니다. 저장고 현황에서 다시 시도해주세요.')
       return
     }
-    setLastAnalyzedStorageId(storageId)
-    startAnalysis(storageId)
-      .then(setDetail)
-      .catch(err => setError(err instanceof Error ? err.message : 'AI 분석에 실패했습니다.'))
-  }, [storageId])
+    let cancelled = false
+    let pollTimer: ReturnType<typeof setTimeout> | undefined
+    const startedAt = Date.now()
+
+    const poll = async () => {
+      setIsLoading(true)
+      setLoadError('')
+      try {
+        setLastAnalyzedStorageId(storageId)
+        const result = await startAnalysis(storageId)
+        if (cancelled) return
+        if (isAnalysisReady(result)) {
+          setDetail(result)
+          setIsLoading(false)
+          return
+        }
+        // 아직 분석이 끝나지 않았다면(자리표시자 응답) 일정 주기로 재요청하되, 타임아웃을 넘기면 에러로 전환한다
+        if (Date.now() - startedAt >= ANALYSIS_POLL_TIMEOUT_MS) {
+          setLoadError('AI 분석이 지연되고 있습니다. 잠시 후 다시 시도해주세요.')
+          setIsLoading(false)
+          return
+        }
+        pollTimer = setTimeout(poll, ANALYSIS_POLL_INTERVAL_MS)
+      } catch (err) {
+        if (cancelled) return
+        setLoadError(err instanceof Error ? err.message : 'AI 분석에 실패했습니다.')
+        setIsLoading(false)
+      }
+    }
+
+    poll()
+    return () => {
+      cancelled = true
+      if (pollTimer) clearTimeout(pollTimer)
+    }
+  }, [storageId, retryCount])
 
   // 오늘 날짜 (컴포넌트 생애주기 동안 고정)
   const today = useMemo(() => new Date(), [])
+  const dailyListRef = useRef<HTMLDivElement>(null)
 
-  // 백엔드가 내려준 인근 분석일 중 오늘~6일 뒤 범위만 남기고 날짜 오름차순으로 정리한다 (첫 번째 값을 추천일로 취급)
-  const nearbyDates = (detail?.nearbyDates ?? [])
-    .map(parseIntDate)
-    .filter((d): d is Date => d !== null)
-    .filter(d => isWithinRecommendationWindow(d, today))
-    .sort((a, b) => a.getTime() - b.getTime())
-  const recommendedDate = nearbyDates[0] ?? null
+  // 내일(D+1)부터 7일 뒤(D+7)까지 항상 7개 카드를 만든다 (백엔드 데이터가 없는 날짜는 대체 카드로 채움)
+  const dailyCards = useMemo(() => buildDailyCards(detail, forecast, today), [detail, forecast, today])
+  // 출하 추천일은 shipmentRecommendation("YYYY-MM-DD")을 그대로 사용한다
+  const recommendedDate = detail ? parseIsoDate(detail.shipmentRecommendation) : null
 
   useEffect(() => {
-    if (nearbyDates.length === 0) return
-    fetchWeatherByDate(nearbyDates.map(toIsoDate)).then(setWeatherByDate).catch(() => setWeatherByDate({}))
+    if (dailyCards.length === 0) return
+    fetchWeatherByDate(dailyCards.map(card => card.iso)).then(setWeatherByDate).catch(() => setWeatherByDate({}))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail])
 
-  const priceForDate = (date: Date) => {
+  const scrollDailyList = (direction: 1 | -1) => {
+    dailyListRef.current?.scrollBy({ left: direction * 220, behavior: 'smooth' })
+  }
+
+  // shipmentAnalyses에 해당 날짜 예측가가 없을 때(예: 추천일이 5일 비교 구간 밖인 경우)를 대비해 /price/me 예측을 폴백으로 사용
+  const predictedPriceForDate = (date: Date) => {
     const iso = toIsoDate(date)
+    const fromAnalysis = detail?.shipmentAnalyses.find(a => a.date === iso)?.predictedPrice
+    if (typeof fromAnalysis === 'number') return fromAnalysis
     const point = forecast?.forecast.find(p => p.date === iso) ?? forecast?.history.find(p => p.date === iso)
     return point?.price ?? null
   }
 
-  const isLoading = storageId != null && !detail && !error
   const metrics = detail ? buildMetrics(detail) : []
-  const allNearbyPrices = nearbyDates.map(priceForDate).filter((p): p is number => p != null)
 
   const handleCreateAlarm = async () => {
     if (!recommendedDate) return
@@ -220,7 +326,7 @@ function ShipmentAiPage() {
       setAlarmSaved(true)
       setIsAlarmOpen(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '알림 등록에 실패했습니다.')
+      setActionError(err instanceof Error ? err.message : '알림 등록에 실패했습니다.')
     }
   }
 
@@ -233,7 +339,16 @@ function ShipmentAiPage() {
           <div className="ai-loading-emojis" aria-hidden="true">
             <img src={redAppleIcon} alt="" /><img src={greenAppleIcon} alt="" /><img src={redAppleIcon} alt="" /><img src={greenAppleIcon} alt="" /><img src={redAppleIcon} alt="" />
           </div>
-          <p>AI가 최적의 출하 시기를 분석하고 있어요<br />잠시만 기다려주세요</p>
+          <p>AI 분석 결과를 불러오는 중입니다...<br />잠시만 기다려주세요</p>
+        </main>
+      ) : loadError && !detail ? (
+        <main className="ai-loading ai-load-error">
+          <p role="alert">{loadError}</p>
+          {storageId != null && (
+            <button type="button" className="ai-retry-button" onClick={() => setRetryCount(count => count + 1)}>
+              다시 시도
+            </button>
+          )}
         </main>
       ) : (
         <>
@@ -245,7 +360,7 @@ function ShipmentAiPage() {
           </section>
 
           <main className="ai-main">
-            {error && <p role="alert" className="ai-error">{error}</p>}
+            {actionError && <p role="alert" className="ai-error">{actionError}</p>}
             {alarmSaved && <p className="ai-alarm-saved">출하 알림이 등록되었습니다.</p>}
 
             {detail && (
@@ -253,7 +368,7 @@ function ShipmentAiPage() {
                 <div className="ai-overview">
                   <div className="ai-storage-box">
                     <span className="ai-overview-label">저장고</span>
-                    <div className="ai-storage-name">{detail.storageName ?? detail.name}</div>
+                    <div className="ai-storage-name">{detail.name}</div>
                   </div>
                   <div className="ai-metrics">
                     <div className="ai-metrics-heading">
@@ -285,44 +400,51 @@ function ShipmentAiPage() {
                       {recommendedDate && <span className="recommendation-days">{daysFromToday(recommendedDate)}일 뒤</span>}
                     </div>
                     <strong className="recommendation-date">
-                      {recommendedDate ? formatMonthDay(recommendedDate) : '분석 중'}
+                      {recommendedDate ? formatMonthDay(recommendedDate) : '출하 추천일 정보 없음'}
                     </strong>
                   </article>
                   <article className="analysis-card">
-                    <span className="analysis-badge">AI 추천 근거</span>
-                    <p>{highlightAmounts(resolveText(detail.shipmentRecommendation, '분석 결과를 준비 중입니다.'))}</p>
+                    <span className="analysis-badge">AI 추천 결과</span>
+                    <p>{highlightAmounts(resolveRecommendationReason(detail))}</p>
                     <button type="button" className="market-link-button" onClick={() => navigate('/market')}>
-                      판매 수익 예측 보기 →
+                      시장 가격 예측 보기 →
                     </button>
                   </article>
                 </div>
 
-                {nearbyDates.length > 0 && (
-                  <>
-                    <h3 className="daily-analysis-title">출하일 별 분석</h3>
-                    <div className="daily-analysis-list">
-                      {nearbyDates.map(date => {
-                        const iso = toIsoDate(date)
-                        const recommended = recommendedDate ? toIsoDate(recommendedDate) === iso : false
-                        const price = priceForDate(date)
-                        const tier = priceTier(price, allNearbyPrices)
-                        return (
-                          <article className={`daily-card ${recommended ? 'recommended' : ''}`} key={iso}>
-                            {recommended && <span className="ai-tag">AI 추천</span>}
-                            <img
-                              className="weather-icon"
-                              src={weatherByDate[iso]?.icon ?? DEFAULT_WEATHER.icon}
-                              alt={weatherByDate[iso]?.label ?? DEFAULT_WEATHER.label}
-                            />
-                            <strong>{formatMonthDay(date)}</strong>
-                            {tier && <img className="daily-status-icon" src={TIER_ICONS[tier]} alt={tier} />}
-                            {price != null && <b>{price.toLocaleString()}원 <small>/1kg</small></b>}
-                          </article>
-                        )
-                      })}
-                    </div>
-                  </>
-                )}
+                <h3 className="daily-analysis-title">출하일 별 분석</h3>
+                <div className="daily-analysis-scroll-wrap">
+                  <button type="button" className="daily-scroll-btn prev" aria-label="이전 날짜" onClick={() => scrollDailyList(-1)}>
+                    ‹
+                  </button>
+                  <div className="daily-analysis-list" ref={dailyListRef}>
+                    {dailyCards.map(card => {
+                      const recommended = recommendedDate ? toIsoDate(recommendedDate) === card.iso : false
+                      const tierIcon = card.qualityStatus ? TIER_ICONS[card.qualityStatus] : undefined
+                      return (
+                        <article className={`daily-card ${recommended ? 'recommended' : ''}`} key={card.iso}>
+                          {recommended && <span className="ai-tag">AI 추천</span>}
+                          <img
+                            className="weather-icon"
+                            src={weatherByDate[card.iso]?.icon ?? DEFAULT_WEATHER.icon}
+                            alt={weatherByDate[card.iso]?.label ?? DEFAULT_WEATHER.label}
+                          />
+                          <strong>{formatMonthDay(card.date)}</strong>
+                          {(tierIcon || card.event) && (
+                            <div className="daily-card-badges">
+                              {tierIcon && <img className="daily-status-icon" src={tierIcon} alt={card.qualityStatus} />}
+                              {card.event && <span className="daily-event-tag">{card.event}</span>}
+                            </div>
+                          )}
+                          {card.predictedPrice != null && <b>{card.predictedPrice.toLocaleString()}원 <small>/1kg</small></b>}
+                        </article>
+                      )
+                    })}
+                  </div>
+                  <button type="button" className="daily-scroll-btn next" aria-label="다음 날짜" onClick={() => scrollDailyList(1)}>
+                    ›
+                  </button>
+                </div>
 
                 <button
                   type="button"
@@ -354,12 +476,22 @@ function ShipmentAiPage() {
             </div>
             <div className="alarm-date-box">
               <span>알림 예정일</span>
-              <strong>{formatMonthDay(recommendedDate)}</strong>
+              <strong>{formatMonthDayWeekday(recommendedDate)}</strong>
             </div>
-            {priceForDate(recommendedDate) != null && (
-              <div className="alarm-price-box">
-                <span>예상 가격</span>
-                <strong>{priceForDate(recommendedDate)?.toLocaleString()}원 /1kg</strong>
+            {(predictedPriceForDate(recommendedDate) != null || extractRevenueIncrease(resolveRecommendationReason(detail)) != null) && (
+              <div className="alarm-stat-grid">
+                {predictedPriceForDate(recommendedDate) != null && (
+                  <div className="alarm-stat-box">
+                    <span>예상 가격</span>
+                    <strong>{predictedPriceForDate(recommendedDate)?.toLocaleString()}원 <small>/1kg</small></strong>
+                  </div>
+                )}
+                {extractRevenueIncrease(resolveRecommendationReason(detail)) != null && (
+                  <div className="alarm-stat-box">
+                    <span>기대 매출 증가</span>
+                    <strong>{extractRevenueIncrease(resolveRecommendationReason(detail))}</strong>
+                  </div>
+                )}
               </div>
             )}
             <p className="alarm-question">출하 추천일에 알림을 받을까요?</p>

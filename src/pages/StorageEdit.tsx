@@ -43,7 +43,7 @@ function StorageEdit() {
     if (storageId == null) return
     getStorage(storageId)
       .then(detail => setForm({
-        name: detail.storageName ?? detail.name ?? '',
+        name: detail.name ?? '',
         variety: detail.type ?? '',
         harvestDate: detail.storeDate ? detail.storeDate.split('T')[0] : '',
         storageMethod: detail.storageMethod ?? '',

@@ -29,6 +29,11 @@
   padding: 0 20px;
 }
 
+.m-ai-loading-emojis {
+  display: flex;
+  gap: 20px;
+}
+
 .m-ai-loading-emojis img {
   width: 32px;
   height: 32px;
@@ -49,6 +54,22 @@
   font-size: 17px;
   font-weight: 600;
   line-height: 1.6;
+}
+
+.m-ai-load-error p {
+  color: #ff5d5d;
+}
+
+.m-ai-retry-button {
+  border: 0;
+  border-radius: 999px;
+  background: #15dc92;
+  color: #fff;
+  padding: 12px 28px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .m-ai-alarm-saved {
@@ -220,7 +241,10 @@
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  overflow-y: hidden;
+  /* overflow-x:auto가 overflow-y도 클리핑하므로, 카드 위로 튀어나오는 AI 추천 뱃지가 잘리지 않도록 위쪽 여백을 확보 */
+  padding: 14px 0 4px;
+  margin-top: -10px;
   scroll-snap-type: x mandatory;
   margin-bottom: 20px;
 }
@@ -266,9 +290,30 @@
   color: #15dc92;
 }
 
+.m-daily-card-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 .m-daily-status-icon {
   width: 60px;
   height: 29px;
+}
+
+.m-daily-event-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 29px;
+  padding: 0 10px;
+  border-radius: 15px;
+  background: #e0f2fe;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .m-daily-card b {
@@ -383,20 +428,34 @@
   font-size: 22px;
 }
 
-.m-alarm-price-box {
+.m-alarm-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.m-alarm-stat-box {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
-  margin-bottom: 16px;
-  font-size: 13px;
+  font-size: 12px;
   color: #6b7280;
 }
 
-.m-alarm-price-box strong {
+.m-alarm-stat-box strong {
   color: #1f1f1f;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.m-alarm-stat-box strong small {
+  font-size: 11px;
+  font-weight: 400;
+  color: #9ca3af;
 }
 
 .m-alarm-modal-buttons {

@@ -54,7 +54,7 @@ function buildMetrics(detail: StorageDetail): StorageMetric[] {
 }
 
 function formatMeasurementDate(detail: StorageDetail) {
-  const source = detail.lastMeasuredAt ?? detail.measuredAt ?? detail.updatedAt ?? detail.storeDate
+  const source = detail.storeDate
   if (!source) return '측정일 정보 없음'
 
   const date = new Date(source)
@@ -112,7 +112,7 @@ function StoragePage() {
             >
               {storages.map(storage => (
                 <option key={storage.storageId} value={storage.storageId}>
-                  {storage.storageName ?? storage.name ?? `저장고 ${storage.storageId}`}
+                  {storage.name}
                 </option>
               ))}
             </select>
@@ -128,7 +128,7 @@ function StoragePage() {
           <div className="metrics-area">
             <div className="metrics-heading">
               <h2>현재 저장 현황</h2>
-              <time dateTime={detail?.lastMeasuredAt ?? detail?.measuredAt ?? detail?.updatedAt ?? detail?.storeDate}>
+              <time dateTime={detail?.storeDate}>
                 {detail ? formatMeasurementDate(detail) : '측정일 정보 없음'}
               </time>
             </div>

@@ -41,7 +41,7 @@ function StorageInfo() {
           {storages.map(storage => (
             <article className="storage-card" key={storage.storageId}>
               <div className="storage-card-heading">
-                <h1>{storage.storageName ?? storage.name ?? `저장고 ${storage.storageId}`}</h1>
+                <h1>{storage.name}</h1>
                 <time>{String(storage.startDate).replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3')} ~</time>
               </div>
               <p>사과 {storage.type} · {storage.storageMethod} · 당도 {storage.brix}</p>

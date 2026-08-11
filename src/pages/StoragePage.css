@@ -15,14 +15,14 @@
 
 .storage-heading {
   padding: 48px min(calc((100% - 1122px) / 2 + 24px), 25%) 56px;
-  background: linear-gradient(90deg, #ffffff 0%, #ffffff 45%, #15dc92 82%, #0bc7c4 100%);
-  border-radius: 0 0 0 64px;
+  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
+  border-radius: 0 0 0 60px;
   box-sizing: border-box;
 }
 
 .storage-heading h1 {
   margin: 0;
-  color: #1F1F1F;
+  color: #fff;
   font-size: 36px;
   line-height: 1.35;
   font-weight: 700;
@@ -31,7 +31,8 @@
 
 .storage-heading p {
   margin: 10px 0 0;
-  color: #4b5563;
+  color: #fff;
+  opacity: 0.95;
   font-size: 24px;
   line-height: 1.5;
   letter-spacing: -0.7px;
@@ -264,6 +265,7 @@
 
 @media (max-width: 560px) {
   .storage-main { width: calc(100% - 32px); padding-top: 32px; }
+  .storage-heading { padding: 32px 24px 40px; border-radius: 0 0 0 40px; }
   .storage-heading h1 { font-size: 30px; }
   .storage-heading p { font-size: 19px; }
   .storage-overview { margin-top: 42px; }

@@ -1,6 +1,6 @@
 .m-mypage-hero {
   padding: 32px 20px 40px;
-  background: linear-gradient(90deg, #15dc92 0%, #0bc7c4 100%);
+  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
   border-radius: 0 0 0 36px;
   color: #fff;
 }
@@ -252,6 +252,39 @@
 
 .m-mypage-summary-grid strong {
   font-size: 14px;
+}
+
+.m-mypage-quality-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f5fbf6;
+}
+
+.m-mypage-quality-box-label {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.m-mypage-quality-box dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.m-mypage-quality-box dt {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.m-mypage-quality-box dd {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #15dc92;
 }
 
 .m-mypage-table {

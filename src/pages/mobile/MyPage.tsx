@@ -161,7 +161,7 @@ function MobileMyPage() {
               {storages.length === 0 && '-'}
               {storages.map(s => (
                 <span className="m-mypage-pill" key={s.storageId}>
-                  {(s.storageName ?? s.name ?? `저장고 ${s.storageId}`)} · {s.type}
+                  {s.name} · {s.type}
                 </span>
               ))}
             </dd>
@@ -278,6 +278,26 @@ function MobileMyPage() {
               </tbody>
             </table>
           )}
+        </section>
+
+        <section className="m-mypage-card">
+          <h2>시장 분석 기록</h2>
+          {/* 시장 분석 기록 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
+          <p className="m-mypage-empty">아직 시장 분석 기록이 없습니다. 데이터가 쌓이면 이곳에 표시돼요.</p>
+        </section>
+
+        <section className="m-mypage-card">
+          <h2>품질 및 저장 환경 변화</h2>
+          {/* 품질/저장환경 리포트 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
+          <div className="m-mypage-quality-box">
+            <span className="m-mypage-quality-box-label">현재 품질 정보</span>
+            <dl>
+              <dt>현재 품질 등급</dt><dd>-</dd>
+              <dt>품질 점수</dt><dd>-</dd>
+              <dt>예상 저장 가능 기간</dt><dd>-</dd>
+              <dt>품질 저하 속도</dt><dd>-</dd>
+            </dl>
+          </div>
         </section>
       </main>
 

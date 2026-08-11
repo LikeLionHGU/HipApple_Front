@@ -23,8 +23,8 @@
   flex-direction: column;
   gap: 12px;
   padding: 48px min(calc((100% - 1280px) / 2 + 80px), 25%) 56px;
-  background: linear-gradient(90deg, #15dc92 0%, #0bc7c4 100%);
-  border-radius: 0 0 0 64px;
+  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
+  border-radius: 0 0 0 60px;
   box-sizing: border-box;
   margin-bottom: 40px;
 }
