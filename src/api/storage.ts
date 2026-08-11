@@ -15,17 +15,25 @@ export type StorageRequest = {
 
 export type StorageSummary = {
   storageId: number
-  storageName?: string
-  name?: string
+  name: string
   startDate: number
   type: string
   storageMethod: string
   brix: number
+  analysisStartDate?: string
+  storagePeriodDays?: number
+}
+
+// 출하일별 분석 카드 1건 (날짜 + 예측가 + 등급 + 이벤트)
+export type ShipmentAnalysis = {
+  date: string // "YYYY-MM-DD"
+  predictedPrice: number
+  qualityStatus: string
+  event: string
 }
 
 export type StorageDetail = {
   storageId: number
-  storageName?: string
   name: string
   type: string
   startDate: number
@@ -43,10 +51,9 @@ export type StorageDetail = {
   qualityStatus: string
   shipmentRecommendation: string
   analysisReason: string
-  nearbyDates: number[]
-  lastMeasuredAt?: string
-  measuredAt?: string
-  updatedAt?: string
+  // 판매 수익(가격) 추천 근거 — AI 추천 결과 박스에서 최우선으로 노출
+  priceRecommendationReason?: string
+  shipmentAnalyses: ShipmentAnalysis[]
   // AI 사진 품질 판정 결과 (사진 업로드 후 채워짐)
   qualityGrade?: string
   qualityRipeness?: string
@@ -111,8 +118,12 @@ export const checkQuality = (storageId: number, photo: File) => {
 }
 
 // AI 출하 시기 분석 시작
-export const startAnalysis = (storageId: number) =>
-  apiFetch<StorageDetail>(`/storage/${storageId}/analyze`, { method: 'POST' })
+export const startAnalysis = async (storageId: number) => {
+  console.log('[API Request] AI 분석 요청 파라미터:', { storageId })
+  const result = await apiFetch<StorageDetail>(`/storage/${storageId}/analyze`, { method: 'POST' })
+  console.log('[API Response] AI 분석 응답 데이터:', result)
+  return result
+}
 
 // 로그인 농가의 저장고 이름 목록 (드롭다운용)
 export const myStorageNames = () => apiFetch<string[]>('/storage/me')
