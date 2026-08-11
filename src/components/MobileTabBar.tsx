@@ -19,7 +19,7 @@ const TABS = [
     ),
   },
   {
-    label: '수익 예측',
+    label: '시장 예측',
     path: '/market',
     match: (p: string) => p === '/market',
     icon: (

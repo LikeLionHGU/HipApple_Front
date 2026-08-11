@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import CameraCaptureModal from '../components/CameraCaptureModal'
-import { checkQuality } from '../api/storage'
+import { checkQuality, type QualityCheckResponse } from '../api/storage'
 import './PhotoUploadPage.css'
 
 function formatFileSize(bytes: number) {
@@ -11,10 +11,19 @@ function formatFileSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
 }
 
+// 진단 결과 등급(우수/양호/불량)에 따른 뱃지 스타일 클래스
+const GRADE_BADGE_CLASS: Record<string, string> = {
+  우수: 'diagnosis-badge--good',
+  양호: 'diagnosis-badge--fair',
+  불량: 'diagnosis-badge--poor',
+}
+
 function PhotoUploadPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const storageId = (location.state as { storageId?: number } | null)?.storageId
+  const state = location.state as { storageId?: number; storageName?: string } | null
+  const storageId = state?.storageId
+  const storageName = state?.storageName
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [file, setFile] = useState<File | null>(null)
@@ -23,6 +32,7 @@ function PhotoUploadPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [isCameraOpen, setIsCameraOpen] = useState(false)
+  const [result, setResult] = useState<QualityCheckResponse | null>(null)
 
   useEffect(() => {
     if (!file) {
@@ -49,11 +59,13 @@ function PhotoUploadPage() {
       return
     }
     setIsSubmitting(true)
+    setError('')
     try {
-      await checkQuality(storageId, file)
-      goToShipmentAi()
+      const response = await checkQuality(storageId, file)
+      setResult(response)
     } catch (err) {
       setError(err instanceof Error ? err.message : '사진 분석에 실패했습니다.')
+    } finally {
       setIsSubmitting(false)
     }
   }
@@ -62,54 +74,86 @@ function PhotoUploadPage() {
     <div className="photo-upload-page">
       <Header />
       <main className="photo-upload-main">
-        <div
-          className={`photo-dropzone ${isDragOver ? 'drag-over' : ''}`}
-          onDragOver={event => { event.preventDefault(); setIsDragOver(true) }}
-          onDragLeave={() => setIsDragOver(false)}
-          onDrop={handleDrop}
-        >
-          <span className="photo-dropzone-icon" aria-hidden="true">⬆</span>
-          <p className="photo-dropzone-title">사진을 이곳에 끌어다 놓아주세요</p>
-          <p className="photo-dropzone-sub">또는 아래 버튼으로 파일을 선택하세요</p>
-          <div className="photo-select-row">
-            <button type="button" className="photo-select-button" onClick={() => inputRef.current?.click()}>
-              {file ? '파일 다시 선택하기' : '파일 선택하기'}
-            </button>
-            <button type="button" className="photo-camera-button" onClick={() => setIsCameraOpen(true)}>
-              촬영하기
-            </button>
-          </div>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            className="photo-file-input"
-            onChange={event => setFile(event.target.files?.[0] ?? null)}
-          />
-
-          {file && (
-            <div className="photo-file-row">
-              {previewUrl && <img className="photo-file-thumb" src={previewUrl} alt="" />}
-              <div className="photo-file-info">
-                <strong>{file.name}</strong>
-                <span>{formatFileSize(file.size)}</span>
+        {result ? (
+          <div className="diagnosis-card">
+            <div className="diagnosis-card-head">
+              <div className="diagnosis-card-title">
+                <span>진단 결과</span>
+                <span className="diagnosis-card-storage">{storageName ? `${storageName} 저장고` : '저장고'}</span>
               </div>
-              <button type="button" className="photo-file-remove" onClick={() => setFile(null)} aria-label="파일 제거">×</button>
+              <button type="button" className="diagnosis-close" aria-label="닫기" onClick={goToShipmentAi}>×</button>
             </div>
-          )}
-        </div>
+
+            <span className={`diagnosis-badge ${GRADE_BADGE_CLASS[result.grade] ?? 'diagnosis-badge--fair'}`}>
+              {result.grade}
+            </span>
+
+            <div className="diagnosis-body">
+              <div className="diagnosis-reason">
+                <h2>진단 근거</h2>
+                <p>{result.shipmentComment}</p>
+              </div>
+              {previewUrl && <img className="diagnosis-photo" src={previewUrl} alt="업로드한 사과 사진" />}
+            </div>
+          </div>
+        ) : (
+          <div
+            className={`photo-dropzone ${isDragOver ? 'drag-over' : ''}`}
+            onDragOver={event => { event.preventDefault(); setIsDragOver(true) }}
+            onDragLeave={() => setIsDragOver(false)}
+            onDrop={handleDrop}
+          >
+            <span className="photo-dropzone-icon" aria-hidden="true">⬆</span>
+            <p className="photo-dropzone-title">사진을 이곳에 끌어다 놓아주세요</p>
+            <p className="photo-dropzone-sub">또는 아래 버튼으로 파일을 선택하세요</p>
+            <div className="photo-select-row">
+              <button type="button" className="photo-select-button" onClick={() => inputRef.current?.click()}>
+                {file ? '파일 다시 선택하기' : '파일 선택하기'}
+              </button>
+              <button type="button" className="photo-camera-button" onClick={() => setIsCameraOpen(true)}>
+                촬영하기
+              </button>
+            </div>
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*"
+              className="photo-file-input"
+              onChange={event => setFile(event.target.files?.[0] ?? null)}
+            />
+
+            {file && (
+              <div className="photo-file-row">
+                {previewUrl && <img className="photo-file-thumb" src={previewUrl} alt="" />}
+                <div className="photo-file-info">
+                  <strong>{file.name}</strong>
+                  <span>{formatFileSize(file.size)}</span>
+                </div>
+                <button type="button" className="photo-file-remove" onClick={() => setFile(null)} aria-label="파일 제거">×</button>
+              </div>
+            )}
+          </div>
+        )}
 
         {error && <p role="alert" className="photo-upload-error">{error}</p>}
 
-        {file ? (
-          <button type="button" className="photo-submit-button" onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? '분석 준비 중...' : 'AI 추천 받기'}
+        {!result && (
+          file ? (
+            <button type="button" className="photo-submit-button" onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? '분석 준비 중...' : '업로드하기'}
+            </button>
+          ) : (
+            <p className="photo-skip-row">
+              사진 없이 진행할게요{' '}
+              <button type="button" className="photo-skip-link" onClick={goToShipmentAi}>건너뛰기</button>
+            </p>
+          )
+        )}
+
+        {result && (
+          <button type="button" className="photo-submit-button" onClick={goToShipmentAi}>
+            AI 추천 받기
           </button>
-        ) : (
-          <p className="photo-skip-row">
-            사진 없이 진행할게요{' '}
-            <button type="button" className="photo-skip-link" onClick={goToShipmentAi}>건너뛰기</button>
-          </p>
         )}
       </main>
       <Footer />

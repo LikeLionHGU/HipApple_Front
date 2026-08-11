@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { getStorages, getMajorSchedules, type StorageSummary, type MajorSchedule } from '../api/storage'
+import HeroBanner from '../components/HeroBanner'
+import { getStorage, getStorages, getMajorSchedules, type StorageDetail, type StorageSummary, type MajorSchedule } from '../api/storage'
 import { getMe, type UserMe } from '../api/user'
 import { getMonthlySchedules, createSchedule, deleteSchedule, type Schedule } from '../api/schedule'
 import { getPriceHistory, type PricePredictionHistoryResponse, type PricePredictionPeriod } from '../api/pricePrediction'
@@ -41,6 +42,18 @@ function buildCalendarWeeks(year: number, month: number): (number | null)[][] {
   return weeks
 }
 
+// 품질 점수 추이 그래프 — 연결된 백엔드 리포트 API가 없어 피그마 카드 모양만 유지하는 플레이스홀더
+function QualityTrendPlaceholder() {
+  const width = 280
+  const height = 90
+  const y = height / 2
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="mypage-quality-chart-svg">
+      <line x1="0" y1={y} x2={width} y2={y} stroke="#e5e7eb" strokeWidth="2" strokeDasharray="6 6" />
+    </svg>
+  )
+}
+
 function PricePredictionChart({ data }: { data: PricePredictionHistoryResponse }) {
   const points = data.chartPoints
   if (points.length === 0) return <p className="mypage-chart-empty">표시할 데이터가 없습니다.</p>
@@ -77,6 +90,7 @@ function MyPage() {
   const [storages, setStorages] = useState<StorageSummary[]>([])
   const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
   const [majorSchedules, setMajorSchedules] = useState<MajorSchedule[]>([])
+  const [detail, setDetail] = useState<StorageDetail | null>(null)
 
   const today = useMemo(() => new Date(), [])
   const [viewYear, setViewYear] = useState(today.getFullYear())
@@ -103,6 +117,8 @@ function MyPage() {
   useEffect(() => {
     if (selectedStorageId == null) return
     getMajorSchedules(selectedStorageId).then(setMajorSchedules).catch(() => setMajorSchedules([]))
+    // '4. 분석 기간 요약'에 바인딩할 AI 분석/저장 환경 요약(periodSummary)을 함께 조회한다
+    getStorage(selectedStorageId).then(setDetail).catch(() => setDetail(null))
   }, [selectedStorageId])
 
   const refetchSchedules = () => {
@@ -163,29 +179,14 @@ function MyPage() {
       .catch(() => setHistory(null))
   }, [period])
 
-  const summary = useMemo(() => {
-    if (!history || history.tableRows.length === 0) return null
-    const predicted = history.tableRows.map(r => r.predictedPrice)
-    const up = history.tableRows.filter(r => r.changeRate > 0).length
-    const down = history.tableRows.filter(r => r.changeRate < 0).length
-    return {
-      count: history.tableRows.length,
-      max: Math.max(...predicted),
-      min: Math.min(...predicted),
-      avg: Math.round(predicted.reduce((a, b) => a + b, 0) / predicted.length),
-      up,
-      down,
-    }
-  }, [history])
+  const aiAnalysisSummary = detail?.periodSummary?.aiAnalysisSummary
+  const storageEnvironmentSummary = detail?.periodSummary?.storageEnvironmentSummary
 
   return (
     <div className="mypage">
       <Header />
 
-      <section className="mypage-hero">
-        <h1>마이페이지</h1>
-        <p>농가 정보와 일정을 한눈에 확인하고, 분석 리포트를 생성할 수 있어요</p>
-      </section>
+      <HeroBanner title="마이페이지" subtitle="농가 정보와 일정을 한눈에 확인하고, 분석 리포트를 생성할 수 있어요" />
 
       <main className="mypage-main">
         {error && <p role="alert" className="mypage-error">{error}</p>}
@@ -202,7 +203,7 @@ function MyPage() {
                   {storages.length === 0 && '-'}
                   {storages.map(s => (
                     <span className="mypage-pill" key={s.storageId}>
-                      {(s.storageName ?? s.name ?? `저장고 ${s.storageId}`)} · {s.type}
+                      {s.name} · {s.type}
                     </span>
                   ))}
                 </dd>
@@ -302,7 +303,7 @@ function MyPage() {
 
           <div className="mypage-report-grid">
             <section className="mypage-report-panel">
-              <h3>AI 가격 예측 이력</h3>
+              <h3>1. AI 가격 예측 이력</h3>
               <div className="mypage-chart-legend">
                 <span><i className="solid" /> 예측 가격</span>
                 <span><i className="dashed" /> 실제 평균 가격(참고)</span>
@@ -330,15 +331,59 @@ function MyPage() {
             </section>
 
             <section className="mypage-report-panel">
-              <h3>분석 기간 요약</h3>
-              {summary ? (
-                <div className="mypage-summary-grid">
-                  <div><span>AI 분석 횟수</span><strong>{summary.count}회</strong></div>
-                  <div><span>최고 예측 가격</span><strong>{summary.max.toLocaleString()}원/kg</strong></div>
-                  <div><span>최저 예측 가격</span><strong>{summary.min.toLocaleString()}원/kg</strong></div>
-                  <div><span>평균 예측 가격</span><strong>{summary.avg.toLocaleString()}원/kg</strong></div>
-                  <div><span>가격 상승일 수</span><strong>{summary.up}일</strong></div>
-                  <div><span>가격 하락일 수</span><strong>{summary.down}일</strong></div>
+              <h3>2. 시장 분석 기록</h3>
+              {/* 시장 분석 기록 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
+              <p className="mypage-empty">아직 시장 분석 기록이 없습니다. 데이터가 쌓이면 이곳에 표시돼요.</p>
+            </section>
+
+            <section className="mypage-report-panel mypage-quality-panel">
+              <h3>3. 품질 및 저장 환경 변화</h3>
+              {/* 품질/저장환경 리포트 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
+              <div className="mypage-quality-body">
+                <div className="mypage-quality-chart">
+                  <span className="mypage-quality-chart-label">품질 점수 변화 추이</span>
+                  <QualityTrendPlaceholder />
+                </div>
+                <div className="mypage-quality-box">
+                  <span className="mypage-quality-box-label">현재 품질 정보</span>
+                  <dl>
+                    <dt>현재 품질 등급</dt><dd>-</dd>
+                    <dt>품질 점수</dt><dd>-</dd>
+                    <dt>예상 저장 가능 기간</dt><dd>-</dd>
+                    <dt>품질 저하 속도</dt><dd>-</dd>
+                  </dl>
+                </div>
+              </div>
+            </section>
+
+            <section className="mypage-report-panel">
+              <h3>4. 분석 기간 요약</h3>
+              {aiAnalysisSummary || storageEnvironmentSummary ? (
+                <div className="mypage-period-summary">
+                  <div className="mypage-period-summary-col">
+                    <span className="mypage-period-summary-title">AI 분석 요약</span>
+                    <dl>
+                      <div><dt>AI 분석 횟수</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.analysisCount}회` : '-'}</dd></div>
+                      <div><dt>AI 출하 추천 횟수</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.shipmentRecommendationCount}회` : '-'}</dd></div>
+                      <div><dt>최고 예측 가격</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.maxPredictedPrice.toLocaleString()}원/kg` : '-'}</dd></div>
+                      <div><dt>최저 예측 가격</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.minPredictedPrice.toLocaleString()}원/kg` : '-'}</dd></div>
+                      <div><dt>평균 예측 가격</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.avgPredictedPrice.toLocaleString()}원/kg` : '-'}</dd></div>
+                      <div><dt>가격 상승일 수</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.priceIncreaseDays}일` : '-'}</dd></div>
+                      <div><dt>가격 하락일 수</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.priceDecreaseDays}일` : '-'}</dd></div>
+                    </dl>
+                  </div>
+                  <div className="mypage-period-summary-col">
+                    <span className="mypage-period-summary-title">저장 환경 요약</span>
+                    <dl>
+                      <div><dt>평균 온도</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.avgTemperature}°C` : '-'}</dd></div>
+                      <div><dt>평균 습도</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.avgHumidity}%` : '-'}</dd></div>
+                      <div><dt>평균 CO2</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.avgCo2}ppm` : '-'}</dd></div>
+                      <div><dt>온도 임계값 이탈</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.tempDeviationCount}회` : '-'}</dd></div>
+                      <div><dt>습도 임계값 이탈</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.humidityDeviationCount}회` : '-'}</dd></div>
+                      <div><dt>CO2 이상 감지</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.co2AnomalyCount}회` : '-'}</dd></div>
+                      <div><dt>환경 안정성 점수</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.environmentStabilityScore}/100` : '-'}</dd></div>
+                    </dl>
+                  </div>
                 </div>
               ) : (
                 <p className="mypage-empty">표시할 데이터가 없습니다.</p>

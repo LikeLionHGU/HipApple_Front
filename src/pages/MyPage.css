@@ -7,26 +7,6 @@
   font-family: 'Inter', sans-serif;
 }
 
-.mypage-hero {
-  padding: 48px min(calc((100% - 1122px) / 2 + 24px), 25%) 56px;
-  background: linear-gradient(90deg, #15dc92 0%, #0bc7c4 100%);
-  border-radius: 0 0 0 64px;
-  box-sizing: border-box;
-  color: #fff;
-}
-
-.mypage-hero h1 {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 700;
-}
-
-.mypage-hero p {
-  margin: 10px 0 0;
-  font-size: 16px;
-  opacity: 0.95;
-}
-
 .mypage-main {
   width: min(1122px, calc(100% - 48px));
   margin: 0 auto;
@@ -390,25 +370,112 @@
 .mypage-table td.up { color: #15dc92; }
 .mypage-table td.down { color: #ff5d5d; }
 
-.mypage-summary-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+.mypage-quality-body {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+  flex-wrap: wrap;
 }
 
-.mypage-summary-grid > div {
+.mypage-quality-chart {
+  flex: 1 1 200px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
 }
 
-.mypage-summary-grid span {
-  font-size: 12px;
+.mypage-quality-chart-label,
+.mypage-quality-box-label {
+  font-size: 13px;
   color: #9ca3af;
 }
 
-.mypage-summary-grid strong {
+.mypage-quality-chart-svg {
+  width: 100%;
+  height: auto;
+}
+
+.mypage-quality-box {
+  flex: 0 0 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #f5fbf6;
+}
+
+.mypage-quality-box dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mypage-quality-box dt {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.mypage-quality-box dd {
+  margin: 2px 0 0;
   font-size: 16px;
+  font-weight: 700;
+  color: #15dc92;
+}
+
+.mypage-period-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.mypage-period-summary-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.mypage-period-summary-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.mypage-period-summary-col dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mypage-period-summary-col dl > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mypage-period-summary-col dt {
+  color: #9ca3af;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.mypage-period-summary-col dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .mypage-period-summary {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 /* ===== 일정 추가 모달 ===== */
@@ -509,7 +576,7 @@
 }
 
 @media print {
-  .mypage-hero,
+  .hero-banner,
   .mypage-calendar-card,
   .mypage-side,
   .mypage-add-schedule-button,

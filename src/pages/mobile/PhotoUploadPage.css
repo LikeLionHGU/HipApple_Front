@@ -145,3 +145,91 @@
 .m-photo-submit {
   margin-top: 24px;
 }
+
+/* ===== 진단 결과 카드 (사진 업로드 후 AI 품질 진단 결과) ===== */
+.m-diagnosis-card {
+  padding: 20px;
+  border: 2px solid #a7e5cd;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.m-diagnosis-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.m-diagnosis-card-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.m-diagnosis-card-storage {
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.m-diagnosis-close {
+  border: 0;
+  background: none;
+  color: #9ca3af;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.m-diagnosis-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.m-diagnosis-badge--good {
+  background: rgba(21, 220, 146, 0.12);
+  color: #11b478;
+}
+
+.m-diagnosis-badge--fair {
+  background: rgba(245, 166, 35, 0.12);
+  color: #c8790f;
+}
+
+.m-diagnosis-badge--poor {
+  background: rgba(255, 93, 93, 0.12);
+  color: #e14343;
+}
+
+.m-diagnosis-photo {
+  width: 100%;
+  height: 180px;
+  margin-top: 16px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.m-diagnosis-reason {
+  margin-top: 16px;
+}
+
+.m-diagnosis-reason h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.m-diagnosis-reason p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.6;
+}

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import MobileHeader from '../../components/MobileHeader'
 import MobileTabBar from '../../components/MobileTabBar'
-import { getStorages, getMajorSchedules, type StorageSummary, type MajorSchedule } from '../../api/storage'
+import MobileHeroBanner from '../../components/MobileHeroBanner'
+import { getStorage, getStorages, getMajorSchedules, type StorageDetail, type StorageSummary, type MajorSchedule } from '../../api/storage'
 import { getMe, type UserMe } from '../../api/user'
 import { getMonthlySchedules, createSchedule, deleteSchedule, type Schedule } from '../../api/schedule'
 import { getPriceHistory, type PricePredictionHistoryResponse, type PricePredictionPeriod } from '../../api/pricePrediction'
@@ -46,6 +47,7 @@ function MobileMyPage() {
   const [storages, setStorages] = useState<StorageSummary[]>([])
   const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
   const [majorSchedules, setMajorSchedules] = useState<MajorSchedule[]>([])
+  const [detail, setDetail] = useState<StorageDetail | null>(null)
 
   const today = useMemo(() => new Date(), [])
   const [viewYear, setViewYear] = useState(today.getFullYear())
@@ -71,6 +73,7 @@ function MobileMyPage() {
   useEffect(() => {
     if (selectedStorageId == null) return
     getMajorSchedules(selectedStorageId).then(setMajorSchedules).catch(() => setMajorSchedules([]))
+    getStorage(selectedStorageId).then(setDetail).catch(() => setDetail(null))
   }, [selectedStorageId])
 
   const refetchSchedules = () => {
@@ -126,27 +129,14 @@ function MobileMyPage() {
     getPriceHistory({ cropType: '사과', period }).then(setHistory).catch(() => setHistory(null))
   }, [period])
 
-  const summary = useMemo(() => {
-    if (!history || history.tableRows.length === 0) return null
-    const predicted = history.tableRows.map(r => r.predictedPrice)
-    return {
-      count: history.tableRows.length,
-      max: Math.max(...predicted),
-      min: Math.min(...predicted),
-      avg: Math.round(predicted.reduce((a, b) => a + b, 0) / predicted.length),
-      up: history.tableRows.filter(r => r.changeRate > 0).length,
-      down: history.tableRows.filter(r => r.changeRate < 0).length,
-    }
-  }, [history])
+  const aiAnalysisSummary = detail?.periodSummary?.aiAnalysisSummary
+  const storageEnvironmentSummary = detail?.periodSummary?.storageEnvironmentSummary
 
   return (
     <div className="m-app with-tabbar">
       <MobileHeader />
 
-      <section className="m-mypage-hero">
-        <h1>마이페이지</h1>
-        <p>농가 정보와 일정을 한눈에 확인하세요</p>
-      </section>
+      <MobileHeroBanner title="마이페이지" subtitle="농가 정보와 일정을 한눈에 확인하세요" />
 
       <main className="m-body">
         {error && <p role="alert" className="m-error">{error}</p>}
@@ -161,7 +151,7 @@ function MobileMyPage() {
               {storages.length === 0 && '-'}
               {storages.map(s => (
                 <span className="m-mypage-pill" key={s.storageId}>
-                  {(s.storageName ?? s.name ?? `저장고 ${s.storageId}`)} · {s.type}
+                  {s.name} · {s.type}
                 </span>
               ))}
             </dd>
@@ -246,14 +236,32 @@ function MobileMyPage() {
             ))}
           </div>
 
-          {summary ? (
-            <div className="m-mypage-summary-grid">
-              <div><span>AI 분석 횟수</span><strong>{summary.count}회</strong></div>
-              <div><span>최고 예측 가격</span><strong>{summary.max.toLocaleString()}원</strong></div>
-              <div><span>최저 예측 가격</span><strong>{summary.min.toLocaleString()}원</strong></div>
-              <div><span>평균 예측 가격</span><strong>{summary.avg.toLocaleString()}원</strong></div>
-              <div><span>가격 상승일 수</span><strong>{summary.up}일</strong></div>
-              <div><span>가격 하락일 수</span><strong>{summary.down}일</strong></div>
+          {aiAnalysisSummary || storageEnvironmentSummary ? (
+            <div className="m-mypage-period-summary">
+              <div className="m-mypage-period-summary-group">
+                <span className="m-mypage-period-summary-title">AI 분석 요약</span>
+                <div className="m-mypage-summary-grid">
+                  <div><span>AI 분석 횟수</span><strong>{aiAnalysisSummary ? `${aiAnalysisSummary.analysisCount}회` : '-'}</strong></div>
+                  <div><span>AI 출하 추천 횟수</span><strong>{aiAnalysisSummary ? `${aiAnalysisSummary.shipmentRecommendationCount}회` : '-'}</strong></div>
+                  <div><span>최고 예측 가격</span><strong>{aiAnalysisSummary ? `${aiAnalysisSummary.maxPredictedPrice.toLocaleString()}원` : '-'}</strong></div>
+                  <div><span>최저 예측 가격</span><strong>{aiAnalysisSummary ? `${aiAnalysisSummary.minPredictedPrice.toLocaleString()}원` : '-'}</strong></div>
+                  <div><span>평균 예측 가격</span><strong>{aiAnalysisSummary ? `${aiAnalysisSummary.avgPredictedPrice.toLocaleString()}원` : '-'}</strong></div>
+                  <div><span>가격 상승일 수</span><strong>{aiAnalysisSummary ? `${aiAnalysisSummary.priceIncreaseDays}일` : '-'}</strong></div>
+                  <div><span>가격 하락일 수</span><strong>{aiAnalysisSummary ? `${aiAnalysisSummary.priceDecreaseDays}일` : '-'}</strong></div>
+                </div>
+              </div>
+              <div className="m-mypage-period-summary-group">
+                <span className="m-mypage-period-summary-title">저장 환경 요약</span>
+                <div className="m-mypage-summary-grid">
+                  <div><span>평균 온도</span><strong>{storageEnvironmentSummary ? `${storageEnvironmentSummary.avgTemperature}°C` : '-'}</strong></div>
+                  <div><span>평균 습도</span><strong>{storageEnvironmentSummary ? `${storageEnvironmentSummary.avgHumidity}%` : '-'}</strong></div>
+                  <div><span>평균 CO2</span><strong>{storageEnvironmentSummary ? `${storageEnvironmentSummary.avgCo2}ppm` : '-'}</strong></div>
+                  <div><span>온도 임계값 이탈</span><strong>{storageEnvironmentSummary ? `${storageEnvironmentSummary.tempDeviationCount}회` : '-'}</strong></div>
+                  <div><span>습도 임계값 이탈</span><strong>{storageEnvironmentSummary ? `${storageEnvironmentSummary.humidityDeviationCount}회` : '-'}</strong></div>
+                  <div><span>CO2 이상 감지</span><strong>{storageEnvironmentSummary ? `${storageEnvironmentSummary.co2AnomalyCount}회` : '-'}</strong></div>
+                  <div><span>환경 안정성 점수</span><strong>{storageEnvironmentSummary ? `${storageEnvironmentSummary.environmentStabilityScore}/100` : '-'}</strong></div>
+                </div>
+              </div>
             </div>
           ) : (
             <p className="m-mypage-empty">표시할 데이터가 없습니다.</p>
@@ -278,6 +286,26 @@ function MobileMyPage() {
               </tbody>
             </table>
           )}
+        </section>
+
+        <section className="m-mypage-card">
+          <h2>시장 분석 기록</h2>
+          {/* 시장 분석 기록 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
+          <p className="m-mypage-empty">아직 시장 분석 기록이 없습니다. 데이터가 쌓이면 이곳에 표시돼요.</p>
+        </section>
+
+        <section className="m-mypage-card">
+          <h2>품질 및 저장 환경 변화</h2>
+          {/* 품질/저장환경 리포트 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
+          <div className="m-mypage-quality-box">
+            <span className="m-mypage-quality-box-label">현재 품질 정보</span>
+            <dl>
+              <dt>현재 품질 등급</dt><dd>-</dd>
+              <dt>품질 점수</dt><dd>-</dd>
+              <dt>예상 저장 가능 기간</dt><dd>-</dd>
+              <dt>품질 저하 속도</dt><dd>-</dd>
+            </dl>
+          </div>
         </section>
       </main>
 

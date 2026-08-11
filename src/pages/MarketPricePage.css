@@ -11,39 +11,11 @@
 
 .market-main {
   flex: 1;
-  padding: 0 80px 80px;
+  padding: 40px 80px 80px;
   max-width: 1280px;
   width: 100%;
   box-sizing: border-box;
   margin: 0 auto;
-}
-
-.page-header {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 48px min(calc((100% - 1280px) / 2 + 80px), 25%) 56px;
-  background: linear-gradient(90deg, #15dc92 0%, #0bc7c4 100%);
-  border-radius: 0 0 0 64px;
-  box-sizing: border-box;
-  margin-bottom: 40px;
-}
-
-.page-title {
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 40px;
-  color: #fff;
-  margin: 0;
-}
-
-.page-subtitle {
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 24px;
-  color: #fff;
-  opacity: 0.95;
-  margin: 0;
 }
 
 /* ===== 필터 영역 ===== */
@@ -342,15 +314,8 @@
 
 /* ===== 반응형 ===== */
 @media (max-width: 900px) {
-  .page-header {
-    padding: 32px 24px 40px;
-    border-radius: 0 0 0 40px;
-  }
-  .page-title {
-    font-size: 28px;
-  }
   .market-main {
-    padding: 0 24px 60px;
+    padding: 40px 24px 60px;
   }
   .forecast-body {
     grid-template-columns: 1fr;

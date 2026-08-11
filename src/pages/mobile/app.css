@@ -67,38 +67,6 @@
   padding: 0 16px;
 }
 
-.m-page-title {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 6px;
-}
-
-.m-page-sub {
-  font-size: 15px;
-  color: #6b7280;
-  margin: 0 0 20px;
-}
-
-.m-page-hero {
-  padding: 28px 20px 36px;
-  background: linear-gradient(90deg, #15dc92 0%, #0bc7c4 100%);
-  border-radius: 0 0 0 32px;
-}
-
-.m-page-hero .m-page-title,
-.m-page-hero .m-page-sub {
-  color: #fff;
-  margin: 0;
-}
-
-.m-page-hero .m-page-title {
-  margin-bottom: 6px;
-}
-
-.m-page-hero .m-page-sub {
-  opacity: 0.95;
-}
-
 .m-section-title {
   font-size: 18px;
   font-weight: 700;

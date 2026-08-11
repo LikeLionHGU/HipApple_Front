@@ -7,29 +7,6 @@
   font-family: 'Inter', sans-serif;
 }
 
-.ai-hero {
-  padding: 43px min(calc((100% - 1122px) / 2 + 24px), 25%) 42px;
-  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
-  border-radius: 0 0 0 60px;
-  box-sizing: border-box;
-  color: #fff;
-}
-
-.ai-hero h1 {
-  margin: 0;
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 40px;
-  color: #fff;
-}
-
-.ai-hero p {
-  margin: 18px 0 0;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
 .ai-main {
   width: min(1122px, calc(100% - 48px));
   margin: 0 auto;
@@ -150,6 +127,11 @@
   text-align: center;
 }
 
+.ai-loading-emojis {
+  display: flex;
+  gap: 20px;
+}
+
 .ai-loading-emojis img {
   width: 40px;
   height: 40px;
@@ -172,6 +154,26 @@
   font-size: 20px;
   font-weight: 600;
   line-height: 1.6;
+}
+
+.ai-load-error p {
+  color: #ff5d5d;
+}
+
+.ai-retry-button {
+  border: 0;
+  border-radius: 999px;
+  background: #15dc92;
+  color: #fff;
+  padding: 12px 28px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ai-retry-button:hover {
+  background: #11b478;
 }
 
 /* ===== 요약 카드 ===== */
@@ -215,14 +217,64 @@
 .market-link-button:hover { background: #11b478; }
 
 .daily-analysis-title { margin: 40px 0 32px; font-size: 17px; font-weight: 600; }
-.daily-analysis-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
-.daily-card { position: relative; display: flex; height: 228px; padding: 19px 15px 0; box-sizing: border-box; align-items: center; flex-direction: column; border: none; border-radius: 20px; background: #fff; box-shadow: 0 0 4px #e1e1e1; }
+
+.daily-analysis-scroll-wrap { display: flex; align-items: center; gap: 12px; }
+
+.daily-scroll-btn {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #6b7280;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.daily-scroll-btn:hover { background: #f4faf7; color: #15dc92; border-color: #15dc92; }
+
+.daily-analysis-list {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  /* overflow-x:auto가 overflow-y도 클리핑하므로, 카드 위로 튀어나오는 AI 추천 뱃지가 잘리지 않도록 위쪽 여백을 확보 */
+  padding: 32px 2px 12px;
+  margin-top: -28px;
+}
+
+.daily-analysis-list::-webkit-scrollbar { height: 6px; }
+.daily-analysis-list::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 999px; }
+
+.daily-card { position: relative; display: flex; flex: 0 0 200px; scroll-snap-align: start; height: 228px; padding: 19px 15px 0; box-sizing: border-box; align-items: center; flex-direction: column; border: none; border-radius: 20px; background: #fff; box-shadow: 0 0 4px #e1e1e1; }
 .daily-card.recommended { border: 2px solid #15dc92; box-shadow: 0 0 12px rgba(21, 220, 146, 0.35); }
 .ai-tag { position: absolute; top: -27px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; justify-content: center; width: 74px; height: 27px; border-radius: 10px 10px 0 0; background: #15dc92; color: #fff; font-size: 15px; font-weight: 400; }
 .weather-icon { width: 19px; height: 19px; object-fit: contain; }
 .daily-card > strong { margin-top: 12px; font-size: 18px; font-weight: 500; color: #414141; }
 .daily-card.recommended > strong { color: #15dc92; }
-.daily-status-icon { width: 70px; height: 34px; margin-top: 24px; }
+.daily-card-badges { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; margin-top: 24px; }
+.daily-status-icon { width: 70px; height: 34px; }
+.daily-event-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 17px;
+  background: #e0f2fe;
+  color: #0284c7;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
 .daily-card > b { width: calc(100% + 30px); margin-top: auto; padding: 16px 0; border-top: 2px solid #eeeeee; text-align: center; font-size: 32px; font-weight: 700; }
 .daily-card > b small { font-size: 15px; font-weight: 400; }
 .daily-card.recommended > b { color: #15dc92; border-top-color: #15dc92; }
@@ -323,20 +375,34 @@
   font-size: 26px;
 }
 
-.alarm-price-box {
+.alarm-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.alarm-stat-box {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
   padding: 14px 18px;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
-  margin-bottom: 16px;
   font-size: 14px;
   color: #6b7280;
 }
 
-.alarm-price-box strong {
+.alarm-stat-box strong {
   color: #1f1f1f;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.alarm-stat-box strong small {
+  font-size: 13px;
+  font-weight: 400;
+  color: #9ca3af;
 }
 
 .alarm-question {
@@ -377,16 +443,16 @@
   .ai-storage-name { width: 100%; }
   .ai-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ai-summary-grid { grid-template-columns: 1fr; }
-  .daily-analysis-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .daily-card { flex-basis: 44%; }
 }
 
 @media (max-width: 560px) {
-  .ai-hero { padding: 32px 24px 40px; border-radius: 0 0 0 40px; }
-  .ai-hero h1 { font-size: 24px; }
   .ai-main { padding-top: 28px; }
   .ai-metrics-heading { display: block; }
   .ai-metrics-heading time { display: block; margin-bottom: 12px; }
   .ai-metric-grid { grid-template-columns: 1fr; }
   .analysis-card { flex-direction: column; align-items: flex-start; }
   .market-link-button { width: 100%; text-align: center; }
+  .daily-card { flex-basis: 72%; }
+  .daily-scroll-btn { display: none; }
 }

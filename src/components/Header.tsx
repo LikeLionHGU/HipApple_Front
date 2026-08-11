@@ -16,7 +16,7 @@ export default function Header() {
   const navLinks = [
     { label: "저장고 현황", path: "/storage" },
     { label: "출하 AI", path: "/storage/ai" },
-    { label: "수익 예측", path: "/market" },
+    { label: "시장 예측", path: "/market" },
   ];
 
   const handleLogout = () => {

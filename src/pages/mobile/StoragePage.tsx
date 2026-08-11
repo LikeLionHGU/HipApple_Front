@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MobileHeader from '../../components/MobileHeader'
 import MobileTabBar from '../../components/MobileTabBar'
+import MobileHeroBanner from '../../components/MobileHeroBanner'
+import AppleLoading from '../../components/AppleLoading'
 import suitableIcon from '../../assets/적합.svg'
 import cautionIcon from '../../assets/주의.svg'
 import { getStorage, getStorages, type StorageDetail, type StorageSummary } from '../../api/storage'
@@ -43,7 +45,7 @@ function buildMetrics(detail: StorageDetail): StorageMetric[] {
 }
 
 function formatMeasurementDate(detail: StorageDetail) {
-  const source = detail.lastMeasuredAt ?? detail.measuredAt ?? detail.updatedAt ?? detail.storeDate
+  const source = detail.storeDate
   if (!source) return '측정일 정보 없음'
   const date = new Date(source)
   if (Number.isNaN(date.getTime())) return '측정일 정보 없음'
@@ -56,21 +58,31 @@ function MobileStoragePage() {
   const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
   const [detail, setDetail] = useState<StorageDetail | null>(null)
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     getStorages()
       .then(list => {
         setStorages(list)
-        if (list.length > 0) setSelectedStorageId(list[0].storageId)
+        if (list.length > 0) {
+          setSelectedStorageId(list[0].storageId)
+        } else {
+          setIsLoading(false)
+        }
       })
-      .catch(err => setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.'))
+      .catch(err => {
+        setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.')
+        setIsLoading(false)
+      })
   }, [])
 
   useEffect(() => {
     if (selectedStorageId == null) return
+    setIsLoading(true)
     getStorage(selectedStorageId)
       .then(setDetail)
       .catch(err => setError(err instanceof Error ? err.message : '저장고 정보를 불러오지 못했습니다.'))
+      .finally(() => setIsLoading(false))
   }, [selectedStorageId])
 
   const metrics = useMemo(() => (detail ? buildMetrics(detail) : []), [detail])
@@ -80,83 +92,86 @@ function MobileStoragePage() {
     <div className="m-app with-tabbar">
       <MobileHeader />
 
-      <section className="m-page-hero">
-        <h1 className="m-page-title">저장고 현황</h1>
-        <p className="m-page-sub">저장고의 현재 상태를 한눈에 확인하세요.</p>
-      </section>
+      {isLoading ? (
+        <AppleLoading compact message={<>저장고 정보를 불러오는 중입니다...<br />잠시만 기다려주세요</>} />
+      ) : (
+        <>
+          <MobileHeroBanner title="저장고 현황" subtitle="저장고의 현재 상태를 한눈에 확인하세요." />
 
-      <main className="m-body">
-        {error && <p role="alert" className="m-error">{error}</p>}
+          <main className="m-body">
+            {error && <p role="alert" className="m-error">{error}</p>}
 
-        <div className="m-storage-selector">
-          <select
-            className="m-select"
-            value={selectedStorageId ?? ''}
-            onChange={e => setSelectedStorageId(Number(e.target.value))}
-          >
-            {storages.map(storage => (
-              <option key={storage.storageId} value={storage.storageId}>
-                {storage.storageName ?? storage.name ?? `저장고 ${storage.storageId}`}
-              </option>
-            ))}
-          </select>
-          <button type="button" className="m-storage-info-link" onClick={() => navigate('/storage/info')}>
-            저장고 목록 ›
-          </button>
-        </div>
+            <div className="m-storage-selector">
+              <select
+                className="m-select"
+                value={selectedStorageId ?? ''}
+                onChange={e => setSelectedStorageId(Number(e.target.value))}
+              >
+                {storages.map(storage => (
+                  <option key={storage.storageId} value={storage.storageId}>
+                    {storage.name}
+                  </option>
+                ))}
+              </select>
+              <button type="button" className="m-storage-info-link" onClick={() => navigate('/storage/info')}>
+                저장고 목록 ›
+              </button>
+            </div>
 
-        <div className="m-metrics-head">
-          <span className="m-section-title">현재 저장 현황</span>
-          <time dateTime={detail?.lastMeasuredAt ?? detail?.measuredAt ?? detail?.updatedAt ?? detail?.storeDate}>
-            {detail ? formatMeasurementDate(detail) : '측정일 정보 없음'}
-          </time>
-        </div>
-        <div className="m-metric-grid">
-          {metrics.map(m => (
-            <article className="m-metric-card" key={m.label}>
-              <div className="m-metric-top">
-                <h3>{m.label}</h3>
-                <img src={m.status === 'good' ? suitableIcon : cautionIcon} alt={m.status === 'good' ? '적합' : '주의'} />
+            <div className="m-metrics-head">
+              <span className="m-section-title">현재 저장 현황</span>
+              <time dateTime={detail?.storeDate}>
+                {detail ? formatMeasurementDate(detail) : '측정일 정보 없음'}
+              </time>
+            </div>
+            <div className="m-metric-grid">
+              {metrics.map(m => (
+                <article className="m-metric-card" key={m.label}>
+                  <div className="m-metric-top">
+                    <h3>{m.label}</h3>
+                    <img src={m.status === 'good' ? suitableIcon : cautionIcon} alt={m.status === 'good' ? '적합' : '주의'} />
+                  </div>
+                  <strong>{m.value}</strong>
+                  <p>{m.description}</p>
+                </article>
+              ))}
+            </div>
+
+            <section className={`m-quality-panel ${hasWarning ? 'warning' : 'good'}`}>
+              <div className="m-quality-head">
+                <span className="m-section-title">저장 품질 상태</span>
+                <span className={`m-quality-badge ${hasWarning ? 'warning' : 'good'}`}>
+                  <img src={hasWarning ? cautionIcon : suitableIcon} alt="" />
+                  {hasWarning ? '주의' : '적합'}
+                </span>
               </div>
-              <strong>{m.value}</strong>
-              <p>{m.description}</p>
-            </article>
-          ))}
-        </div>
+              {hasWarning ? (
+                <p>에틸렌 농도가 주의 수준(0.3ppm)에 도달했습니다. 장기 저장 시 품질 저하 가능성이 있어 빠른 출하를 검토하세요.</p>
+              ) : (
+                <p>현재 저장 환경이 권장 기준을 충족하고 있습니다.</p>
+              )}
+            </section>
 
-        <section className={`m-quality-panel ${hasWarning ? 'warning' : 'good'}`}>
-          <div className="m-quality-head">
-            <span className="m-section-title">저장 품질 상태</span>
-            <span className={`m-quality-badge ${hasWarning ? 'warning' : 'good'}`}>
-              <img src={hasWarning ? cautionIcon : suitableIcon} alt="" />
-              {hasWarning ? '주의' : '적합'}
-            </span>
-          </div>
-          {hasWarning ? (
-            <p>에틸렌 농도가 주의 수준(0.3ppm)에 도달했습니다. 장기 저장 시 품질 저하 가능성이 있어 빠른 출하를 검토하세요.</p>
-          ) : (
-            <p>현재 저장 환경이 권장 기준을 충족하고 있습니다.</p>
-          )}
-        </section>
-
-        <p className="m-cta-hint">*사진을 올리면 AI가 더 정확하게 분석해드려요</p>
-        <div className="m-cta-buttons">
-          <button
-            className="m-secondary-btn"
-            type="button"
-            onClick={() => navigate('/storage/photo-upload', { state: { storageId: selectedStorageId } })}
-          >
-            사진 업로드하기
-          </button>
-          <button
-            className="m-primary-btn m-ai-btn"
-            type="button"
-            onClick={() => navigate('/storage/ai', { state: { storageId: selectedStorageId } })}
-          >
-            AI 추천 받기
-          </button>
-        </div>
-      </main>
+            <p className="m-cta-hint">*사진을 올리면 AI가 더 정확하게 분석해드려요</p>
+            <div className="m-cta-buttons">
+              <button
+                className="m-secondary-btn"
+                type="button"
+                onClick={() => navigate('/storage/photo-upload', { state: { storageId: selectedStorageId, storageName: detail?.name } })}
+              >
+                사진 업로드하기
+              </button>
+              <button
+                className="m-primary-btn m-ai-btn"
+                type="button"
+                onClick={() => navigate('/storage/ai', { state: { storageId: selectedStorageId } })}
+              >
+                AI 추천 받기
+              </button>
+            </div>
+          </main>
+        </>
+      )}
 
       <MobileTabBar />
     </div>

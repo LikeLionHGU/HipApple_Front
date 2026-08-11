@@ -1,0 +1,55 @@
+.apple-loading {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.apple-loading--compact {
+  min-height: 0;
+  padding: 60px 20px;
+}
+
+.apple-loading-emojis {
+  display: flex;
+  gap: 20px;
+}
+
+.apple-loading-emojis img {
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+  animation: apple-loading-bounce 1s ease-in-out infinite;
+}
+
+.apple-loading-emojis img:nth-child(2) { animation-delay: 0.1s; }
+.apple-loading-emojis img:nth-child(3) { animation-delay: 0.2s; }
+.apple-loading-emojis img:nth-child(4) { animation-delay: 0.3s; }
+.apple-loading-emojis img:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes apple-loading-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+.apple-loading-message {
+  margin: 0;
+  color: #15dc92;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+@media (max-width: 560px) {
+  .apple-loading-emojis img {
+    width: 32px;
+    height: 32px;
+  }
+  .apple-loading-message {
+    font-size: 16px;
+  }
+}

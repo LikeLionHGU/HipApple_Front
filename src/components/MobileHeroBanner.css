@@ -1,0 +1,25 @@
+.mobile-hero-banner {
+  padding: 32px 20px 40px;
+  box-sizing: border-box;
+  background: linear-gradient(91.33deg, #15dc92 7.54%, #6be4ed 98.23%);
+  border-radius: 0 0 0 60px;
+}
+
+.mobile-hero-banner-title {
+  margin: 0 0 6px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.mobile-hero-banner-subtitle {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #ffffff;
+  opacity: 0.95;
+}
