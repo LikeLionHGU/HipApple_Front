@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import AppleLoading from '../components/AppleLoading'
 import suitableIcon from '../assets/적합.svg'
 import cautionIcon from '../assets/주의.svg'
 import qualityGoodBadge from '../assets/quality-badge-적합.svg'
@@ -68,23 +69,34 @@ function StoragePage() {
   const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
   const [detail, setDetail] = useState<StorageDetail | null>(null)
   const [error, setError] = useState('')
+  // 저장고 목록 또는 세부 정보를 아직 받지 못한 동안 사과 로딩 화면을 보여준다
+  const [isLoading, setIsLoading] = useState(true)
 
   // 저장고 목록 조회 후 첫 번째 저장고 선택
   useEffect(() => {
     getStorages()
       .then(list => {
         setStorages(list)
-        if (list.length > 0) setSelectedStorageId(list[0].storageId)
+        if (list.length > 0) {
+          setSelectedStorageId(list[0].storageId)
+        } else {
+          setIsLoading(false)
+        }
       })
-      .catch(err => setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.'))
+      .catch(err => {
+        setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.')
+        setIsLoading(false)
+      })
   }, [])
 
   // 선택된 저장고의 세부 정보 조회
   useEffect(() => {
     if (selectedStorageId == null) return
+    setIsLoading(true)
     getStorage(selectedStorageId)
       .then(setDetail)
       .catch(err => setError(err instanceof Error ? err.message : '저장고 정보를 불러오지 못했습니다.'))
+      .finally(() => setIsLoading(false))
   }, [selectedStorageId])
 
   const metrics = useMemo(() => (detail ? buildMetrics(detail) : []), [detail])
@@ -94,102 +106,108 @@ function StoragePage() {
     <div className="storage-page">
       <Header />
 
-      <section className="storage-heading" aria-labelledby="storage-title">
-        <h1 id="storage-title">저장고 현황</h1>
-        <p>저장고의 현재 상태를 한눈에 확인하세요.</p>
-      </section>
+      {isLoading ? (
+        <AppleLoading message={<>저장고 정보를 불러오는 중입니다...<br />잠시만 기다려주세요</>} />
+      ) : (
+        <>
+          <section className="storage-heading" aria-labelledby="storage-title">
+            <h1 id="storage-title">저장고 현황</h1>
+            <p>저장고의 현재 상태를 한눈에 확인하세요.</p>
+          </section>
 
-      <main className="storage-main">
-        {error && <p role="alert" className="storage-error">{error}</p>}
+          <main className="storage-main">
+            {error && <p role="alert" className="storage-error">{error}</p>}
 
-        <section className="storage-overview" aria-label="저장고 상태 요약">
-          <div className="storage-selector">
-            <label htmlFor="storage-select">저장고</label>
-            <select
-              id="storage-select"
-              value={selectedStorageId ?? ''}
-              onChange={event => setSelectedStorageId(Number(event.target.value))}
-            >
-              {storages.map(storage => (
-                <option key={storage.storageId} value={storage.storageId}>
-                  {storage.name}
-                </option>
-              ))}
-            </select>
-            <button
-              className="storage-info-link"
-              type="button"
-              onClick={() => navigate('/storage/info')}
-            >
-              저장고 목록
-            </button>
-          </div>
+            <section className="storage-overview" aria-label="저장고 상태 요약">
+              <div className="storage-selector">
+                <label htmlFor="storage-select">저장고</label>
+                <select
+                  id="storage-select"
+                  value={selectedStorageId ?? ''}
+                  onChange={event => setSelectedStorageId(Number(event.target.value))}
+                >
+                  {storages.map(storage => (
+                    <option key={storage.storageId} value={storage.storageId}>
+                      {storage.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="storage-info-link"
+                  type="button"
+                  onClick={() => navigate('/storage/info')}
+                >
+                  저장고 목록
+                </button>
+              </div>
 
-          <div className="metrics-area">
-            <div className="metrics-heading">
-              <h2>현재 저장 현황</h2>
-              <time dateTime={detail?.storeDate}>
-                {detail ? formatMeasurementDate(detail) : '측정일 정보 없음'}
-              </time>
+              <div className="metrics-area">
+                <div className="metrics-heading">
+                  <h2>현재 저장 현황</h2>
+                  <time dateTime={detail?.storeDate}>
+                    {detail ? formatMeasurementDate(detail) : '측정일 정보 없음'}
+                  </time>
+                </div>
+                <div className="metric-grid">
+                  {metrics.map(metric => (
+                    <article className="metric-card" key={metric.label}>
+                      <div className="metric-card-topline">
+                        <h3>{metric.label}</h3>
+                        <img
+                          className="status-icon"
+                          src={metric.status === 'good' ? suitableIcon : cautionIcon}
+                          alt={metric.status === 'good' ? '적합' : '주의'}
+                        />
+                      </div>
+                      <strong>{metric.value}</strong>
+                      <p>{metric.description}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section className="quality-panel" aria-labelledby="quality-title">
+              <div className="quality-title-row">
+                <h2 id="quality-title">저장 품질 상태</h2>
+                <img
+                  className="quality-badge"
+                  src={hasWarning ? qualityWarningBadge : qualityGoodBadge}
+                  alt={hasWarning ? '주의' : '적합'}
+                />
+              </div>
+              {hasWarning ? (
+                <p>
+                  에틸렌 농도가 주의 수준(0.3ppm)에 도달했습니다.<br />
+                  장기 저장 시 품질 저하 가능성이 있으며, 빠른 출하를 검토하시기 바랍니다.
+                </p>
+              ) : (
+                <p>현재 저장 환경이 권장 기준을 충족하고 있습니다.</p>
+              )}
+            </section>
+
+            <div className="storage-cta">
+              <p className="storage-cta-hint">*사진을 올리면 AI가 더 정확하게 분석해드려요</p>
+              <div className="storage-cta-buttons">
+                <button
+                  className="photo-upload-button"
+                  type="button"
+                  onClick={() => navigate('/storage/photo-upload', { state: { storageId: selectedStorageId, storageName: detail?.name } })}
+                >
+                  사진 업로드하기
+                </button>
+                <button
+                  className="ai-recommend-button"
+                  type="button"
+                  onClick={() => navigate('/storage/ai', { state: { storageId: selectedStorageId } })}
+                >
+                  AI 추천 받기
+                </button>
+              </div>
             </div>
-            <div className="metric-grid">
-              {metrics.map(metric => (
-                <article className="metric-card" key={metric.label}>
-                  <div className="metric-card-topline">
-                    <h3>{metric.label}</h3>
-                    <img
-                      className="status-icon"
-                      src={metric.status === 'good' ? suitableIcon : cautionIcon}
-                      alt={metric.status === 'good' ? '적합' : '주의'}
-                    />
-                  </div>
-                  <strong>{metric.value}</strong>
-                  <p>{metric.description}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="quality-panel" aria-labelledby="quality-title">
-          <div className="quality-title-row">
-            <h2 id="quality-title">저장 품질 상태</h2>
-            <img
-              className="quality-badge"
-              src={hasWarning ? qualityWarningBadge : qualityGoodBadge}
-              alt={hasWarning ? '주의' : '적합'}
-            />
-          </div>
-          {hasWarning ? (
-            <p>
-              에틸렌 농도가 주의 수준(0.3ppm)에 도달했습니다.<br />
-              장기 저장 시 품질 저하 가능성이 있으며, 빠른 출하를 검토하시기 바랍니다.
-            </p>
-          ) : (
-            <p>현재 저장 환경이 권장 기준을 충족하고 있습니다.</p>
-          )}
-        </section>
-
-        <div className="storage-cta">
-          <p className="storage-cta-hint">*사진을 올리면 AI가 더 정확하게 분석해드려요</p>
-          <div className="storage-cta-buttons">
-            <button
-              className="photo-upload-button"
-              type="button"
-              onClick={() => navigate('/storage/photo-upload', { state: { storageId: selectedStorageId, storageName: detail?.name } })}
-            >
-              사진 업로드하기
-            </button>
-            <button
-              className="ai-recommend-button"
-              type="button"
-              onClick={() => navigate('/storage/ai', { state: { storageId: selectedStorageId } })}
-            >
-              AI 추천 받기
-            </button>
-          </div>
-        </div>
-      </main>
+          </main>
+        </>
+      )}
       <Footer />
     </div>
   )

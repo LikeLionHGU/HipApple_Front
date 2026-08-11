@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { getStorages, getMajorSchedules, type StorageSummary, type MajorSchedule } from '../api/storage'
+import { getStorage, getStorages, getMajorSchedules, type StorageDetail, type StorageSummary, type MajorSchedule } from '../api/storage'
 import { getMe, type UserMe } from '../api/user'
 import { getMonthlySchedules, createSchedule, deleteSchedule, type Schedule } from '../api/schedule'
 import { getPriceHistory, type PricePredictionHistoryResponse, type PricePredictionPeriod } from '../api/pricePrediction'
@@ -89,6 +89,7 @@ function MyPage() {
   const [storages, setStorages] = useState<StorageSummary[]>([])
   const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
   const [majorSchedules, setMajorSchedules] = useState<MajorSchedule[]>([])
+  const [detail, setDetail] = useState<StorageDetail | null>(null)
 
   const today = useMemo(() => new Date(), [])
   const [viewYear, setViewYear] = useState(today.getFullYear())
@@ -115,6 +116,8 @@ function MyPage() {
   useEffect(() => {
     if (selectedStorageId == null) return
     getMajorSchedules(selectedStorageId).then(setMajorSchedules).catch(() => setMajorSchedules([]))
+    // '4. 분석 기간 요약'에 바인딩할 AI 분석/저장 환경 요약(periodSummary)을 함께 조회한다
+    getStorage(selectedStorageId).then(setDetail).catch(() => setDetail(null))
   }, [selectedStorageId])
 
   const refetchSchedules = () => {
@@ -175,20 +178,8 @@ function MyPage() {
       .catch(() => setHistory(null))
   }, [period])
 
-  const summary = useMemo(() => {
-    if (!history || history.tableRows.length === 0) return null
-    const predicted = history.tableRows.map(r => r.predictedPrice)
-    const up = history.tableRows.filter(r => r.changeRate > 0).length
-    const down = history.tableRows.filter(r => r.changeRate < 0).length
-    return {
-      count: history.tableRows.length,
-      max: Math.max(...predicted),
-      min: Math.min(...predicted),
-      avg: Math.round(predicted.reduce((a, b) => a + b, 0) / predicted.length),
-      up,
-      down,
-    }
-  }, [history])
+  const aiAnalysisSummary = detail?.periodSummary?.aiAnalysisSummary
+  const storageEnvironmentSummary = detail?.periodSummary?.storageEnvironmentSummary
 
   return (
     <div className="mypage">
@@ -369,14 +360,32 @@ function MyPage() {
 
             <section className="mypage-report-panel">
               <h3>4. 분석 기간 요약</h3>
-              {summary ? (
-                <div className="mypage-summary-grid">
-                  <div><span>AI 분석 횟수</span><strong>{summary.count}회</strong></div>
-                  <div><span>최고 예측 가격</span><strong>{summary.max.toLocaleString()}원/kg</strong></div>
-                  <div><span>최저 예측 가격</span><strong>{summary.min.toLocaleString()}원/kg</strong></div>
-                  <div><span>평균 예측 가격</span><strong>{summary.avg.toLocaleString()}원/kg</strong></div>
-                  <div><span>가격 상승일 수</span><strong>{summary.up}일</strong></div>
-                  <div><span>가격 하락일 수</span><strong>{summary.down}일</strong></div>
+              {aiAnalysisSummary || storageEnvironmentSummary ? (
+                <div className="mypage-period-summary">
+                  <div className="mypage-period-summary-col">
+                    <span className="mypage-period-summary-title">AI 분석 요약</span>
+                    <dl>
+                      <div><dt>AI 분석 횟수</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.analysisCount}회` : '-'}</dd></div>
+                      <div><dt>AI 출하 추천 횟수</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.shipmentRecommendationCount}회` : '-'}</dd></div>
+                      <div><dt>최고 예측 가격</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.maxPredictedPrice.toLocaleString()}원/kg` : '-'}</dd></div>
+                      <div><dt>최저 예측 가격</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.minPredictedPrice.toLocaleString()}원/kg` : '-'}</dd></div>
+                      <div><dt>평균 예측 가격</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.avgPredictedPrice.toLocaleString()}원/kg` : '-'}</dd></div>
+                      <div><dt>가격 상승일 수</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.priceIncreaseDays}일` : '-'}</dd></div>
+                      <div><dt>가격 하락일 수</dt><dd>{aiAnalysisSummary ? `${aiAnalysisSummary.priceDecreaseDays}일` : '-'}</dd></div>
+                    </dl>
+                  </div>
+                  <div className="mypage-period-summary-col">
+                    <span className="mypage-period-summary-title">저장 환경 요약</span>
+                    <dl>
+                      <div><dt>평균 온도</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.avgTemperature}°C` : '-'}</dd></div>
+                      <div><dt>평균 습도</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.avgHumidity}%` : '-'}</dd></div>
+                      <div><dt>평균 CO2</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.avgCo2}ppm` : '-'}</dd></div>
+                      <div><dt>온도 임계값 이탈</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.tempDeviationCount}회` : '-'}</dd></div>
+                      <div><dt>습도 임계값 이탈</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.humidityDeviationCount}회` : '-'}</dd></div>
+                      <div><dt>CO2 이상 감지</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.co2AnomalyCount}회` : '-'}</dd></div>
+                      <div><dt>환경 안정성 점수</dt><dd>{storageEnvironmentSummary ? `${storageEnvironmentSummary.environmentStabilityScore}/100` : '-'}</dd></div>
+                    </dl>
+                  </div>
                 </div>
               ) : (
                 <p className="mypage-empty">표시할 데이터가 없습니다.</p>

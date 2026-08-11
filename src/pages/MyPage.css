@@ -445,25 +445,57 @@
   color: #15dc92;
 }
 
-.mypage-summary-grid {
+.mypage-period-summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
 }
 
-.mypage-summary-grid > div {
+.mypage-period-summary-col {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 10px;
+  min-width: 0;
 }
 
-.mypage-summary-grid span {
-  font-size: 12px;
+.mypage-period-summary-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.mypage-period-summary-col dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mypage-period-summary-col dl > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mypage-period-summary-col dt {
   color: #9ca3af;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
-.mypage-summary-grid strong {
-  font-size: 16px;
+.mypage-period-summary-col dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .mypage-period-summary {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 /* ===== 일정 추가 모달 ===== */

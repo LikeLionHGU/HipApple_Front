@@ -231,11 +231,29 @@
   font-weight: 600;
 }
 
+.m-mypage-period-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.m-mypage-period-summary-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.m-mypage-period-summary-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
 .m-mypage-summary-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 16px;
 }
 
 .m-mypage-summary-grid > div {
