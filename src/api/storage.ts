@@ -58,6 +58,20 @@ export type AnalysisPeriodSummary = {
   storageEnvironmentSummary: StorageEnvironmentSummary
 }
 
+// 시장 분석 기록 1건 (마이페이지 리포트 "2. 시장 분석 기록"에 대응)
+export type MarketAnalysisRecord = {
+  date: string
+  content: string
+}
+
+// 가격 예측 이력 1건 (예측가 vs 실제가 비교)
+export type PredictionHistory = {
+  date: string
+  predictedPrice: number
+  actualPrice: number
+  changeRate: number
+}
+
 export type StorageDetail = {
   storageId: number
   name: string
@@ -88,6 +102,10 @@ export type StorageDetail = {
   qualityConfidence?: string
   qualityCheckedAt?: string
   periodSummary?: AnalysisPeriodSummary
+  // 시장 분석 기록 (마이페이지 리포트 "2. 시장 분석 기록"에 대응)
+  marketAnalysisRecords?: MarketAnalysisRecord[]
+  // 예측가 vs 실제가 이력
+  predictionHistories?: PredictionHistory[]
 }
 
 // 사진 기반 AI 사과 품질 판정 응답
