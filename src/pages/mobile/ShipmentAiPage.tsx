@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import MobileHeader from '../../components/MobileHeader'
 import MobileTabBar from '../../components/MobileTabBar'
@@ -246,11 +246,21 @@ function MobileShipmentAiPage() {
   }, [storageId, retryCount])
 
   const today = useMemo(() => new Date(), [])
+  const recommendedCardRef = useRef<HTMLElement | null>(null)
 
   // 내일(D+1)부터 7일 뒤(D+7)까지 항상 7개 카드를 만든다 (백엔드 데이터가 없는 날짜는 대체 카드로 채움)
   const dailyCards = useMemo(() => buildDailyCards(detail, forecast, today), [detail, forecast, today])
-  // 출하 추천일은 shipmentRecommendation("YYYY-MM-DD")을 그대로 사용한다
-  const recommendedDate = detail ? parseIsoDate(detail.shipmentRecommendation) : null
+  // 출하 추천일은 shipmentRecommendation("YYYY-MM-DD")을 그대로 사용한다 — 추천일 문자열이 바뀔 때만 새로 계산해 자동 스크롤이 매 렌더마다 재실행되지 않게 한다
+  const recommendedDate = useMemo(
+    () => (detail ? parseIsoDate(detail.shipmentRecommendation) : null),
+    [detail?.shipmentRecommendation],
+  )
+
+  // 화면 진입 시 'AI 추천' 뱃지가 달린 카드를 가로 스크롤 영역 중앙으로 자동 이동
+  useEffect(() => {
+    if (!recommendedDate) return
+    recommendedCardRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+  }, [recommendedDate])
 
   // shipmentAnalyses에 해당 날짜 예측가가 없을 때(예: 추천일이 5일 비교 구간 밖인 경우)를 대비해 /price/me 예측을 폴백으로 사용
   const predictedPriceForDate = (date: Date) => {
@@ -351,7 +361,11 @@ function MobileShipmentAiPage() {
                     const recommended = recommendedDate ? toIsoDate(recommendedDate) === card.iso : false
                     const tierIcon = card.qualityStatus ? TIER_ICONS[card.qualityStatus] : undefined
                     return (
-                      <article className={`m-daily-card ${recommended ? 'recommended' : ''}`} key={card.iso}>
+                      <article
+                        className={`m-daily-card ${recommended ? 'recommended' : ''}`}
+                        key={card.iso}
+                        ref={recommended ? recommendedCardRef : undefined}
+                      >
                         {recommended && <span className="m-ai-tag">AI 추천</span>}
                         <strong>{formatMonthDay(card.date)}</strong>
                         {(tierIcon || card.event) && (

@@ -131,6 +131,7 @@ function MobileMyPage() {
 
   const aiAnalysisSummary = detail?.periodSummary?.aiAnalysisSummary
   const storageEnvironmentSummary = detail?.periodSummary?.storageEnvironmentSummary
+  const marketAnalysisRecords = detail?.marketAnalysisRecords ?? []
 
   return (
     <div className="m-app with-tabbar">
@@ -290,8 +291,18 @@ function MobileMyPage() {
 
         <section className="m-mypage-card">
           <h2>시장 분석 기록</h2>
-          {/* 시장 분석 기록 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
-          <p className="m-mypage-empty">아직 시장 분석 기록이 없습니다. 데이터가 쌓이면 이곳에 표시돼요.</p>
+          {marketAnalysisRecords.length === 0 ? (
+            <p className="m-mypage-empty">아직 시장 분석 기록이 없습니다. 데이터가 쌓이면 이곳에 표시돼요.</p>
+          ) : (
+            <ul className="m-mypage-market-list">
+              {marketAnalysisRecords.map(record => (
+                <li className="m-mypage-market-item" key={`${record.date}-${record.content}`}>
+                  <span className="m-mypage-market-date">{record.date}</span>
+                  <p className="m-mypage-market-content">{record.content}</p>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section className="m-mypage-card">

@@ -180,10 +180,10 @@
 .ai-summary-grid { display: grid; grid-template-columns: 319px 1fr; gap: 24px; margin-top: 8px; }
 .recommendation-card, .analysis-card { box-sizing: border-box; border-radius: 20px; }
 .recommendation-card { min-height: 186px; padding: 39px 36px; background: #15dc92; color: #fff; box-shadow: 0 0 10px rgba(21, 220, 146, 0.3); }
-.recommendation-top-row { display: flex; align-items: baseline; gap: 12px; }
-.recommendation-label { font-size: 24px; font-weight: 400; }
-.recommendation-days { font-size: 20px; font-weight: 500; line-height: 32px; opacity: 0.5; }
-.recommendation-date { display: block; margin-top: 30px; font-size: 64px; line-height: 45px; font-weight: 700; }
+.recommendation-top-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.recommendation-label { font-size: 24px; font-weight: 400; white-space: nowrap; }
+.recommendation-days { font-size: 20px; font-weight: 500; line-height: 1.4; opacity: 0.5; white-space: nowrap; }
+.recommendation-date { display: block; margin-top: 24px; font-size: 52px; line-height: 1.2; font-weight: 700; white-space: nowrap; }
 
 .analysis-card {
   position: relative;
