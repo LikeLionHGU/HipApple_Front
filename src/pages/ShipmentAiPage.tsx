@@ -293,11 +293,21 @@ function ShipmentAiPage() {
   // 오늘 날짜 (컴포넌트 생애주기 동안 고정)
   const today = useMemo(() => new Date(), [])
   const dailyListRef = useRef<HTMLDivElement>(null)
+  const recommendedCardRef = useRef<HTMLElement | null>(null)
 
   // 내일(D+1)부터 7일 뒤(D+7)까지 항상 7개 카드를 만든다 (백엔드 데이터가 없는 날짜는 대체 카드로 채움)
   const dailyCards = useMemo(() => buildDailyCards(detail, forecast, today), [detail, forecast, today])
-  // 출하 추천일은 shipmentRecommendation("YYYY-MM-DD")을 그대로 사용한다
-  const recommendedDate = detail ? parseIsoDate(detail.shipmentRecommendation) : null
+  // 출하 추천일은 shipmentRecommendation("YYYY-MM-DD")을 그대로 사용한다 — 추천일 문자열이 바뀔 때만 새로 계산해 자동 스크롤이 매 렌더마다 재실행되지 않게 한다
+  const recommendedDate = useMemo(
+    () => (detail ? parseIsoDate(detail.shipmentRecommendation) : null),
+    [detail?.shipmentRecommendation],
+  )
+
+  // 화면 진입 시 'AI 추천' 뱃지가 달린 카드를 가로 스크롤 영역 중앙으로 자동 이동
+  useEffect(() => {
+    if (!recommendedDate) return
+    recommendedCardRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+  }, [recommendedDate])
 
   useEffect(() => {
     if (dailyCards.length === 0) return
@@ -421,7 +431,11 @@ function ShipmentAiPage() {
                       const recommended = recommendedDate ? toIsoDate(recommendedDate) === card.iso : false
                       const tierIcon = card.qualityStatus ? TIER_ICONS[card.qualityStatus] : undefined
                       return (
-                        <article className={`daily-card ${recommended ? 'recommended' : ''}`} key={card.iso}>
+                        <article
+                          className={`daily-card ${recommended ? 'recommended' : ''}`}
+                          key={card.iso}
+                          ref={recommended ? recommendedCardRef : undefined}
+                        >
                           {recommended && <span className="ai-tag">AI 추천</span>}
                           <img
                             className="weather-icon"

@@ -17,6 +17,37 @@
   margin: 0;
 }
 
+.m-mypage-market-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.m-mypage-market-item {
+  padding: 10px 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.m-mypage-market-date {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #15dc92;
+  margin-bottom: 4px;
+}
+
+.m-mypage-market-content {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #374151;
+}
+
 .m-mypage-info-list {
   margin: 0;
   display: grid;
