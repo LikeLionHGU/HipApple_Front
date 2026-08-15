@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { setToken, verifyOauthState } from '../api/auth'
 import { apiFetch } from '../api/client'
-import farmsignLogo from '../assets/farmsign-logo.svg'
+import farmsignLogo from '../assets/팜사인_로고.svg'
 import Spinner from '../components/Spinner'
 import './LoginPage.css'
 

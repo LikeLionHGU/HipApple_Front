@@ -1,5 +1,5 @@
 import { startGoogleLogin } from '../api/auth'
-import farmsignLogo from '../assets/farmsign-logo.svg'
+import farmsignLogo from '../assets/팜사인_로고.svg'
 import './LoginPage.css'
 
 function LoginPage() {

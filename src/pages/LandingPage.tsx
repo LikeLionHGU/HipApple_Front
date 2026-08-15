@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { isLoggedIn, startGoogleLogin } from "../api/auth";
-import farmsignLogo from "../assets/farmsign-logo.svg";
+import farmsignLogo from "../assets/팜사인_로고.svg";
 import redAppleIcon from "../assets/redapple.svg";
 import greenAppleIcon from "../assets/greenapple.svg";
 import Footer from "../components/Footer";
