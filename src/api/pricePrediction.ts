@@ -20,13 +20,13 @@ export type PricePredictionHistoryResponse = {
   tableRows: PricePredictionTableRow[]
 }
 
+// 백엔드 스펙(GET /api/price-predictions)이 받는 쿼리 파라미터는 period 하나뿐이다 (기본값 SIX_MONTHS)
 export type PricePredictionHistoryParams = {
-  cropType: string
   period?: PricePredictionPeriod
 }
 
 // AI 가격 예측 이력 (마이페이지 리포트)
-export const getPriceHistory = ({ cropType, period }: PricePredictionHistoryParams) => {
-  const query = new URLSearchParams({ cropType, ...(period ? { period } : {}) }).toString()
-  return apiFetch<PricePredictionHistoryResponse>(`/api/price-predictions?${query}`)
+export const getPriceHistory = ({ period }: PricePredictionHistoryParams = {}) => {
+  const query = period ? `?${new URLSearchParams({ period }).toString()}` : ''
+  return apiFetch<PricePredictionHistoryResponse>(`/api/price-predictions${query}`)
 }

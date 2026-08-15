@@ -127,6 +127,39 @@ export type MajorSchedule = {
   eventType: string
 }
 
+// 품질 및 저장 환경 변화 조회 응답 (마이페이지 리포트 "3. 품질 및 저장 환경 변화"에 대응)
+export type StorageEnvironmentStatus = {
+  storageName: string
+  temperature: number
+  humidity: number
+  ethylene: number
+  storageDays: number
+  lastUpdated: string
+}
+
+// 품질 점수 변화 추이 그래프의 점 1개
+export type QualityTrendPoint = {
+  date: string
+  score: number
+}
+
+// 현재 품질 정보 박스에 바인딩할 값
+export type CurrentQualityMetrics = {
+  grade: string
+  score: number
+  maxScore: number
+  estimatedStorageDays: number
+  degradationSpeed: string
+}
+
+export type QualityStorageStatusResponse = {
+  status: string
+  title: string
+  storageEnvironment: StorageEnvironmentStatus
+  trendData: QualityTrendPoint[]
+  currentMetrics: CurrentQualityMetrics
+}
+
 // 전체 저장고 조회
 export const getStorages = () => apiFetch<StorageSummary[]>('/storage')
 
@@ -176,3 +209,7 @@ export const myStorageNames = () => apiFetch<string[]>('/storage/me')
 // 저장고의 주요 일정 목록
 export const getMajorSchedules = (storageId: number) =>
   apiFetch<MajorSchedule[]>(`/storage/${storageId}/major-schedules`)
+
+// 품질 및 저장 환경 변화 조회 (저장고 현황 + 시계열 차트 + 현재 품질 정보)
+export const getQualityStorageStatus = (storageId: number) =>
+  apiFetch<QualityStorageStatusResponse>(`/storage/${storageId}/quality-status`)
