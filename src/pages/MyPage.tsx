@@ -434,7 +434,7 @@ function MyPage() {
               )}
             </section>
 
-            <section className="mypage-report-panel">
+            <section className="mypage-report-panel mypage-market-panel">
               <h3>2. 시장 분석 기록</h3>
               {marketAnalysisRecords.length === 0 ? (
                 <p className="mypage-empty">아직 시장 분석 기록이 없습니다. 데이터가 쌓이면 이곳에 표시돼요.</p>
