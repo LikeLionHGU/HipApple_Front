@@ -297,7 +297,9 @@
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
+  /* 2번 카드를 absolute + grid-column/row로 고정 배치하기 위한 containing block */
+  position: relative;
 }
 
 .mypage-report-panel {
@@ -306,6 +308,36 @@
   padding: 24px;
   box-sizing: border-box;
 }
+
+/*
+ * 1번 카드(AI 가격 예측 이력)를 높이의 기준(Master)으로 삼는다.
+ * 2번 카드가 일반 grid item으로 남아있으면, 리스트 항목이 아무리 많아도
+ * grid의 auto row는 "그 행에서 가장 큰 콘텐츠"를 기준으로 커지기 때문에
+ * 2번 카드의 리스트 전체 높이만큼 1번 카드까지 함께 늘어나 하단에 빈 공간이 생긴다.
+ * position: absolute + 명시적 grid-column/row를 주면 2번 카드는 grid의 auto-track
+ * 계산(intrinsic sizing)에서 완전히 제외되고, 1번 카드 혼자 행 높이를 결정한 뒤
+ * 그 결과(고정 높이) 셀에 딱 맞춰 배치된다. 이후 내부 리스트는 flex:1 + overflow-y:auto로
+ * 정상적으로 스크롤된다.
+ */
+.mypage-market-panel {
+  position: absolute;
+  /* 절대배치된 grid item은 끝 라인을 auto로 두면 "그리드 끝까지"로 해석되어 2행까지 통째로 잡아먹으므로,
+     시작/끝 라인을 모두 명시해 정확히 1행 2열 셀 하나로만 범위를 제한한다 */
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * 2번 카드가 position:absolute로 auto-placement 흐름에서 빠지면, 나머지 카드(1·3·4번)의
+ * 자동 배치 순서가 밀리면서 3번 카드가 2번 자리(1행 2열)로 끌려온다.
+ * 그래서 나머지 카드도 명시적으로 셀을 지정해 순서가 밀리지 않도록 고정한다.
+ */
+.mypage-report-grid > .mypage-report-panel:nth-child(1) { grid-column: 1; grid-row: 1; }
+.mypage-report-grid > .mypage-report-panel:nth-child(3) { grid-column: 1; grid-row: 2; }
+.mypage-report-grid > .mypage-report-panel:nth-child(4) { grid-column: 2; grid-row: 2; }
 
 .mypage-report-panel h3 {
   margin: 0 0 16px;
@@ -316,33 +348,53 @@
 .mypage-market-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
   margin: 0;
   padding: 0;
   list-style: none;
-  max-height: 260px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  /* 얇고 깔끔한 커스텀 스크롤바 */
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+
+.mypage-market-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mypage-market-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mypage-market-list::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
+.mypage-market-list::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
 }
 
 .mypage-market-item {
-  padding: 12px 14px;
-  border: 1px solid #f0f0f0;
-  border-radius: 12px;
-  background: #fafafa;
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
 }
 
 .mypage-market-date {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  color: #15dc92;
-  margin-bottom: 4px;
+  flex: 0 0 76px;
+  font-size: 13px;
+  color: #9ca3af;
 }
 
 .mypage-market-content {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: #374151;
 }
 
@@ -623,4 +675,10 @@
 @media (max-width: 960px) {
   .mypage-top-grid { grid-template-columns: 1fr; }
   .mypage-report-grid { grid-template-columns: 1fr; }
+
+  /* 1열 레이아웃에서는 카드가 세로로 쌓이므로 1번 카드에 높이를 맞출 필요가 없다 — absolute 배치를 해제하고 일반 흐름으로 되돌린다 */
+  .mypage-market-panel {
+    position: static;
+    inset: auto;
+  }
 }

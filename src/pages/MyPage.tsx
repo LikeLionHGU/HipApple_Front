@@ -2,10 +2,26 @@ import { useEffect, useMemo, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import HeroBanner from '../components/HeroBanner'
-import { getStorage, getStorages, getMajorSchedules, type StorageDetail, type StorageSummary, type MajorSchedule } from '../api/storage'
+import {
+  getStorage,
+  getStorages,
+  getMajorSchedules,
+  getQualityStorageStatus,
+  type StorageDetail,
+  type StorageSummary,
+  type MajorSchedule,
+  type QualityStorageStatusResponse,
+  type QualityTrendPoint,
+} from '../api/storage'
 import { getMe, type UserMe } from '../api/user'
 import { getMonthlySchedules, createSchedule, deleteSchedule, type Schedule } from '../api/schedule'
-import { getPriceHistory, type PricePredictionHistoryResponse, type PricePredictionPeriod } from '../api/pricePrediction'
+import {
+  getPriceHistory,
+  type PricePredictionHistoryResponse,
+  type PricePredictionChartPoint,
+  type PricePredictionTableRow,
+  type PricePredictionPeriod,
+} from '../api/pricePrediction'
 import './MyPage.css'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
@@ -42,7 +58,7 @@ function buildCalendarWeeks(year: number, month: number): (number | null)[][] {
   return weeks
 }
 
-// 품질 점수 추이 그래프 — 연결된 백엔드 리포트 API가 없어 피그마 카드 모양만 유지하는 플레이스홀더
+// trendData가 비어있을 때(분석 이력 없음) 카드 모양만 유지하는 플레이스홀더
 function QualityTrendPlaceholder() {
   const width = 280
   const height = 90
@@ -52,6 +68,87 @@ function QualityTrendPlaceholder() {
       <line x1="0" y1={y} x2={width} y2={y} stroke="#e5e7eb" strokeWidth="2" strokeDasharray="6 6" />
     </svg>
   )
+}
+
+// 품질 점수 변화 추이 그래프 (리포트 "3. 품질 및 저장 환경 변화")
+function QualityTrendChart({ data }: { data: QualityTrendPoint[] }) {
+  if (data.length === 0) return <QualityTrendPlaceholder />
+
+  const width = 280
+  const height = 100
+  const padding = { top: 10, right: 8, bottom: 20, left: 8 }
+  const scores = data.map(p => p.score)
+  const min = Math.min(...scores)
+  const max = Math.max(...scores)
+  const range = max - min || 1
+
+  const toX = (i: number) => padding.left + (i / Math.max(1, data.length - 1)) * (width - padding.left - padding.right)
+  const toY = (v: number) => padding.top + (1 - (v - min) / range) * (height - padding.top - padding.bottom)
+  const linePoints = data.map((p, i) => `${toX(i)},${toY(p.score)}`).join(' ')
+
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="mypage-quality-chart-svg">
+      <polyline points={linePoints} fill="none" stroke="#15dc92" strokeWidth="2" />
+      {data.map((p, i) => <circle key={p.date} cx={toX(i)} cy={toY(p.score)} r="3" fill="#15dc92" />)}
+      {data.map((p, i) => (
+        <text key={p.date} x={toX(i)} y={height - 4} fontSize="9" fill="#9ca3af" textAnchor="middle">
+          {p.date.slice(5)}
+        </text>
+      ))}
+    </svg>
+  )
+}
+
+// 피그마 디자인 스펙의 "1. AI 가격 예측 이력" 6개월 예시 곡선 — 오늘 날짜 기준 상대 오프셋으로 재구성해 하드코딩 날짜 없이 재사용한다
+const MOCK_PRICE_ANCHORS: { daysAgoRatio: number; predictedPrice: number; actualPrice: number }[] = [
+  { daysAgoRatio: 1, predictedPrice: 3850, actualPrice: 3720 },
+  { daysAgoRatio: 0.75, predictedPrice: 4120, actualPrice: 3980 },
+  { daysAgoRatio: 0.5, predictedPrice: 4530, actualPrice: 4210 },
+  { daysAgoRatio: 0.25, predictedPrice: 4910, actualPrice: 4560 },
+  { daysAgoRatio: 0, predictedPrice: 4780, actualPrice: 4430 },
+]
+
+const MOCK_PERIOD_SPAN_DAYS: Record<PricePredictionPeriod, number> = {
+  ONE_MONTH: 30,
+  SIX_MONTHS: 180,
+  ONE_YEAR: 360,
+}
+
+// 백엔드 응답이 비어있거나 실패했을 때만 사용하는 Fallback — 피그마 레이아웃(차트+표)이 항상 노출되도록 채운다
+function buildMockPriceHistory(period: PricePredictionPeriod, today: Date): PricePredictionHistoryResponse {
+  const spanDays = MOCK_PERIOD_SPAN_DAYS[period]
+  const anchors = MOCK_PRICE_ANCHORS.map(anchor => {
+    const daysAgo = Math.round(anchor.daysAgoRatio * spanDays)
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo)
+    return { date: toIsoDate(date), predictedPrice: anchor.predictedPrice, actualPrice: anchor.actualPrice }
+  })
+
+  const tableRows: PricePredictionTableRow[] = anchors.map((point, index) => {
+    const prevPrice = anchors[index - 1]?.predictedPrice
+    const changeRate = prevPrice ? Number((((point.predictedPrice - prevPrice) / prevPrice) * 100).toFixed(1)) : 0
+    return { ...point, changeRate }
+  })
+
+  // 앵커 사이를 선형 보간해 차트 라인을 부드럽게 채운다
+  const STEPS_PER_SEGMENT = 4
+  const chartPoints: PricePredictionChartPoint[] = []
+  for (let i = 0; i < anchors.length - 1; i++) {
+    const from = anchors[i]
+    const to = anchors[i + 1]
+    const fromTime = new Date(from.date).getTime()
+    const toTime = new Date(to.date).getTime()
+    for (let step = 0; step < STEPS_PER_SEGMENT; step++) {
+      const t = step / STEPS_PER_SEGMENT
+      chartPoints.push({
+        date: toIsoDate(new Date(fromTime + (toTime - fromTime) * t)),
+        predictedPrice: Math.round(from.predictedPrice + (to.predictedPrice - from.predictedPrice) * t),
+        actualPrice: Math.round(from.actualPrice + (to.actualPrice - from.actualPrice) * t),
+      })
+    }
+  }
+  chartPoints.push(anchors[anchors.length - 1])
+
+  return { chartPoints, tableRows }
 }
 
 function PricePredictionChart({ data }: { data: PricePredictionHistoryResponse }) {
@@ -91,6 +188,7 @@ function MyPage() {
   const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
   const [majorSchedules, setMajorSchedules] = useState<MajorSchedule[]>([])
   const [detail, setDetail] = useState<StorageDetail | null>(null)
+  const [qualityStatus, setQualityStatus] = useState<QualityStorageStatusResponse | null>(null)
 
   const today = useMemo(() => new Date(), [])
   const [viewYear, setViewYear] = useState(today.getFullYear())
@@ -119,6 +217,8 @@ function MyPage() {
     getMajorSchedules(selectedStorageId).then(setMajorSchedules).catch(() => setMajorSchedules([]))
     // '4. 분석 기간 요약'에 바인딩할 AI 분석/저장 환경 요약(periodSummary)을 함께 조회한다
     getStorage(selectedStorageId).then(setDetail).catch(() => setDetail(null))
+    // '3. 품질 및 저장 환경 변화'에 바인딩할 품질 점수 추이/현재 품질 정보를 조회한다
+    getQualityStorageStatus(selectedStorageId).then(setQualityStatus).catch(() => setQualityStatus(null))
   }, [selectedStorageId])
 
   const refetchSchedules = () => {
@@ -174,10 +274,13 @@ function MyPage() {
   }
 
   useEffect(() => {
-    getPriceHistory({ cropType: '사과', period })
-      .then(setHistory)
-      .catch(() => setHistory(null))
-  }, [period])
+    getPriceHistory({ period })
+      .then(result => {
+        const hasData = result.chartPoints.length > 0 || result.tableRows.length > 0
+        setHistory(hasData ? result : buildMockPriceHistory(period, today))
+      })
+      .catch(() => setHistory(buildMockPriceHistory(period, today)))
+  }, [period, today])
 
   const aiAnalysisSummary = detail?.periodSummary?.aiAnalysisSummary
   const storageEnvironmentSummary = detail?.periodSummary?.storageEnvironmentSummary
@@ -331,7 +434,7 @@ function MyPage() {
               )}
             </section>
 
-            <section className="mypage-report-panel">
+            <section className="mypage-report-panel mypage-market-panel">
               <h3>2. 시장 분석 기록</h3>
               {marketAnalysisRecords.length === 0 ? (
                 <p className="mypage-empty">아직 시장 분석 기록이 없습니다. 데이터가 쌓이면 이곳에 표시돼요.</p>
@@ -349,19 +452,20 @@ function MyPage() {
 
             <section className="mypage-report-panel mypage-quality-panel">
               <h3>3. 품질 및 저장 환경 변화</h3>
-              {/* 품질/저장환경 리포트 API가 아직 없어, 카드 레이아웃만 유지한 채 플레이스홀더로 대체 */}
               <div className="mypage-quality-body">
                 <div className="mypage-quality-chart">
                   <span className="mypage-quality-chart-label">품질 점수 변화 추이</span>
-                  <QualityTrendPlaceholder />
+                  <QualityTrendChart data={qualityStatus?.trendData ?? []} />
                 </div>
                 <div className="mypage-quality-box">
                   <span className="mypage-quality-box-label">현재 품질 정보</span>
                   <dl>
-                    <dt>현재 품질 등급</dt><dd>-</dd>
-                    <dt>품질 점수</dt><dd>-</dd>
-                    <dt>예상 저장 가능 기간</dt><dd>-</dd>
-                    <dt>품질 저하 속도</dt><dd>-</dd>
+                    <dt>현재 품질 등급</dt><dd>{qualityStatus?.currentMetrics.grade ?? '-'}</dd>
+                    <dt>품질 점수</dt>
+                    <dd>{qualityStatus ? `${qualityStatus.currentMetrics.score}/${qualityStatus.currentMetrics.maxScore}` : '-'}</dd>
+                    <dt>예상 저장 가능 기간</dt>
+                    <dd>{qualityStatus ? `${qualityStatus.currentMetrics.estimatedStorageDays}일` : '-'}</dd>
+                    <dt>품질 저하 속도</dt><dd>{qualityStatus?.currentMetrics.degradationSpeed ?? '-'}</dd>
                   </dl>
                 </div>
               </div>
