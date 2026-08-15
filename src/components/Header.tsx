@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import farmsignLogo from "../assets/farmsign-logo.svg";
+import farmsignLogo from "../assets/팜사인_로고.svg";
 import mypageIcon from "../assets/mypage.svg";
 import { logout } from "../api/auth";
 import "./Header.css";
