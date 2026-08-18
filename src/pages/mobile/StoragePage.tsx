@@ -7,8 +7,14 @@ import AppleLoading from '../../components/AppleLoading'
 import suitableIcon from '../../assets/적합.svg'
 import cautionIcon from '../../assets/주의.svg'
 import { getStorage, getStorages, type StorageDetail, type StorageSummary } from '../../api/storage'
+import { readCache, writeCache } from '../../utils/cache'
+import { useLoadingCap } from '../../hooks/useLoadingCap'
+import { buildMockStorageDetail } from '../../utils/mockData'
 import './app.css'
 import './StoragePage.css'
+
+const STORAGES_CACHE_KEY = 'storage:storages'
+const storageDetailCacheKey = (id: number) => `storage:detail:${id}`
 
 type StorageStatus = 'good' | 'warning'
 type StorageMetric = { label: string; value: string; description: string; status: StorageStatus }
@@ -54,34 +60,58 @@ function formatMeasurementDate(detail: StorageDetail) {
 
 function MobileStoragePage() {
   const navigate = useNavigate()
-  const [storages, setStorages] = useState<StorageSummary[]>([])
-  const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
-  const [detail, setDetail] = useState<StorageDetail | null>(null)
+  // 모듈 top-level이 아니라 마운트 시점에서 읽어야, SPA 내에서 다른 페이지를 갔다가 돌아왔을 때도
+  // 그사이 채워진 최신 캐시를 즉시 반영해 전면 로딩이 다시 뜨지 않는다
+  const cachedStorages = readCache<StorageSummary[]>(STORAGES_CACHE_KEY)
+  const [storages, setStorages] = useState<StorageSummary[]>(cachedStorages ?? [])
+  const [selectedStorageId, setSelectedStorageId] = useState<number | null>(cachedStorages?.[0]?.storageId ?? null)
+  const [detail, setDetail] = useState<StorageDetail | null>(() =>
+    cachedStorages?.[0] ? readCache<StorageDetail>(storageDetailCacheKey(cachedStorages[0].storageId)) : null,
+  )
   const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(!cachedStorages)
+
+  // 2초가 지나도 응답이 없으면 로딩 화면을 걷어내고, 실제 데이터가 아직 없을 때만 더미 데이터로 레이아웃을 채운다
+  useLoadingCap(isLoading, () => {
+    setIsLoading(false)
+    setDetail(current => current ?? buildMockStorageDetail(new Date()))
+  })
 
   useEffect(() => {
     getStorages()
       .then(list => {
         setStorages(list)
+        writeCache(STORAGES_CACHE_KEY, list)
         if (list.length > 0) {
-          setSelectedStorageId(list[0].storageId)
+          setSelectedStorageId(current => current ?? list[0].storageId)
         } else {
+          setDetail(null)
           setIsLoading(false)
         }
       })
       .catch(err => {
-        setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.')
+        if (storages.length === 0) setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.')
         setIsLoading(false)
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     if (selectedStorageId == null) return
-    setIsLoading(true)
+    const cachedDetail = readCache<StorageDetail>(storageDetailCacheKey(selectedStorageId))
+    if (cachedDetail) {
+      setDetail(cachedDetail)
+    } else {
+      setIsLoading(true)
+    }
     getStorage(selectedStorageId)
-      .then(setDetail)
-      .catch(err => setError(err instanceof Error ? err.message : '저장고 정보를 불러오지 못했습니다.'))
+      .then(result => {
+        setDetail(result)
+        writeCache(storageDetailCacheKey(selectedStorageId), result)
+      })
+      .catch(err => {
+        if (!cachedDetail) setError(err instanceof Error ? err.message : '저장고 정보를 불러오지 못했습니다.')
+      })
       .finally(() => setIsLoading(false))
   }, [selectedStorageId])
 

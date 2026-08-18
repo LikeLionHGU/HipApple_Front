@@ -22,7 +22,15 @@ import {
   type PricePredictionTableRow,
   type PricePredictionPeriod,
 } from '../api/pricePrediction'
+import { readCache, writeCache } from '../utils/cache'
 import './MyPage.css'
+
+const USER_CACHE_KEY = 'mypage:user'
+const STORAGES_CACHE_KEY = 'mypage:storages'
+const majorSchedulesCacheKey = (id: number) => `mypage:majorSchedules:${id}`
+const detailCacheKey = (id: number) => `mypage:detail:${id}`
+const qualityStatusCacheKey = (id: number) => `mypage:quality:${id}`
+const priceHistoryCacheKey = (period: PricePredictionPeriod) => `mypage:priceHistory:${period}`
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -183,12 +191,19 @@ function PricePredictionChart({ data }: { data: PricePredictionHistoryResponse }
 }
 
 function MyPage() {
-  const [user, setUser] = useState<UserMe | null>(null)
-  const [storages, setStorages] = useState<StorageSummary[]>([])
-  const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
-  const [majorSchedules, setMajorSchedules] = useState<MajorSchedule[]>([])
-  const [detail, setDetail] = useState<StorageDetail | null>(null)
-  const [qualityStatus, setQualityStatus] = useState<QualityStorageStatusResponse | null>(null)
+  const cachedStorages = readCache<StorageSummary[]>(STORAGES_CACHE_KEY)
+  const [user, setUser] = useState<UserMe | null>(() => readCache<UserMe>(USER_CACHE_KEY))
+  const [storages, setStorages] = useState<StorageSummary[]>(cachedStorages ?? [])
+  const [selectedStorageId, setSelectedStorageId] = useState<number | null>(cachedStorages?.[0]?.storageId ?? null)
+  const [majorSchedules, setMajorSchedules] = useState<MajorSchedule[]>(() =>
+    cachedStorages?.[0] ? readCache<MajorSchedule[]>(majorSchedulesCacheKey(cachedStorages[0].storageId)) ?? [] : [],
+  )
+  const [detail, setDetail] = useState<StorageDetail | null>(() =>
+    cachedStorages?.[0] ? readCache<StorageDetail>(detailCacheKey(cachedStorages[0].storageId)) : null,
+  )
+  const [qualityStatus, setQualityStatus] = useState<QualityStorageStatusResponse | null>(() =>
+    cachedStorages?.[0] ? readCache<QualityStorageStatusResponse>(qualityStatusCacheKey(cachedStorages[0].storageId)) : null,
+  )
 
   const today = useMemo(() => new Date(), [])
   const [viewYear, setViewYear] = useState(today.getFullYear())
@@ -198,27 +213,38 @@ function MyPage() {
   const [modalInput, setModalInput] = useState('')
 
   const [period, setPeriod] = useState<PricePredictionPeriod>('SIX_MONTHS')
-  const [history, setHistory] = useState<PricePredictionHistoryResponse | null>(null)
+  const [history, setHistory] = useState<PricePredictionHistoryResponse | null>(() =>
+    readCache<PricePredictionHistoryResponse>(priceHistoryCacheKey('SIX_MONTHS')),
+  )
 
   const [error, setError] = useState('')
 
+  // 캐시된 값이 있으면 화면엔 이미 반영돼 있으므로, 실패 시에도 지우지 않고 성공할 때만 조용히 갱신한다(SWR)
   useEffect(() => {
-    getMe().then(setUser).catch(() => setUser(null))
+    getMe().then(result => { setUser(result); writeCache(USER_CACHE_KEY, result) }).catch(() => {})
     getStorages()
       .then(list => {
         setStorages(list)
-        if (list.length > 0) setSelectedStorageId(list[0].storageId)
+        writeCache(STORAGES_CACHE_KEY, list)
+        if (list.length > 0) setSelectedStorageId(current => current ?? list[0].storageId)
       })
-      .catch(err => setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.'))
+      .catch(err => { if (storages.length === 0) setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.') })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     if (selectedStorageId == null) return
-    getMajorSchedules(selectedStorageId).then(setMajorSchedules).catch(() => setMajorSchedules([]))
+    getMajorSchedules(selectedStorageId)
+      .then(result => { setMajorSchedules(result); writeCache(majorSchedulesCacheKey(selectedStorageId), result) })
+      .catch(() => {})
     // '4. 분석 기간 요약'에 바인딩할 AI 분석/저장 환경 요약(periodSummary)을 함께 조회한다
-    getStorage(selectedStorageId).then(setDetail).catch(() => setDetail(null))
+    getStorage(selectedStorageId)
+      .then(result => { setDetail(result); writeCache(detailCacheKey(selectedStorageId), result) })
+      .catch(() => {})
     // '3. 품질 및 저장 환경 변화'에 바인딩할 품질 점수 추이/현재 품질 정보를 조회한다
-    getQualityStorageStatus(selectedStorageId).then(setQualityStatus).catch(() => setQualityStatus(null))
+    getQualityStorageStatus(selectedStorageId)
+      .then(result => { setQualityStatus(result); writeCache(qualityStatusCacheKey(selectedStorageId), result) })
+      .catch(() => {})
   }, [selectedStorageId])
 
   const refetchSchedules = () => {
@@ -274,12 +300,20 @@ function MyPage() {
   }
 
   useEffect(() => {
+    const cached = readCache<PricePredictionHistoryResponse>(priceHistoryCacheKey(period))
+    if (cached) setHistory(cached)
+
     getPriceHistory({ period })
       .then(result => {
         const hasData = result.chartPoints.length > 0 || result.tableRows.length > 0
-        setHistory(hasData ? result : buildMockPriceHistory(period, today))
+        if (hasData) {
+          setHistory(result)
+          writeCache(priceHistoryCacheKey(period), result)
+        } else if (!cached) {
+          setHistory(buildMockPriceHistory(period, today))
+        }
       })
-      .catch(() => setHistory(buildMockPriceHistory(period, today)))
+      .catch(() => { if (!cached) setHistory(buildMockPriceHistory(period, today)) })
   }, [period, today])
 
   const aiAnalysisSummary = detail?.periodSummary?.aiAnalysisSummary
