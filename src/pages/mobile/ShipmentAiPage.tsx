@@ -16,8 +16,15 @@ import { getMe } from '../../api/user'
 import { getMyForecast, type ForecastResponse } from '../../api/forecast'
 import { createSchedule } from '../../api/schedule'
 import { getLastAnalyzedStorageId, setLastAnalyzedStorageId } from '../../utils/recentAnalysis'
+import { readCache, writeCache } from '../../utils/cache'
+import { useLoadingCap } from '../../hooks/useLoadingCap'
+import { buildMockStorageDetail } from '../../utils/mockData'
 import './app.css'
 import './ShipmentAiPage.css'
+
+const FARMER_NAME_CACHE_KEY = 'ai:farmerName'
+const MY_FORECAST_CACHE_KEY = 'ai:myForecast'
+const aiDetailCacheKey = (id: number) => `ai:detail:${id}`
 
 function formatMonthDay(date: Date) {
   return `${date.getMonth() + 1}월 ${date.getDate()}일`
@@ -189,19 +196,37 @@ function MobileShipmentAiPage() {
   // 하단 탭바 '출하 AI' 등 storageId 없이 진입한 경우, 가장 최근에 분석했던 저장고를 이어서 보여준다
   const storageId = stateStorageId ?? getLastAnalyzedStorageId() ?? undefined
 
-  const [farmerName, setFarmerName] = useState('')
-  const [detail, setDetail] = useState<StorageDetail | null>(null)
-  const [forecast, setForecast] = useState<ForecastResponse | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [farmerName, setFarmerName] = useState(() => readCache<string>(FARMER_NAME_CACHE_KEY) ?? '')
+  const [detail, setDetail] = useState<StorageDetail | null>(() =>
+    storageId != null ? readCache<StorageDetail>(aiDetailCacheKey(storageId)) : null,
+  )
+  const [forecast, setForecast] = useState<ForecastResponse | null>(() => readCache<ForecastResponse>(MY_FORECAST_CACHE_KEY))
+  const [isLoading, setIsLoading] = useState(() => !(storageId != null && readCache(aiDetailCacheKey(storageId))))
   const [loadError, setLoadError] = useState('')
   const [actionError, setActionError] = useState('')
   const [retryCount, setRetryCount] = useState(0)
   const [isAlarmOpen, setIsAlarmOpen] = useState(false)
   const [alarmSaved, setAlarmSaved] = useState(false)
+  // 현재 detail이 실제/캐시 데이터가 아니라 더미로 채운 것인지 추적한다 — 이후 폴링이 완전히
+  // 실패해서 에러로 전환될 때, 더미를 실제 데이터인 것처럼 계속 보여주지 않고 에러 화면으로 되돌리기 위함
+  const isMockDetailRef = useRef(false)
+
+  // 2초가 지나도 분석 결과가 없으면 로딩 화면을 걷어낸다. 분석 대상 저장고가 있는데도 아직 결과가
+  // 없다면(느린 응답) 더미 데이터로 레이아웃을 채우고, 폴링은 백그라운드에서 계속돼 도착하는 즉시 교체된다
+  useLoadingCap(isLoading, () => {
+    setIsLoading(false)
+    if (storageId != null) {
+      setDetail(current => {
+        if (current) return current
+        isMockDetailRef.current = true
+        return buildMockStorageDetail(new Date())
+      })
+    }
+  })
 
   useEffect(() => {
-    getMe().then(user => setFarmerName(user.name)).catch(() => setFarmerName(''))
-    getMyForecast().then(setForecast).catch(() => setForecast(null))
+    getMe().then(user => { setFarmerName(user.name); writeCache(FARMER_NAME_CACHE_KEY, user.name) }).catch(() => {})
+    getMyForecast().then(result => { setForecast(result); writeCache(MY_FORECAST_CACHE_KEY, result) }).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -212,28 +237,39 @@ function MobileShipmentAiPage() {
     let cancelled = false
     let pollTimer: ReturnType<typeof setTimeout> | undefined
     const startedAt = Date.now()
+    const hasCachedDetail = readCache<StorageDetail>(aiDetailCacheKey(storageId)) != null
+
+    if (!hasCachedDetail) setIsLoading(true)
+    setLoadError('')
+    isMockDetailRef.current = false
 
     const poll = async () => {
-      setIsLoading(true)
-      setLoadError('')
       try {
         setLastAnalyzedStorageId(storageId)
         const result = await startAnalysis(storageId)
         if (cancelled) return
         if (isAnalysisReady(result)) {
+          isMockDetailRef.current = false
           setDetail(result)
+          writeCache(aiDetailCacheKey(storageId), result)
           setIsLoading(false)
           return
         }
         if (Date.now() - startedAt >= ANALYSIS_POLL_TIMEOUT_MS) {
-          setLoadError('AI 분석이 지연되고 있습니다. 잠시 후 다시 시도해주세요.')
+          if (!hasCachedDetail) {
+            setLoadError('AI 분석이 지연되고 있습니다. 잠시 후 다시 시도해주세요.')
+            if (isMockDetailRef.current) setDetail(null)
+          }
           setIsLoading(false)
           return
         }
         pollTimer = setTimeout(poll, ANALYSIS_POLL_INTERVAL_MS)
       } catch (err) {
         if (cancelled) return
-        setLoadError(err instanceof Error ? err.message : 'AI 분석에 실패했습니다.')
+        if (!hasCachedDetail) {
+          setLoadError(err instanceof Error ? err.message : 'AI 분석에 실패했습니다.')
+          if (isMockDetailRef.current) setDetail(null)
+        }
         setIsLoading(false)
       }
     }

@@ -9,7 +9,13 @@ import cautionIcon from '../assets/주의.svg'
 import qualityGoodBadge from '../assets/quality-badge-적합.svg'
 import qualityWarningBadge from '../assets/quality-badge-주의.svg'
 import { getStorage, getStorages, type StorageDetail, type StorageSummary } from '../api/storage'
+import { readCache, writeCache } from '../utils/cache'
+import { useLoadingCap } from '../hooks/useLoadingCap'
+import { buildMockStorageDetail } from '../utils/mockData'
 import './StoragePage.css'
+
+const STORAGES_CACHE_KEY = 'storage:storages'
+const storageDetailCacheKey = (id: number) => `storage:detail:${id}`
 
 type StorageStatus = 'good' | 'warning'
 
@@ -66,37 +72,62 @@ function formatMeasurementDate(detail: StorageDetail) {
 
 function StoragePage() {
   const navigate = useNavigate()
-  const [storages, setStorages] = useState<StorageSummary[]>([])
-  const [selectedStorageId, setSelectedStorageId] = useState<number | null>(null)
-  const [detail, setDetail] = useState<StorageDetail | null>(null)
+  // 모듈 top-level이 아니라 마운트 시점(컴포넌트 본문)에서 읽어야, SPA 내에서 다른 페이지를 갔다가
+  // 다시 돌아왔을 때도(리로드 없이) 그사이 채워진 최신 캐시를 즉시 반영해 전면 로딩이 다시 뜨지 않는다
+  const cachedStorages = readCache<StorageSummary[]>(STORAGES_CACHE_KEY)
+  const [storages, setStorages] = useState<StorageSummary[]>(cachedStorages ?? [])
+  const [selectedStorageId, setSelectedStorageId] = useState<number | null>(cachedStorages?.[0]?.storageId ?? null)
+  const [detail, setDetail] = useState<StorageDetail | null>(() =>
+    cachedStorages?.[0] ? readCache<StorageDetail>(storageDetailCacheKey(cachedStorages[0].storageId)) : null,
+  )
   const [error, setError] = useState('')
-  // 저장고 목록 또는 세부 정보를 아직 받지 못한 동안 사과 로딩 화면을 보여준다
-  const [isLoading, setIsLoading] = useState(true)
+  // 캐시된 데이터가 있으면 전면 로딩 없이 바로 레이아웃을 보여주고, 없으면 최대 2초만 로딩 화면을 유지한다
+  const [isLoading, setIsLoading] = useState(!cachedStorages)
 
-  // 저장고 목록 조회 후 첫 번째 저장고 선택
+  // 2초가 지나도 응답이 없으면 로딩 화면을 걷어내고, 실제 데이터가 아직 없을 때만 더미 데이터로 레이아웃을 채운다
+  useLoadingCap(isLoading, () => {
+    setIsLoading(false)
+    setDetail(current => current ?? buildMockStorageDetail(new Date()))
+  })
+
+  // 저장고 목록 조회 후 첫 번째 저장고 선택 (캐시가 있으면 이미 선택돼 있으므로 유지한다)
   useEffect(() => {
     getStorages()
       .then(list => {
         setStorages(list)
+        writeCache(STORAGES_CACHE_KEY, list)
         if (list.length > 0) {
-          setSelectedStorageId(list[0].storageId)
+          setSelectedStorageId(current => current ?? list[0].storageId)
         } else {
+          // 저장고가 실제로 하나도 없는 것으로 확인됐다면, 그사이 채워졌을 수 있는 더미 데이터를 지운다
+          setDetail(null)
           setIsLoading(false)
         }
       })
       .catch(err => {
-        setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.')
+        if (storages.length === 0) setError(err instanceof Error ? err.message : '저장고 목록을 불러오지 못했습니다.')
         setIsLoading(false)
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // 선택된 저장고의 세부 정보 조회
+  // 선택된 저장고의 세부 정보 조회 — 캐시된 값이 있으면 즉시 보여주고 백그라운드에서 최신 데이터로 교체한다(SWR)
   useEffect(() => {
     if (selectedStorageId == null) return
-    setIsLoading(true)
+    const cachedDetail = readCache<StorageDetail>(storageDetailCacheKey(selectedStorageId))
+    if (cachedDetail) {
+      setDetail(cachedDetail)
+    } else {
+      setIsLoading(true)
+    }
     getStorage(selectedStorageId)
-      .then(setDetail)
-      .catch(err => setError(err instanceof Error ? err.message : '저장고 정보를 불러오지 못했습니다.'))
+      .then(result => {
+        setDetail(result)
+        writeCache(storageDetailCacheKey(selectedStorageId), result)
+      })
+      .catch(err => {
+        if (!cachedDetail) setError(err instanceof Error ? err.message : '저장고 정보를 불러오지 못했습니다.')
+      })
       .finally(() => setIsLoading(false))
   }, [selectedStorageId])
 

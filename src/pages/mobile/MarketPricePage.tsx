@@ -4,7 +4,11 @@ import MobileTabBar from '../../components/MobileTabBar'
 import MobileHeroBanner from '../../components/MobileHeroBanner'
 import ForecastChart from '../../components/ForecastChart'
 import Spinner from '../../components/Spinner'
-import { getForecast, getPriceOptions, type ForecastPoint, type ForecastResponse } from '../../api/forecast'
+import { getForecast, getPriceOptions, type PriceOptions, type ForecastResponse } from '../../api/forecast'
+import { readCache, writeCache } from '../../utils/cache'
+import { useLoadingCap } from '../../hooks/useLoadingCap'
+import { buildWeekForecast, toIsoDate } from '../../utils/forecast'
+import { buildMockForecastResponse } from '../../utils/mockData'
 import './app.css'
 import './MarketPricePage.css'
 
@@ -21,68 +25,76 @@ const formatMd = (iso: string) => {
 const avg = (nums: number[]) =>
   nums.length ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length) : 0
 
-const toIsoDate = (date: Date) => {
-  const p = (n: number) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())}`
-}
-
-// 백엔드가 과거 날짜를 섞어 내려주거나 날짜가 들쭉날쭉해도, 오늘(D-0)부터 6일 뒤(D+6)까지
-// 정확히 7일치만 날짜 오름차순으로 재구성한다. 특정 일자 데이터가 없으면 가장 가까운 값으로 채운다.
-function buildWeekForecast(forecast: ForecastPoint[], history: ForecastPoint[] | { date: string; price: number }[], today: Date): ForecastPoint[] {
-  const byDate = new Map(forecast.map(point => [point.date, point]))
-  const fallbackPrice = history.length ? history[history.length - 1].price : forecast[0]?.price ?? 0
-  let lastKnown: ForecastPoint | null = null
-
-  return Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(today)
-    date.setDate(date.getDate() + i)
-    const iso = toIsoDate(date)
-    const existing = byDate.get(iso)
-    if (existing) {
-      lastKnown = existing
-      return { ...existing, date: iso, horizon: i + 1 }
-    }
-    const base = lastKnown ?? { price: fallbackPrice, low: fallbackPrice, high: fallbackPrice }
-    return { date: iso, price: base.price, low: base.low, high: base.high, horizon: i + 1 }
-  })
-}
+const OPTIONS_CACHE_KEY = 'market:options'
+const forecastCacheKey = (market: string, variety: string) => `market:forecast:${market}:${variety}`
+const pickDefault = (options: string[], preferred: string) => (options.includes(preferred) ? preferred : options[0] ?? '')
 
 function MobileMarketPricePage() {
-  const [markets, setMarkets] = useState<string[]>([])
-  const [varieties, setVarieties] = useState<string[]>([])
-  const [market, setMarket] = useState('')
-  const [variety, setVariety] = useState('')
+  // 모듈 top-level이 아니라 마운트 시점에서 읽어야, SPA 내에서 다른 페이지를 갔다가 돌아왔을 때도
+  // 그사이 채워진 최신 캐시를 즉시 반영해 전면 로딩이 다시 뜨지 않는다
+  const cachedOptions = readCache<PriceOptions>(OPTIONS_CACHE_KEY)
+  const initialMarket = cachedOptions ? pickDefault(cachedOptions.markets, '서울가락') : ''
+  const initialVariety = cachedOptions ? pickDefault(cachedOptions.varieties, '후지') : ''
 
-  const [data, setData] = useState<ForecastResponse | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [markets, setMarkets] = useState<string[]>(cachedOptions?.markets ?? [])
+  const [varieties, setVarieties] = useState<string[]>(cachedOptions?.varieties ?? [])
+  const [market, setMarket] = useState(initialMarket)
+  const [variety, setVariety] = useState(initialVariety)
+
+  const [data, setData] = useState<ForecastResponse | null>(() =>
+    initialMarket && initialVariety ? readCache<ForecastResponse>(forecastCacheKey(initialMarket, initialVariety)) : null,
+  )
+  const [loading, setLoading] = useState(!data)
   const [error, setError] = useState('')
 
+  // 2초가 지나도 응답이 없으면 로딩 화면을 걷어내고, 실제 데이터가 아직 없을 때만 더미 데이터로 차트를 채운다
+  useLoadingCap(loading, () => {
+    setLoading(false)
+    setData(current => current ?? buildMockForecastResponse(market, variety, new Date()))
+  })
+
+  // 캐시된 예측 데이터가 있으면 즉시 보여주고, 백엔드 응답은 백그라운드에서 받아 조용히 교체한다(SWR)
   const fetchForecast = useCallback(async (m: string, v: string) => {
     if (!m || !v) return
-    setLoading(true)
+    const key = forecastCacheKey(m, v)
+    const cached = readCache<ForecastResponse>(key)
+    if (cached) {
+      setData(cached)
+      setLoading(false)
+    } else {
+      setLoading(true)
+    }
     setError('')
     try {
-      setData(await getForecast(m, v))
+      const result = await getForecast(m, v)
+      setData(result)
+      writeCache(key, result)
     } catch {
-      setError('예측 데이터를 불러오지 못했습니다. 다른 조합을 선택해 보세요.')
-      setData(null)
+      if (!cached) {
+        setError('예측 데이터를 불러오지 못했습니다. 다른 조합을 선택해 보세요.')
+        setData(null)
+      }
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
+    if (initialMarket && initialVariety) fetchForecast(initialMarket, initialVariety)
+
     getPriceOptions()
       .then(opts => {
+        writeCache(OPTIONS_CACHE_KEY, opts)
         setMarkets(opts.markets)
         setVarieties(opts.varieties)
-        const m = opts.markets.includes('서울가락') ? '서울가락' : opts.markets[0] ?? ''
-        const v = opts.varieties.includes('후지') ? '후지' : opts.varieties[0] ?? ''
+        const m = pickDefault(opts.markets, '서울가락')
+        const v = pickDefault(opts.varieties, '후지')
         setMarket(m)
         setVariety(v)
-        fetchForecast(m, v)
+        if (m !== initialMarket || v !== initialVariety) fetchForecast(m, v)
       })
-      .catch(() => setError('선택 목록을 불러오지 못했습니다.'))
+      .catch(() => { if (!cachedOptions) setError('선택 목록을 불러오지 못했습니다.') })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchForecast])
 
   const history = data?.history ?? []
