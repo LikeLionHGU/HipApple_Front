@@ -270,7 +270,11 @@ function ShipmentAiPage() {
 
   // 캐시된 값이 있으면 화면엔 이미 반영돼 있으므로, 여기선 실패해도 지우지 않고 성공 시에만 조용히 갱신한다
   useEffect(() => {
-    getMe().then(user => { setFarmerName(user.name); writeCache(FARMER_NAME_CACHE_KEY, user.name) }).catch(() => {})
+    getMe().then(user => {
+      const name = user.farmName || user.name
+      setFarmerName(name)
+      writeCache(FARMER_NAME_CACHE_KEY, name)
+    }).catch(() => {})
     getMyForecast().then(result => { setForecast(result); writeCache(MY_FORECAST_CACHE_KEY, result) }).catch(() => {})
   }, [])
 

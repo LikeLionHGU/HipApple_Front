@@ -225,7 +225,11 @@ function MobileShipmentAiPage() {
   })
 
   useEffect(() => {
-    getMe().then(user => { setFarmerName(user.name); writeCache(FARMER_NAME_CACHE_KEY, user.name) }).catch(() => {})
+    getMe().then(user => {
+      const name = user.farmName || user.name
+      setFarmerName(name)
+      writeCache(FARMER_NAME_CACHE_KEY, name)
+    }).catch(() => {})
     getMyForecast().then(result => { setForecast(result); writeCache(MY_FORECAST_CACHE_KEY, result) }).catch(() => {})
   }, [])
 

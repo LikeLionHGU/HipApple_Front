@@ -52,6 +52,16 @@ function formatDot(iso: string) {
   return `${y}.${m}.${d}`
 }
 
+// 백엔드가 내려주는 시장 분석 기록 날짜의 연도가 실제와 무관하게(테스트 데이터 등) 표시되는 문제가 있어,
+// 월/일만 추출해 현재 연도로 다시 표기한다. 연도를 문자열로 고정하지 않고 매번 new Date()로 계산해
+// 해가 바뀌어도 다시 오래된 연도로 보이지 않게 한다.
+function formatMarketRecordDate(value: string) {
+  const match = value.match(/^\d{4}[-./](\d{2})[-./](\d{2})/)
+  if (!match) return value
+  const [, month, day] = match
+  return `${new Date().getFullYear()}.${month}.${day}`
+}
+
 // 달력에 표시할 주 단위 날짜 그리드(빈 칸은 null)를 만든다
 function buildCalendarWeeks(year: number, month: number): (number | null)[][] {
   const firstWeekday = new Date(year, month - 1, 1).getDay()
@@ -335,7 +345,7 @@ function MyPage() {
               <h2>기본 정보</h2>
               <dl className="mypage-info-list">
                 <dt>이름</dt>
-                <dd>{user?.name ?? '-'}</dd>
+                <dd>{user?.farmName || user?.name || '-'}</dd>
                 <dt>저장고</dt>
                 <dd className="mypage-storage-pills">
                   {storages.length === 0 && '-'}
@@ -476,7 +486,7 @@ function MyPage() {
                 <ul className="mypage-market-list">
                   {marketAnalysisRecords.map(record => (
                     <li className="mypage-market-item" key={`${record.date}-${record.content}`}>
-                      <span className="mypage-market-date">{record.date}</span>
+                      <span className="mypage-market-date">{formatMarketRecordDate(record.date)}</span>
                       <p className="mypage-market-content">{record.content}</p>
                     </li>
                   ))}

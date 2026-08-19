@@ -196,6 +196,21 @@
   font-weight: 500;
 }
 
+.signup-info-error {
+  color: #E11D48;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  align-self: flex-end;
+  margin: 0;
+}
+
+.signup-info-page .next-btn:disabled {
+  background: #A9A9A9;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .signup-info-page .next-btn {
   width: 204px;
   height: 50px;

@@ -131,6 +131,19 @@
   background: #17ae76;
 }
 
+.m-primary-btn:disabled {
+  background: #a9a9a9;
+  cursor: not-allowed;
+}
+
+.m-auth-error {
+  color: #e11d48;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: center;
+  margin: -8px 0 0;
+}
+
 /* 텍스트 링크 */
 .m-auth-link {
   background: none;
