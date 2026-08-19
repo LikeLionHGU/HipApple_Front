@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { saveProfile } from '../../api/user'
 import farmsignLogo from '../../assets/팜사인_로고.svg'
 import './auth.css'
+
+// 재배 규모 입력("숫자 + 단위")을 백엔드 필드(farmSize: int32, farmSizeUnit: string)로 분리해 파싱한다
+function parseScale(scale: string): { farmSize?: number; farmSizeUnit: string } {
+  const match = scale.trim().match(/^(\d+)\s*(.*)$/)
+  if (!match) return { farmSizeUnit: scale.trim() }
+  return { farmSize: Number(match[1]), farmSizeUnit: match[2].trim() || '평' }
+}
 
 function MobileSignupInfoPage() {
   const navigate = useNavigate()
@@ -10,6 +18,8 @@ function MobileSignupInfoPage() {
   const [variety, setVariety] = useState('')
   const [scale, setScale] = useState('')
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   const markets = ['농협 공판장', '도매시장', '직거래']
 
@@ -17,6 +27,27 @@ function MobileSignupInfoPage() {
     setSelectedMarkets(prev =>
       prev.includes(market) ? prev.filter(m => m !== market) : [...prev, market],
     )
+  }
+
+  const handleNext = async () => {
+    if (isSubmitting) return
+    setError('')
+    setIsSubmitting(true)
+    try {
+      const { farmSize, farmSizeUnit } = parseScale(scale)
+      await saveProfile({
+        farmName: location.trim(),
+        variety: variety.trim(),
+        farmSize,
+        farmSizeUnit,
+        shipmentType: selectedMarkets.join(','),
+      })
+      navigate('/signup/step3')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '농가 정보 저장에 실패했습니다.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -68,8 +99,10 @@ function MobileSignupInfoPage() {
             </div>
           </div>
 
-          <button className="m-primary-btn" type="button" onClick={() => navigate('/signup/step3')}>
-            다음으로
+          {error && <p role="alert" className="m-auth-error">{error}</p>}
+
+          <button className="m-primary-btn" type="button" onClick={handleNext} disabled={isSubmitting}>
+            {isSubmitting ? '저장 중...' : '다음으로'}
           </button>
         </div>
       </main>

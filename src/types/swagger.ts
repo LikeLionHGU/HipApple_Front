@@ -23,6 +23,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/user/test-login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 테스트용 로그인 (스웨거용) */
+        post: operations["testLogin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/user/profile": {
         parameters: {
             query?: never;
@@ -158,6 +175,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/storage/{storageId}/quality-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 품질 및 저장 환경 변화 조회 (저장고 현황 + 시계열 차트 + 현재 품질 정보) */
+        get: operations["getQualityStorageStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/storage/{storageId}/major-schedules": {
         parameters: {
             query?: never;
@@ -266,6 +300,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * AI 가격 예측 이력 및 차트 데이터 조회
+         * @description 조회 기간(기본 6개월) 동안의 AI 가격 예측값과 실제 시장가를 조회합니다.
+         */
         get: operations["getHistory"];
         put?: never;
         post?: never;
@@ -313,20 +351,21 @@ export interface components {
         ApiResult: {
             result?: string;
         };
+        LoginResponse: {
+            accessToken?: string;
+            isNewUser?: boolean;
+        };
         ProfileRequest: {
-            farmLocation: string;
+            farmName: string;
             variety: string;
             /** Format: int32 */
             farmSize?: number;
             farmSizeUnit: string;
             shipmentType: string;
+            farmLocation?: string;
         };
         GoogleLoginRequest: {
             idToken: string;
-        };
-        LoginResponse: {
-            accessToken?: string;
-            isNewUser?: boolean;
         };
         FeatureContribution: {
             name?: string;
@@ -375,6 +414,19 @@ export interface components {
             aiAnalysisSummary?: components["schemas"]["AiAnalysisSummary"];
             storageEnvironmentSummary?: components["schemas"]["StorageEnvironmentSummary"];
         };
+        MarketAnalysisRecordResponse: {
+            date?: string;
+            content?: string;
+        };
+        PredictionHistoryResponse: {
+            date?: string;
+            /** Format: int32 */
+            predictedPrice?: number;
+            /** Format: int32 */
+            actualPrice?: number;
+            /** Format: double */
+            changeRate?: number;
+        };
         ShipmentAnalysisResponse: {
             date?: string;
             /** Format: int32 */
@@ -421,6 +473,8 @@ export interface components {
             /** Format: date-time */
             qualityCheckedAt?: string;
             periodSummary?: components["schemas"]["AnalysisPeriodSummaryResponse"];
+            marketAnalysisRecords?: components["schemas"]["MarketAnalysisRecordResponse"][];
+            predictionHistories?: components["schemas"]["PredictionHistoryResponse"][];
         };
         StorageEnvironmentSummary: {
             /** Format: double */
@@ -447,6 +501,7 @@ export interface components {
             /** Format: int64 */
             id?: number;
             name?: string;
+            farmName?: string;
         };
         StorageSummaryResponse: {
             /** Format: int64 */
@@ -462,6 +517,40 @@ export interface components {
             analysisStartDate?: string;
             /** Format: int64 */
             storagePeriodDays?: number;
+        };
+        CurrentMetrics: {
+            grade?: string;
+            /** Format: int32 */
+            score?: number;
+            /** Format: int32 */
+            maxScore?: number;
+            /** Format: int32 */
+            estimatedStorageDays?: number;
+            degradationSpeed?: string;
+        };
+        QualityStorageStatusResponse: {
+            status?: string;
+            title?: string;
+            storageEnvironment?: components["schemas"]["StorageEnvironment"];
+            trendData?: components["schemas"]["QualityTrendPoint"][];
+            currentMetrics?: components["schemas"]["CurrentMetrics"];
+        };
+        QualityTrendPoint: {
+            date?: string;
+            /** Format: double */
+            score?: number;
+        };
+        StorageEnvironment: {
+            storageName?: string;
+            /** Format: double */
+            temperature?: number;
+            /** Format: double */
+            humidity?: number;
+            /** Format: double */
+            ethylene?: number;
+            /** Format: int64 */
+            storageDays?: number;
+            lastUpdated?: string;
         };
         MajorScheduleResponse: {
             title?: string;
@@ -550,26 +639,56 @@ export interface components {
             item?: string;
             variety?: string;
         };
+        /** @description AI 가격 예측 차트 포인트 */
         PricePredictionChartPoint: {
-            /** Format: date */
+            /**
+             * Format: date
+             * @description 예측 기준 날짜
+             * @example 2026-07-17
+             */
             date?: string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description AI 예측 가격 (원/kg)
+             * @example 4120
+             */
             predictedPrice?: number;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description 실제 시장 평균 가격 (원/kg, 미집계 시 null)
+             * @example 3980
+             */
             actualPrice?: number;
         };
         PricePredictionHistoryResponse: {
             chartPoints?: components["schemas"]["PricePredictionChartPoint"][];
             tableRows?: components["schemas"]["PricePredictionTableRow"][];
         };
+        /** @description AI 가격 예측 이력 테이블 행 */
         PricePredictionTableRow: {
-            /** Format: date */
+            /**
+             * Format: date
+             * @description 예측 기준 날짜
+             * @example 2026-07-17
+             */
             date?: string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description AI 예측 가격 (원/kg)
+             * @example 4120
+             */
             predictedPrice?: number;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description 실제 시장 평균 가격 (원/kg, 미집계 시 null)
+             * @example 3980
+             */
             actualPrice?: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description 전일 대비 변동률 (%, 변동 없거나 최초 데이터 시 null)
+             * @example 7
+             */
             changeRate?: number;
         };
     };
@@ -647,6 +766,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResult"];
+                };
+            };
+        };
+    };
+    testLogin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["LoginResponse"];
                 };
             };
         };
@@ -888,6 +1027,28 @@ export interface operations {
             };
         };
     };
+    getQualityStorageStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                storageId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["QualityStorageStatusResponse"];
+                };
+            };
+        };
+    };
     getMajorSchedules: {
         parameters: {
             query?: never;
@@ -1020,8 +1181,8 @@ export interface operations {
     };
     getHistory: {
         parameters: {
-            query: {
-                cropType: string;
+            query?: {
+                /** @description 조회 기간 (기본값: SIX_MONTHS) */
                 period?: "ONE_MONTH" | "SIX_MONTHS" | "ONE_YEAR";
             };
             header?: never;
