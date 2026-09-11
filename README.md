@@ -1,6 +1,6 @@
 <img width="1024" height="559" alt="hipapple" src="https://github.com/user-attachments/assets/3f2748a2-3de0-45cb-8a4a-e04a71d3d418" />
 
-# HipApple
+# 팜사인 FarmSign
 
 **저장고 상태와 시장 시세를 함께 분석해, 사과를 가장 잘 팔 수 있는 순간을 알려주는 서비스.**
 
@@ -75,5 +75,5 @@ src/pages/
 
 ---
 
-멋쟁이사자처럼 한동대학교 · 멋쟁이사과 팀
+멋쟁이사자처럼 한동대학교 · **HipApple(멋쟁이사과)** 팀이 만들었습니다.
 [백엔드 저장소](https://github.com/LikeLionHGU/HipApple_Backend)
